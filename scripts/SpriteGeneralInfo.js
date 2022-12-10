@@ -1,29 +1,30 @@
 class SpriteGeneralInfo {
-  constructor(x, y, startFrame, framesAmount, frameRate, height, width) {
+  constructor(id, x, y, startFrame, framesAmount, frameRate, height, width) {
+    this.id = id;
     this.x = x;
     this.y = y;
     this.startFrame = startFrame;
     this.currentFrame = startFrame;
     this.framesAmount = framesAmount;
     this.frameRate = frameRate;
-    this.dirX = dirX;
-    this.dirY = dirY;
     this.height = height;
     this.width = width;
+    this.center = { x: x + (width / 2), y: y + (height / 2) }
   }
 
   //Frame
-  changeFrameCount;
-  frameRate;
-  startFrame;
-  framesAmount;
-  currentFrame;
+  changeFrameCount = 0;
+  frameRate = 0;
+  startFrame = 0;
+  framesAmount = 0;
+  currentFrame = 0;
+  center = {};
 
   //Size
-  height;
-  width;
+  height = 0;
+  width = 0;
 
   //Location
-  x;
-  y;
+  x = 0;
+  y = 0;
 }
