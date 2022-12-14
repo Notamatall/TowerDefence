@@ -1,6 +1,46 @@
-html,body{
+body,html{
 height: 100%;
-width: 100%;
-background:black;
+background:#000000;
+}
 
+#game__hp-money-bar{
+position: absolute;
+width: 150px;
+display: flex;
+flex-direction: column;
+right: 70px;
+top: 35px;
+justify-content:space-evenly;
+min-height: 80px;
+padding-left: 10px;
+background-color: rgba(0, 0, 0, 0.347);
+font-weight: 700;
+font-size: 20px;
+}
+
+#game__money-container{
+  color:goldenrod;
+
+}
+
+#game__money-container.active {
+  animation-duration: 1.5s;
+  animation-name: slidein;
+  animation-iteration-count: 2;
+}
+
+@keyframes slidein {
+  0% {
+    transform: scale(1);
+  }
+  50%{
+    transform: scale(2);
+  }
+  100%{
+    transform: scale(1);
+  }
+}
+
+#game__hp-container{
+color: rgba(178, 50, 50, 0.804);
 }

@@ -1,14 +1,20 @@
 
 class Tower extends SpriteGeneralInfo {
-  constructor({ id, x, y, startFrame, framesAmount, frameRate, height, width, attackRadius, attackDamage }) {
+  constructor({ image, id, x, y, startFrame, framesAmount, frameRate, height, width, attackRadius, attackDamage }) {
     super(id, x, y, startFrame, framesAmount, frameRate, height, width);
     this.attackRadius = attackRadius;
     this.attackDamage = attackDamage;
+    this.image = image;
+    this.circle = new Path2D();
+    this.circle.arc(this.center.x, this.center.y, this.attackRadius, 0, 2 * Math.PI);
   }
+  circle;
+  image;
   angle = 0;
   attackDamage = 0;
-  attackRadius = 150;
+  attackRadius = 0;
   attackattackTarget = null;
+  audioList = [];
 
   animate() {
     this.changeFrameCount++;
@@ -32,77 +38,82 @@ class Tower extends SpriteGeneralInfo {
   }
 
   update() {
+
     if (this.attackTarget != null)
       this.attack();
-    else if (this.attackTarget == null) {
+    else
       this.searchAttackTarget();
-    }
-
     const spriteStartAngle = 90;
-    this.drawRadius();
-
-    drawRotatedImage(towerImage, this.center.x, this.center.y, this.currentFrame * this.width, 0, this.angle + spriteStartAngle, this.width, 128, -(this.width / 2), -(this.height / 2), 128, 128);
+    drawRotatedImage(this.image, this.center.x, this.center.y, this.currentFrame * this.width, 0, this.angle + spriteStartAngle, this.width, 128, -(this.width / 2), -(this.height / 2), 128, 128);
   }
 
-  drawRadius() {
-    ctx.strokeStyle = 'rgba(137, 11, 11, 0.350)';
-    ctx.beginPath();
-    ctx.roundRect(this.center.x - this.attackRadius, this.center.y - this.attackRadius, this.attackRadius * 2, this.attackRadius * 2, 360);
-    ctx.stroke();
-  }
 
   attack() {
-
-    if (this.isInAttackRadius()) {
+    if (!this.isInAttackRadius()) {
       this.attackTarget = null;
       this.currentFrame = this.startFrame;
     }
-    else
+    else {
       this.fireAndRotate();
-
+    }
   }
-
 
   isInAttackRadius() {
-    if (Math.abs(this.attackTarget.x + this.attackTarget.width * 0.5 - this.center.x) > this.attackRadius
-      || Math.abs(this.attackTarget.y + this.attackTarget.height * 0.5 - this.center.y) > this.attackRadius) {
-      return true;
-    }
-    return false;
+    return ctx.isPointInPath(this.circle, this.attackTarget.center.x, this.attackTarget.center.y)
   }
+
   fireAndRotate() {
     this.angle = this.getAngleToattackTarget();
     if (this.animate()) {
+      this.playShotAudio();
       this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
       if (this.attackTarget.currentHp <= 0) {
-        const target = this.attackTarget;
-        demonsList.splice(demonsList.findIndex(demon => demon.id == this.attackTarget.id), 1);
-        for (const tower of towerList) {
-          if (tower.attackTarget == target) {
-            tower.currentFrame = tower.startFrame;
-            tower.attackTarget = null;
-            tower.animate()
-          }
-        }
+        this.onEnemyDeath();
       }
     }
   }
+
+  onEnemyDeath() {
+    const target = this.attackTarget;
+    userStatsProxy.userMoney = userStatsProxy.userMoney + target.reward;
+    demonsList.splice(demonsList.findIndex(demon => demon.id == this.attackTarget.id), 1);
+    for (const tower of towerList) {
+      if (tower.attackTarget == target) {
+        tower.currentFrame = tower.startFrame;
+        tower.attackTarget = null;
+        tower.animate()
+      }
+    }
+  }
+
   searchAttackTarget() {
     for (const demon of demonsList) {
-      if (Math.abs(demon.x + demon.width * 0.5 - this.center.x) < this.attackRadius
-        && Math.abs(demon.y + demon.height * 0.5 - this.center.y) < this.attackRadius) {
-
+      if (ctx.isPointInPath(this.circle, demon.center.x, demon.center.y)) {
         this.attackTarget = demon;
         this.currentFrame = this.startFrame;
+        return;
       }
     }
   }
 
   getAngleToattackTarget() {
-
     let angle = Math.atan2(this.attackTarget.center.y - this.center.y, this.attackTarget.center.x - this.center.x);
-
     return angle * (180 / Math.PI);
   }
 
+  playShotAudio() {
+    //   switch (this.image) {
+    //     case simplePlasmaTowerImage:
+    //       smPlasmaCannonAudio.load()
+    //       smPlasmaCannonAudio.play().catch(e => e);
+    //       break;
+    //     case simpleCannonTowerImage:
+    //       smCannonAudio.load();
+    //       smCannonAudio.play().catch(e => e);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
+  }
 }
