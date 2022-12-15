@@ -2,6 +2,21 @@ const hpContainer = document.getElementById('game__hp-container');
 const moneyContainer = document.getElementById('game__money-container');
 const hpMoneyContainer = document.getElementById('game__hp-money-bar');
 
+const soundContainer = document.getElementById('game__sound-icon');
+
+soundContainer.style.backgroundImage = 'url(../sprites/icon-mute.png)';
+let sound = true;
+
+soundContainer.onclick = () => {
+  sound = !sound;
+  if (sound)
+    soundContainer.style.backgroundImage = 'url(../sprites/icon-unmute.png)';
+  else
+    soundContainer.style.backgroundImage = 'url(../sprites/icon-mute.png)';
+
+}
+
+
 const c = function (index, angle = null, dirX = null, dirY = null, order = null) {
   return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
 }
@@ -95,11 +110,11 @@ const drawMap = (environmentX, environmentY) => {
     }
 }
 
-const drawFlippedImage = (image, width, height) => {
+const drawFlippedImage = (image, xDraw, yDraw, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY) => {
   ctx.save();
-  ctx.translate(width, height);
+  ctx.translate(xDraw, yDraw);
   ctx.scale(-1, 1);
-  ctx.drawImage(image, 0, 0, 256, 256, -192, 0, 256, 256);
+  ctx.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
   ctx.restore();
 }
 

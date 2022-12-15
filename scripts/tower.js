@@ -102,18 +102,18 @@ class Tower extends SpriteGeneralInfo {
   }
 
   playShotAudio() {
-    //   switch (this.image) {
-    //     case simplePlasmaTowerImage:
-    //       smPlasmaCannonAudio.load()
-    //       smPlasmaCannonAudio.play().catch(e => e);
-    //       break;
-    //     case simpleCannonTowerImage:
-    //       smCannonAudio.load();
-    //       smCannonAudio.play().catch(e => e);
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // }
+    if (sound)
+      switch (this.image) {
+        case simplePlasmaTowerImage:
+          smPlasmaCannonAudio.load()
+          smPlasmaCannonAudio.play().catch(e => e);
+          break;
+        case simpleCannonTowerImage:
+          smCannonAudio.load();
+          smCannonAudio.play().catch(e => e);
+          break;
+        default:
+          break;
+      }
   }
 }

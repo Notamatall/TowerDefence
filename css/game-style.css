@@ -44,3 +44,13 @@ font-size: 20px;
 #game__hp-container{
 color: rgba(178, 50, 50, 0.804);
 }
+
+#game__sound-icon{
+  position: absolute;
+  right: 250px;
+top: 35px;
+width: 96px;
+height: 96px;
+min-width: 20px;
+min-height: 20px;
+}

@@ -5,6 +5,7 @@ const mapTemplate = createImage(896, 640, '../sprites/terrain.png');
 const simplePlasmaTowerImage = createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
 const simpleCannonTowerImage = createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
 const platformImage = createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
+const demonBossImage = createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
 
 const smPlasmaCannonAudio = new Audio('../audio/smPlasmaCannonAudio.mp3');
 const smCannonAudio = new Audio('../audio/smCannonAudio.mp3');
@@ -24,7 +25,7 @@ configureMap({
   tileHeight: 128
 });
 initDemonImages();
-
+let count = 0;
 mapTemplate.onload = () => {
   createDemons(15);
 
@@ -38,7 +39,17 @@ mapTemplate.onload = () => {
 
     requestAnimationFrame(animate);
 
+
+
     drawMap(128, 384);
+
+
+    // ctx.drawImage(demonBossImage, 288 * Math.round(count / 5), 160, 288, 160, 250, 250, 288, 160);
+
+    // drawFlippedImage(demonBossImage, 250, 250, 288 * Math.round(count / 5), 160, 288, 160, -288, 0, 288, 160);
+
+    // if (count++ === 55)
+    //   count = 0;
 
     for (const platform of platformList)
       ctx.drawImage(platformImage, 0, 0, defaultTileHeight, defaultTileHeight, platform.x, platform.y, defaultTileHeight, defaultTileHeight);
@@ -70,7 +81,7 @@ function drawMenu() {
   const menuXStart = screen.width / 2.5;
   const menuYStart = screen.height - (offsetHeight * 2.5 - scrollY);
   const textAdditionHeight = 15;
-  // drawCurrentMoneyBar();
+
   for (let index = 0; index < 3; index++) {
     tryDetectMenuHover(menuXStart, menuYStart, index);
     ctx.drawImage(menuItemsList[index].image, 0, 0, defaultTileWidth, defaultTileHeight, menuXStart + index * defaultTileWidth, menuYStart, defaultTileWidth, defaultTileHeight);
@@ -143,7 +154,7 @@ function createDemons(demonsAmount) {
       width: 128,
       startDirX: 1,
       startDirY: 0,
-      moveSpeed: 10,
+      moveSpeed: 1,
       totalHP: 500,
       turnArray: turnArray,
       reward: 75,
@@ -289,8 +300,7 @@ function createImage(width, height, src) {
 
 function initDemonImages() {
   for (let index = 0; index < 6; index++) {
-    demonImageList.push(new Image(256, 256));
-    demonImageList[index].src = `../sprites/demon/Walk${index + 1}.png`;
+    demonImageList.push(createImage(256, 256, `../sprites/demon/Walk${index + 1}.png`));
   }
 }
 
