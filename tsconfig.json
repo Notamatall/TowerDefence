@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"sourceMap": true,
+		"target": "ES5",
+		"listFiles": true,
+		"module": "CommonJS",
+		"esModuleInterop": true,
+		"strict": true,
+		"allowJs": false,
+		"allowSyntheticDefaultImports": true,
+		"types": [
+			"lodash"
+		],
+		"declaration": true,
+		"outDir": "./dist",
+		"typeRoots": [
+			"node_modules/@types",
+			"src/typings.d.ts"
+		],
+	},
+	"paths": {
+		"@/*": [
+			"src/*"
+		]
+	},
+	"files": [
+		"src/main2.ts"
+	],
+	"include": [
+		"src/**/*.d.ts",
+		"src/**/*.ts",
+	],
+	"exclude": [
+		"node_modules"
+	]
+}
