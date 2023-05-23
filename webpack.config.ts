@@ -35,11 +35,8 @@ function getEntry() {
 	const webpackEntry = {};
 
 
-	entryFilenames.forEach(filename => {
-		webpackEntry[filename] = `./src/scripts/${filename}.ts`;
+	entryFilenames.forEach(filename => webpackEntry[filename] = `./src/scripts/${filename}.ts`);
 
-	});
-	console.log(webpackEntry)
 	return webpackEntry;
 }
 

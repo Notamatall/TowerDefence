@@ -9,18 +9,16 @@
 		"allowJs": false,
 		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,
-		"types": [
-			"lodash"
-		],
+		"types": ["lodash"],
 		"declaration": true,
 		"outDir": "./dist",
 		"typeRoots": [
-			"node_modules/@types",
+			"node_modules/@types", 
 			"src/typings.d.ts"
 		],
 	},
 	"paths": {
-		"@/*": [
+		"@/*": [ 
 			"src/*"
 		]
 	},
