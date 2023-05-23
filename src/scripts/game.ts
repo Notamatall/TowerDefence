@@ -9,36 +9,35 @@ export default class Game {
 		console.log(document);
 		console.log(all);
 
-		const canvas = document.querySelector("canvas");
+		const canvas = document.querySelector("canvas")!;
 		const context = canvas ? canvas.getContext('2d') : undefined;
 		console.log(context);
-		// this.loadImages();
+		this.loadImages();
 
 	}
 
+	context: CanvasRenderingContext2D | null = null;
+
+	private loadImages() {
+
+		// const mapTemplate = Game.createImage(896, 640, '../sprites/terrain.png');
+		// const simplePlasmaTowerImage = Game.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
+		// const demonBossImage = Game.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
 
 
+		// demonBossImage.onload = (ev: Event) => {
+		//   this.context.drawImage(demonBossImage, 288, 160, 288, 160, 250, 250, 288, 160);
+		//   console.log(ev);
+		// };
+	}
 
-	// private loadImages() {
-
-	//   const mapTemplate = Game.createImage(896, 640, '../sprites/terrain.png');
-	//   const simplePlasmaTowerImage = Game.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
-	//   const demonBossImage = Game.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
-
-
-	//   demonBossImage.onload = (ev: Event) => {
-	//     this.context.drawImage(demonBossImage, 288, 160, 288, 160, 250, 250, 288, 160);
-	//     console.log(ev);
-	//   };
-	// }
-
-	// static createImage(width: number,
-	//   height: number,
-	//   src: string) {
-	//   const image = new Image(width, height);
-	//   image.src = src;
-	//   return image;
-	// }
+	createImage(width: number,
+		height: number,
+		src: string) {
+		const image = new Image(width, height);
+		image.src = src;
+		return image;
+	}
 }
 
 const game = new Game();

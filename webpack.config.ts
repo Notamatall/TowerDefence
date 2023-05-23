@@ -24,7 +24,7 @@ const webpackConfiguration: Configuration = {
 				},],
 			},
 			{
-				test: '/\.ts$/',
+				test: /\.ts$/,
 				exclude: /node_modules/,
 				loader: 'babel-loader',
 				options: {
