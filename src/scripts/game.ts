@@ -1,21 +1,22 @@
 
 import SpriteGeneralInfo from "./SpriteGeneralInfo";
 import all from "./test";
+import '../styles/game.css';
+import '../styles/game.scss';
+
 export default class Game {
 	constructor() {
 		console.log(document);
 		console.log(all);
 
-		// this.canvas = document.querySelector("canvas")!;
-		// this.context = this.canvas.getContext('2d')!;
-
+		const canvas = document.querySelector("canvas");
+		const context = canvas ? canvas.getContext('2d') : undefined;
+		console.log(context);
 		// this.loadImages();
 
 	}
 
 
-	// canvas: HTMLCanvasElement;
-	// context: CanvasRenderingContext2D;
 
 
 	// private loadImages() {

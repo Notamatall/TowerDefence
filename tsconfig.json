@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"sourceMap": true,
-		"target": "ES5",
+		"target": "ES6",
 		"listFiles": true,
 		"module": "CommonJS",
 		"esModuleInterop": true,
@@ -10,7 +10,8 @@
 		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,
 		"types": [
-			"lodash"
+			"lodash",
+			"node"
 		],
 		"declaration": true,
 		"outDir": "./dist",

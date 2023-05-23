@@ -1,15 +1,39 @@
 import { resolve } from 'path'
-import { Configuration, config } from 'webpack';
+import { Configuration, EntryObject, config } from 'webpack';
 import plugins from './plugins'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import fs from 'fs'
 
 
 const webpackConfiguration: Configuration = {
 	entry: getEntry(),
 	mode: 'development',
+	experiments: { layers: true },
 	module: {
 		rules: [
-			{ test: '/\.ts$/', use: 'ts-loader' }
+			{
+				test: [/\.s[ac]ss$/i, /\.css$/i],
+				use: [MiniCssExtractPlugin.loader, "css-loader", {
+					loader: "sass-loader",
+					options: {
+						sourceMap: true,
+						sassOptions: {
+							outputStyle: "compressed",
+						},
+					}
+				},],
+			},
+			{
+				test: '/\.ts$/',
+				exclude: /node_modules/,
+				loader: 'babel-loader',
+				options: {
+					presets: [
+						['@babel/preset-typescript', { targets: "defaults" }]
+					],
+					plugins: ['@babel/plugin-transform-typescript']
+				}
+			},
 		],
 	},
 	output: {
@@ -26,18 +50,16 @@ const normalizedWebpackOptions = config.getNormalizedWebpackOptions(webpackConfi
 normalizedWebpackOptions.devServer = {
 	compress: true,
 	static: './dist',
-	hot: true
+	hot: true,
+	open: ['/menu.html'],
 };
 
 
-function getEntry() {
+function getEntry(): EntryObject {
 	const entryFilenames = fs.readdirSync('./src/html').map(filename => filename.replace(/\.[^/.]+$/, ""));
-	const webpackEntry = {};
-
-
+	const webpackEntry: EntryObject = {};
 	entryFilenames.forEach(filename => {
-		webpackEntry[filename] = `./src/scripts/${filename}.ts`;
-
+		webpackEntry[filename] = { import: `./src/scripts/${filename}.ts`, layer: 'js' };
 	});
 	console.log(webpackEntry)
 	return webpackEntry;

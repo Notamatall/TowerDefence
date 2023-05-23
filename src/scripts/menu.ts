@@ -1,3 +1,4 @@
+import '../styles/menu-style.css';
 const menuRulesButton = document.getElementById('menu-rules');
 if (menuRulesButton != null)
 	menuRulesButton.onclick = () => onRulesButtonClick();

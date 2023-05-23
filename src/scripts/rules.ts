@@ -1,3 +1,6 @@
+import '../styles/rules-style.css'
+import '../styles/global-style.css'
+
 export default class Page2 {
 	init() {
 		document.body.appendChild(this.component());
