@@ -1,39 +1,46 @@
-export class Game {
-  constructor() {
-    this.canvas = document.querySelector("canvas")!;
-    this.context = this.canvas.getContext('2d')!;
 
-    this.loadImages();
+import SpriteGeneralInfo from "./SpriteGeneralInfo";
+import all from "./test";
+export default class Game {
+	constructor() {
+		console.log(document);
+		console.log(all);
 
-  }
+		// this.canvas = document.querySelector("canvas")!;
+		// this.context = this.canvas.getContext('2d')!;
 
+		// this.loadImages();
 
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
-
-
-  private loadImages() {
-
-    const mapTemplate = Game.createImage(896, 640, '../sprites/terrain.png');
-    const simplePlasmaTowerImage = Game.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
-    const demonBossImage = Game.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+	}
 
 
-    demonBossImage.onload = (ev: Event) => {
-      this.context.drawImage(demonBossImage, 288, 160, 288, 160, 250, 250, 288, 160);
-      console.log(ev);
-    };
-  }
+	// canvas: HTMLCanvasElement;
+	// context: CanvasRenderingContext2D;
 
-  static createImage(width: number,
-    height: number,
-    src: string) {
-    const image = new Image(width, height);
-    image.src = src;
-    return image;
-  }
+
+	// private loadImages() {
+
+	//   const mapTemplate = Game.createImage(896, 640, '../sprites/terrain.png');
+	//   const simplePlasmaTowerImage = Game.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
+	//   const demonBossImage = Game.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+
+
+	//   demonBossImage.onload = (ev: Event) => {
+	//     this.context.drawImage(demonBossImage, 288, 160, 288, 160, 250, 250, 288, 160);
+	//     console.log(ev);
+	//   };
+	// }
+
+	// static createImage(width: number,
+	//   height: number,
+	//   src: string) {
+	//   const image = new Image(width, height);
+	//   image.src = src;
+	//   return image;
+	// }
 }
-export const game: Game = new Game();
+
+const game = new Game();
 
 
 

@@ -2,7 +2,10 @@ export default class Page2 {
 	init() {
 		document.body.appendChild(this.component());
 		document.body.appendChild(this.button());
+
+
 	}
+
 	component() {
 		// const mapTemplate = this.createImage(896, 640, '');
 		const image = document.createElement('img');
@@ -35,8 +38,6 @@ export default class Page2 {
 		}
 		return button;
 	}
-
-
 }
 const page2 = new Page2();
 page2.init();

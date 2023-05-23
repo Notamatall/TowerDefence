@@ -7,6 +7,7 @@
 		"esModuleInterop": true,
 		"strict": true,
 		"allowJs": false,
+		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,
 		"types": [
 			"lodash"
@@ -23,9 +24,6 @@
 			"src/*"
 		]
 	},
-	"files": [
-		"src/main2.ts"
-	],
 	"include": [
 		"src/**/*.d.ts",
 		"src/**/*.ts",

@@ -1,5 +1,7 @@
 import { ProvidePlugin } from "webpack";
 import CopyWebpackPlugin from 'copy-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import fs from 'fs';
 
 const providePlugin = new ProvidePlugin({
 	_: 'lodash',
@@ -8,8 +10,30 @@ const copyWebpackPlugin = new CopyWebpackPlugin({
 	patterns: [{
 		from: './src/sprites',
 		to: './sprites'
-	}]
+	},]
 });
-const webpackPlugins = [providePlugin, copyWebpackPlugin];
 
+const htmlFilesNames = getHtmlFilesNames();
+const htmlPlugins = getHtmlPlugins(htmlFilesNames);
+
+const webpackPlugins = [
+	providePlugin,
+	copyWebpackPlugin,
+	...htmlPlugins];
+
+
+function getHtmlPlugins(filesName: string[]) {
+	return filesName.map(filename => {
+		return new HtmlWebpackPlugin({
+			template: `./src/html/${filename}`,
+			inject: true,
+			chunks: [filename.replace(/\.[^/.]+$/, "")],
+			filename: filename
+		});
+	});
+}
+
+function getHtmlFilesNames(): string[] {
+	return fs.readdirSync('./src/html');
+}
 export default webpackPlugins;

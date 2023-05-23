@@ -1,13 +1,16 @@
 const menuRulesButton = document.getElementById('menu-rules');
-menuRulesButton.onclick = (event) => onRulesButtonClick(event);
+if (menuRulesButton != null)
+	menuRulesButton.onclick = () => onRulesButtonClick();
 
-const onRulesButtonClick = function (event) {
-window.location.href = 'rules.html';
+const onRulesButtonClick = function () {
+	window.location.href = 'rules.html';
 }
 
 const menuGameButton = document.getElementById('menu-game');
-menuGameButton.onclick = (event) => onGameButtonClick(event);
+if (menuGameButton !== null)
+	menuGameButton.onclick = () => onGameButtonClick();
 
-function onGameButtonClick(event) {
-window.location.href = 'game.html';
+function onGameButtonClick() {
+	window.location.href = 'game.html';
 }
+export { };
