@@ -1,47 +1,68 @@
-
-import SpriteGeneralInfo from "./SpriteGeneralInfo";
-import all from "./test";
 import '../styles/game.css';
 import '../styles/game.scss';
-
+import Utilities from "../utilities/utilities";
 export default class Game {
 	constructor() {
-		console.log(document);
-		console.log(all);
-
-		const canvas = document.querySelector("canvas")!;
-		const context = canvas ? canvas.getContext('2d') : undefined;
-		console.log(context);
-		this.loadImages();
-
+		this.loadGraphicElements();
 	}
 
-	context: CanvasRenderingContext2D | null = null;
-
-	private loadImages() {
-
-		// const mapTemplate = Game.createImage(896, 640, '../sprites/terrain.png');
-		// const simplePlasmaTowerImage = Game.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
-		// const demonBossImage = Game.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
-
-
-		// demonBossImage.onload = (ev: Event) => {
-		//   this.context.drawImage(demonBossImage, 288, 160, 288, 160, 250, 250, 288, 160);
-		//   console.log(ev);
-		// };
+	public async init() {
+		await this.loadGameAssets();
 	}
 
-	createImage(width: number,
-		height: number,
-		src: string) {
-		const image = new Image(width, height);
-		image.src = src;
-		return image;
+	context!: CanvasRenderingContext2D;
+	canvas!: HTMLCanvasElement;
+	allAssetsLoaded: boolean = false;
+
+	private loadGraphicElements() {
+		this.tryCatchWrapper(() => {
+			const canvas = document.querySelector('canvas');
+			if (canvas === null)
+				throw new Error('canvas was not found')
+
+			const context = canvas.getContext('2d');
+
+			if (context === null)
+				throw new Error('canvcontextas was not found')
+
+			this.context = context;
+			this.canvas = canvas;
+		});
 	}
+
+	private tryCatchWrapper(context: () => void) {
+		try {
+			context();
+		}
+		catch (error) {
+			console.error(error)
+		}
+	}
+
+	private loadGameAssets(): Promise<void> {
+		const promise: Promise<void> = new Promise(() => {
+			const mapTemplate = Utilities.createImage(896, 640, '../sprites/terrain.png');
+			const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
+			const demonBossImage = Utilities.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+			const images = [mapTemplate, simplePlasmaTowerImage, demonBossImage];
+			let imagesLoaded = 0;
+
+			images.forEach(image => image.onload = onload.bind(this));
+
+			function onload(this: Game) {
+				imagesLoaded++;
+				if (imagesLoaded == images.length) {
+					this.allAssetsLoaded = true;
+				}
+			}
+		})
+		return promise;
+	}
+
 }
 
 const game = new Game();
-
+game.init();
 
 
 

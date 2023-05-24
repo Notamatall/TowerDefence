@@ -8,6 +8,7 @@ import fs from 'fs'
 const webpackConfiguration: Configuration = {
 	entry: getEntry(),
 	mode: 'development',
+	devtool: 'source-map',
 	experiments: { layers: true },
 	module: {
 		rules: [
@@ -61,7 +62,6 @@ function getEntry(): EntryObject {
 	entryFilenames.forEach(filename => {
 		webpackEntry[filename] = { import: `./src/scripts/${filename}.ts`, layer: 'js' };
 	});
-	console.log(webpackEntry)
 	return webpackEntry;
 }
 
