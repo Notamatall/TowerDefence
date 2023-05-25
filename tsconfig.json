@@ -5,7 +5,10 @@
 		"listFiles": true,
 		"module": "CommonJS",
 		"esModuleInterop": true,
+		"emitDeclarationOnly": true,
+		"declarationMap": true,
 		"strict": true,
+		"isolatedModules": true,
 		"allowJs": false,
 		"noImplicitAny": false,
 		"allowSyntheticDefaultImports": true,
@@ -19,15 +22,16 @@
 			"node_modules/@types",
 			"src/typings.d.ts"
 		],
-	},
-	"paths": {
-		"@/*": [
-			"src/*"
-		]
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		},
 	},
 	"include": [
 		"src/**/*.d.ts",
 		"src/**/*.ts",
+		"src/types/index.js",
 	],
 	"exclude": [
 		"node_modules"

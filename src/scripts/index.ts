@@ -1,9 +1,7 @@
-
 export default class Page1 {
 	init() {
 		document.body.appendChild(this.component());
 		document.body.appendChild(this.button());
-
 	}
 
 	component() {

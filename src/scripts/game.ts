@@ -1,13 +1,24 @@
+import path from 'path';
 import '../styles/game.css';
 import '../styles/game.scss';
+import { IImageAsset, ImagePath } from '../types/game';
 import Utilities from "../utilities/utilities";
+
 export default class Game {
 	constructor() {
 		this.loadGraphicElements();
 	}
 
 	public async init() {
-		await this.loadGameAssets();
+		const mapImage = this.getMapTemplateImage();
+		const mapTemplatePromise = this.loadImages({ mapImage });
+		const map = await Promise.all(mapTemplatePromise);
+		console.log(map)
+		// const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
+
+		// const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
+		// const demonBossImage = Utilities.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+
 	}
 
 	context!: CanvasRenderingContext2D;
@@ -30,35 +41,41 @@ export default class Game {
 		});
 	}
 
-	private tryCatchWrapper(context: () => void) {
+	private tryCatchWrapper(context: () => any) {
 		try {
-			context();
+			return context();
 		}
 		catch (error) {
 			console.error(error)
 		}
 	}
 
-	private loadGameAssets(): Promise<void> {
-		const promise: Promise<void> = new Promise(() => {
-			const mapTemplate = Utilities.createImage(896, 640, '../sprites/terrain.png');
-			const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
-			const demonBossImage = Utilities.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
-			const images = [mapTemplate, simplePlasmaTowerImage, demonBossImage];
-			let imagesLoaded = 0;
+	private loadImages(images: { [keyof: string]: HTMLImageElement }): Promise<IImageAsset>[] {
+		const promisesList: Promise<IImageAsset>[] =
+			Object.entries(images)
+				.map((imageObj) => waitForImageToLoad(imageObj[1], imageObj[0]));
 
-			images.forEach(image => image.onload = onload.bind(this));
+		function waitForImageToLoad(imageElement: HTMLImageElement, key: string): Promise<IImageAsset> {
+			return new Promise((
+				resolve: (obj: IImageAsset) => void,
+				reject: (message: string) => void
+			) => {
+				imageElement.onload = () => resolve({ img: imageElement, key: key });
+				imageElement.onerror = () => reject(`${key} load was not successful`);
+			})
+		}
 
-			function onload(this: Game) {
-				imagesLoaded++;
-				if (imagesLoaded == images.length) {
-					this.allAssetsLoaded = true;
-				}
-			}
-		})
-		return promise;
+		return promisesList;
 	}
 
+	private getMapTemplateImage(): HTMLImageElement {
+		return Utilities.createImage(896, 640, ImagePath.map);
+	}
+
+	private createTowersImages() {
+		const simpleCannonTowerImage = Utilities.createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
+
+	}
 }
 
 const game = new Game();
@@ -67,18 +84,16 @@ game.init();
 
 
 
-// const simpleCannonTowerImage = createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
-// const platformImage = createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
 
+
+const offsetHeight = screen.height - document.body.scrollHeight;
+
+const demonImageList = [];
+const towerList = [];
+const platformList = [];
+const demonsList = [];
 // const smPlasmaCannonAudio = new Audio('../audio/smPlasmaCannonAudio.mp3');
 // const smCannonAudio = new Audio('../audio/smCannonAudio.mp3');
-
-// const offsetHeight = screen.height - document.body.scrollHeight;
-
-// const demonImageList = [];
-// const towerList = [];
-// const platformList = [];
-// const demonsList = [];
 
 // makeCanvasReadKeyboardClick();
 // configureMap({
