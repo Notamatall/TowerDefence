@@ -23,7 +23,7 @@ export default class Page1 {
 		button.style.width = 'fit-content';
 
 		button.onclick = () => {
-			window.location.href = 'index2.html';
+			window.location.href = 'menu.html';
 		}
 		return button;
 	}

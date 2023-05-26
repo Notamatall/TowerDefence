@@ -1,4 +1,3 @@
-import path from 'path';
 import '../styles/game.css';
 import '../styles/game.scss';
 import { IImageAsset, ImagePath } from '../types/game';
@@ -13,7 +12,7 @@ export default class Game {
 		const mapImage = this.getMapTemplateImage();
 		const mapTemplatePromise = this.loadImages({ mapImage });
 		const map = await Promise.all(mapTemplatePromise);
-		console.log(map)
+		this.context.drawImage(map[0].img, 0, 160, 288, 160, 250, 250, 288, 160);
 		// const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
 
 		// const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
@@ -38,6 +37,8 @@ export default class Game {
 
 			this.context = context;
 			this.canvas = canvas;
+			canvas.width = 700;
+			canvas.height = 800;
 		});
 	}
 
@@ -69,7 +70,8 @@ export default class Game {
 	}
 
 	private getMapTemplateImage(): HTMLImageElement {
-		return Utilities.createImage(896, 640, ImagePath.map);
+		console.log(ImagePath.map)
+		return Utilities.createImage(896, 640, ImagePath.map.toString());
 	}
 
 	private createTowersImages() {

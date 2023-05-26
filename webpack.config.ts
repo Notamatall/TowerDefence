@@ -35,6 +35,13 @@ const webpackConfiguration: Configuration = {
 					plugins: ['@babel/plugin-transform-typescript']
 				}
 			},
+			{
+				test: /\.(png|jpe?g|gif)$/i,
+				loader: 'file-loader',
+				options: {
+					name: '[name].[ext]',
+				},
+			},
 		],
 	},
 	output: {

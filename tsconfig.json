@@ -11,12 +11,14 @@
 		"isolatedModules": true,
 		"allowJs": false,
 		"noImplicitAny": false,
+		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
+		"declaration": true,
 		"types": [
 			"lodash",
 			"node"
 		],
-		"declaration": true,
+		"baseUrl": "./",
 		"outDir": "./dist",
 		"typeRoots": [
 			"node_modules/@types",
@@ -24,14 +26,13 @@
 		],
 		"paths": {
 			"@/*": [
-				"./src/*"
+				"src/*"
 			]
 		},
 	},
 	"include": [
 		"src/**/*.d.ts",
 		"src/**/*.ts",
-		"src/types/index.js",
 	],
 	"exclude": [
 		"node_modules"
