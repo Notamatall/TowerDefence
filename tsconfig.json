@@ -13,26 +13,26 @@
 		"noImplicitAny": false,
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
-		"declaration": true,
 		"types": [
 			"lodash",
 			"node"
 		],
-		"baseUrl": "./",
+		"declaration": true,
 		"outDir": "./dist",
 		"typeRoots": [
 			"node_modules/@types",
-			"src/typings.d.ts"
+			"src/types"
 		],
+		"baseUrl": "src",
 		"paths": {
 			"@/*": [
-				"src/*"
+				"*"
 			]
-		},
+		}
 	},
 	"include": [
 		"src/**/*.d.ts",
-		"src/**/*.ts",
+		"src/**/*.ts"
 	],
 	"exclude": [
 		"node_modules"

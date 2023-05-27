@@ -1,18 +1,19 @@
-import '../styles/game.css';
-import '../styles/game.scss';
-import { IImageAsset, ImagePath } from '../types/game';
-import Utilities from "../utilities/utilities";
-
+import '@/styles/game.css';
+import '@/styles/game.scss';
+import { IImageAsset, ImagePath } from '@/types/game';
+import Utilities from '@/utilities/utilities'
+import App from '@/scripts/index';
+import MapConfigurator from './mapConfigurator';
 export default class Game {
-	constructor() {
-		this.loadGraphicElements();
-	}
 
 	public async init() {
 		const mapImage = this.getMapTemplateImage();
 		const mapTemplatePromise = this.loadImages({ mapImage });
 		const map = await Promise.all(mapTemplatePromise);
-		this.context.drawImage(map[0].img, 0, 160, 288, 160, 250, 250, 288, 160);
+		this.currentMap = new MapConfigurator();
+
+		this.currentMap.configureMap(screen.height, screen.width)
+		App.context.drawImage(map[0].img, 0, 160, 288, 160, 250, 250, 288, 160);
 		// const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
 
 		// const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
@@ -20,36 +21,9 @@ export default class Game {
 
 	}
 
-	context!: CanvasRenderingContext2D;
-	canvas!: HTMLCanvasElement;
+	currentMap?: MapConfigurator;
 	allAssetsLoaded: boolean = false;
 
-	private loadGraphicElements() {
-		this.tryCatchWrapper(() => {
-			const canvas = document.querySelector('canvas');
-			if (canvas === null)
-				throw new Error('canvas was not found')
-
-			const context = canvas.getContext('2d');
-
-			if (context === null)
-				throw new Error('canvcontextas was not found')
-
-			this.context = context;
-			this.canvas = canvas;
-			canvas.width = 700;
-			canvas.height = 800;
-		});
-	}
-
-	private tryCatchWrapper(context: () => any) {
-		try {
-			return context();
-		}
-		catch (error) {
-			console.error(error)
-		}
-	}
 
 	private loadImages(images: { [keyof: string]: HTMLImageElement }): Promise<IImageAsset>[] {
 		const promisesList: Promise<IImageAsset>[] =
@@ -70,8 +44,7 @@ export default class Game {
 	}
 
 	private getMapTemplateImage(): HTMLImageElement {
-		console.log(ImagePath.map)
-		return Utilities.createImage(896, 640, ImagePath.map.toString());
+		return Utilities.createImage(896, 640, ImagePath.map);
 	}
 
 	private createTowersImages() {
@@ -82,11 +55,6 @@ export default class Game {
 
 const game = new Game();
 game.init();
-
-
-
-
-
 
 const offsetHeight = screen.height - document.body.scrollHeight;
 

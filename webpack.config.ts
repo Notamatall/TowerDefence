@@ -1,9 +1,8 @@
-import { resolve } from 'path'
+import path, { resolve } from 'path'
 import { Configuration, EntryObject, config } from 'webpack';
 import plugins from './plugins'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import fs from 'fs'
-
 
 const webpackConfiguration: Configuration = {
 	entry: getEntry(),
@@ -13,8 +12,11 @@ const webpackConfiguration: Configuration = {
 	module: {
 		rules: [
 			{
-				test: [/\.s[ac]ss$/i, /\.css$/i],
-				use: [MiniCssExtractPlugin.loader, "css-loader", {
+				test: /\.(png|jpe?g|gif)$/i, loader: 'file-loader', options: { name: '[name].[ext]', },
+			},
+			{
+				test: [/\.s[ac]ss$/i, /\.css$/i], use: [MiniCssExtractPlugin.loader, "css-loader",
+				{
 					loader: "sass-loader",
 					options: {
 						sourceMap: true,
@@ -35,13 +37,6 @@ const webpackConfiguration: Configuration = {
 					plugins: ['@babel/plugin-transform-typescript']
 				}
 			},
-			{
-				test: /\.(png|jpe?g|gif)$/i,
-				loader: 'file-loader',
-				options: {
-					name: '[name].[ext]',
-				},
-			},
 		],
 	},
 	output: {
@@ -50,7 +45,10 @@ const webpackConfiguration: Configuration = {
 		path: resolve(__dirname, 'dist'),
 	},
 	resolve: {
-		extensions: ['.ts', '.js'],
+		extensions: ['.ts', '.js', '.png'],
+		alias: {
+			'@': path.resolve(__dirname, 'src')
+		},
 	},
 	plugins: plugins,
 };

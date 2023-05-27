@@ -1,10 +1,10 @@
-import mapImage from '../sprites/terrain.png';
+import mapImage from '@/assets/sprites/terrain.png';
 
 export interface IImageAsset {
 	img: HTMLImageElement;
 	key: string
 }
 
-export enum ImagePath {
-	map = mapImage
+export class ImagePath {
+	static map = mapImage;
 }
