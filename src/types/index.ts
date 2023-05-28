@@ -1,21 +1,23 @@
-import mapImage from '@/assets/sprites/terrain.png';
 import MapConfigurator from '@/scripts/mapConfigurator';
+import { IMapTemplateCell } from '@/scripts/mapTemplates/mapTemplates';
 
 export interface IImageAsset {
 	img: HTMLImageElement;
 	key: string
 }
 
-export class ImagePath {
-	static map = mapImage;
-}
 
 export interface MapConfigurationOptions {
+	mapName: string;
 	defaultTileWidth: number;
 	defaultTileHeight: number;
 	mapImageWidth: number;
 	mapImageHeight: number;
-	mapImage: string
+	mapImageSrc: string;
+	mapTemplate: IMapTemplateCell[][];
+	environmentX: number;
+	environmentY: number;
+	menuOptions: IMenuOption[];
 }
 
 export interface ICanvasContextOptions {
@@ -31,4 +33,10 @@ export interface GameConfigurationOptions {
 export interface ILevelMap {
 	level: number;
 	map: MapConfigurator;
+}
+
+export interface IMenuOption {
+	itemImageSrc: string;
+	price: number;
+	name: string;
 }

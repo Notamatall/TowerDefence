@@ -14,4 +14,3 @@ if (menuGameButton !== null)
 function onGameButtonClick() {
 	window.location.href = 'game.html';
 }
-export { };

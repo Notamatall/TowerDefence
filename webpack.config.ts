@@ -12,10 +12,18 @@ const webpackConfiguration: Configuration = {
 	module: {
 		rules: [
 			{
-				test: /\.(png|jpe?g|gif)$/i, loader: 'file-loader', options: { name: '[name].[ext]', },
+				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				type: 'asset/resource',
 			},
 			{
-				test: [/\.s[ac]ss$/i, /\.css$/i], use: [MiniCssExtractPlugin.loader, "css-loader",
+				test: [/\.s[ac]ss$/i, /\.css$/i],
+				use: [MiniCssExtractPlugin.loader,
+				{
+					loader: "css-loader",
+					options: {
+						url: true
+					},
+				},
 				{
 					loader: "sass-loader",
 					options: {

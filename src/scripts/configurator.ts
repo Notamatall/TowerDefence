@@ -1,11 +1,11 @@
-import { CanvasContext } from "./canvas";
+import { CanvasConfigurator } from "./canvasConfigurator";
 
 export default class Configurator {
 
-	constructor(canvasContext: CanvasContext) {
+	constructor(canvasContext: CanvasConfigurator) {
 		this.canvasContext = canvasContext
 	}
-	private readonly canvasContext: CanvasContext;
+	private readonly canvasContext: CanvasConfigurator;
 
 	protected get canvas(): HTMLCanvasElement {
 		return this.canvasContext.canvas;

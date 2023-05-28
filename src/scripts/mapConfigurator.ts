@@ -1,33 +1,46 @@
 import Utilities from "@/utilities/utilities";
-import { CanvasContext } from "./canvas";
+import { CanvasConfigurator } from "./canvasConfigurator";
 import Configurator from './configurator';
-import { IImageAsset, ImagePath, MapConfigurationOptions } from "@/types";
+import { MapConfigurationOptions } from "@/types";
+import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 
 export default class MapConfigurator extends Configurator {
-	constructor(canvasContext: CanvasContext) {
+	constructor(canvasContext: CanvasConfigurator, options: MapConfigurationOptions) {
 		super(canvasContext);
-	}
-
-	private defaultTileWidth: number = 0;
-	private defaultTileHeight: number = 0;
-	private mapImageWidth: number = 0;
-	private mapImageHeight: number = 0;
-	private mapImageSrc: string = '';
-	innerMapImage!: HTMLImageElement;
-
-
-	get mapImage(): HTMLImageElement {
-		return this.innerMapImage;
-	}
-
-	configureMap(options: MapConfigurationOptions) {
+		this.mapName = options.mapName;
 		this.defaultTileHeight = options.defaultTileHeight;
 		this.defaultTileWidth = options.defaultTileWidth;
 		this.mapImageHeight = options.mapImageHeight;
 		this.mapImageWidth = options.mapImageWidth;
-		this.mapImageSrc = options.mapImage;
-		// defineTurnPlaces();
+		this.mapImageSrc = options.mapImageSrc;
+		this.mapTemplate = options.mapTemplate;
+		this.environmentY = options.environmentY;
+		this.environmentX = options.environmentX;
+		this.offsetHeight = screen.height - document.body.scrollHeight;
 
+		// defineTurnPlaces();
+	}
+	//constants
+	private readonly toRadiance = Math.PI / 180;
+
+	//properties
+	private mapName: string;
+	private defaultTileWidth: number;
+	private defaultTileHeight: number;
+	private mapImageWidth: number;
+	private mapImageHeight: number;
+	private mapImageSrc: string;
+	private mapTemplate: IMapTemplateCell[][];
+
+	private innerMapImage: HTMLImageElement | null = null
+	private environmentX: number;
+	private environmentY: number;
+	private offsetHeight: number;
+
+	get mapImage(): HTMLImageElement {
+		if (this.innerMapImage === null)
+			throw new Error(`Map image for ${this.mapName} was not loaded correctly`);
+		return this.innerMapImage;
 	}
 
 	async loadMapImage(): Promise<void> {
@@ -36,6 +49,90 @@ export default class MapConfigurator extends Configurator {
 		const val = await Promise.all(mapTemplatePromise);
 		this.innerMapImage = val[0].img;
 	}
+
+	drawMap() {
+		for (let i = 0; i < this.mapTemplate.length; i++)
+			for (let j = 0; j < this.mapTemplate[i].length; j++) {
+				let cell = this.mapTemplate[i][j];
+				this.drawRotatedImage(this.mapImage,
+					this.defaultTileWidth * j + this.defaultTileWidth / 2,
+					i * this.defaultTileHeight + this.defaultTileHeight / 2,
+					cell.index * this.environmentX,
+					this.environmentY,
+					this.defaultTileWidth,
+					this.defaultTileHeight,
+					-(this.defaultTileWidth / 2),
+					-(this.defaultTileHeight / 2),
+					this.defaultTileWidth,
+					this.defaultTileHeight,
+					cell.angle);
+			}
+	}
+
+	drawRotatedImage(image: HTMLImageElement,
+		xDraw: number,
+		yDraw: number,
+		pX: number,
+		pY: number,
+		getByX: number,
+		getByY: number,
+		offsetX: number,
+		offsetY: number,
+		totalX: number,
+		totalY: number,
+		angle?: number) {
+
+		this.context.save();
+		this.context.translate(xDraw, yDraw);
+		if (angle)
+			this.context.rotate(angle * this.toRadiance);
+		this.context.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
+		this.context.restore();
+	}
+
+	createMenu() {
+		Utilities.tryCatchWrapper(() => {
+			const menuPlaceholder = document.getElementById('game__menu-placeholder');
+			if (_.isNil(menuPlaceholder))
+				throw new Error(`Menu placeholder was not found - ${this.mapName}`);
+
+
+			// document.createElement('div')
+
+
+			// menuPlaceholder.appendChild()
+		})
+
+
+	}
+
+	// drawMenu() {
+	// 	const menuXStart = screen.width / 2.5;
+	// 	const menuYStart = screen.height - (this.offsetHeight * 2.5 - scrollY);
+	// 	const textAdditionHeight = 15;
+
+	// 	for (let index = 0; index < 3; index++) {
+	// 		tryDetectMenuHover.call(this, menuXStart, menuYStart, index);
+	// 		ctx.drawImage(menuItemsList[index].image, 0, 0, defaultTileWidth, defaultTileHeight, menuXStart + index * defaultTileWidth, menuYStart, defaultTileWidth, defaultTileHeight);
+	// 		drawPrice(menuXStart, menuYStart, index, textAdditionHeight);
+	// 	}
+
+	// 	function tryDetectMenuHover(this:MapConfigurator, menuXStart:number, menuYStart:number, index:number) {
+	// 		const rect = new Path2D();
+	// 		const textAdditionHeight = 30;
+	// 		rect.rect(menuXStart + this.defaultTileWidth * index, menuYStart, this.defaultTileWidth, defaultTileHeight + textAdditionHeight);
+	// 		if (ctx.isPointInPath(rect, cursorX, cursorY) && !isPicked && (userStatsProxy.userMoney - menuItemsList[index].price >= 0)) {
+	// 			ctx.fillStyle = '#cc0e0e61';
+	// 			menuHoverItem = menuItemsList[index].image;
+	// 		}
+	// 		else
+	// 			ctx.fillStyle = '#00000061';
+	// 		ctx.fill(rect);
+	// 	}
+
+
+	// }
+
 }
 
 
@@ -59,7 +156,7 @@ export default class MapConfigurator extends Configurator {
 // }
 
 
-// const c = function (index, angle = null, dirX = null, dirY = null, order = null) {
+// const c = function (index, angle?:number, dirX?:number, dirY?:number, order?:number) {
 //   return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
 // }
 
@@ -76,7 +173,7 @@ export default class MapConfigurator extends Configurator {
 // ];
 // const body = document.body;
 // const turnPlaceList = [];
-// const toRadiance = Math.PI / 180;
+
 // const toDegrees = 180 / Math.PI;
 
 // var handler = {
@@ -132,18 +229,7 @@ export default class MapConfigurator extends Configurator {
 
 // }
 
-// const drawMap = (environmentX, environmentY) => {
-//   for (let i = 0; i < map.length; i++)
-//     for (let j = 0; j < map[i].length; j++) {
-//       let cell = map[i][j];
-//       drawRotatedImage(mapTemplate, defaultTileWidth * j + defaultTileWidth / 2, i * defaultTileHeight + defaultTileHeight / 2, cell.index * environmentX, environmentY, cell.angle, defaultTileWidth, defaultTileHeight, -(defaultTileWidth / 2), -(defaultTileHeight / 2), defaultTileWidth, defaultTileHeight);
 
-//       if (cell.over) {
-//         cell = cell.over;
-//         drawRotatedImage(mapTemplate, defaultTileWidth * j + defaultTileWidth / 2, i * defaultTileHeight + defaultTileHeight / 2, cell.index * environmentX, environmentY, cell.angle, defaultTileWidth, defaultTileHeight, -(defaultTileWidth / 2), -(defaultTileHeight / 2), defaultTileWidth, defaultTileHeight);
-//       }
-//     }
-// }
 
 // const drawFlippedImage = (image, xDraw, yDraw, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY) => {
 //   ctx.save();
@@ -153,13 +239,6 @@ export default class MapConfigurator extends Configurator {
 //   ctx.restore();
 // }
 
-// const drawRotatedImage = (image, xDraw, yDraw, pX, pY, angle, getByX, getByY, offsetX, offsetY, totalX, totalY) => {
-//   ctx.save();
-//   ctx.translate(xDraw, yDraw);
-//   ctx.rotate(angle * toRadiance);
-//   ctx.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
-//   ctx.restore();
-// }
 
 // const drawRadius = (color, x, y, radius) => {
 //   ctx.strokeStyle = color;

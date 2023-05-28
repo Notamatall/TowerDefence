@@ -1,39 +1,57 @@
-import '@/styles/game.css';
+import '../styles/game.css';
 import '@/styles/game.scss';
-import { CanvasContext } from '@/scripts/canvas';
+import { CanvasConfigurator } from '@/scripts/canvasConfigurator';
 import GameConfigurator from './gameConfigurator';
 import MapConfigurator from './mapConfigurator';
-import { ImagePath } from '@/types';
+import { ImagePath } from '@/types/imagePath';
+import { firstLevelTemplate } from './mapTemplates/mapTemplates';
 
-const app = new CanvasContext({
+const app = new CanvasConfigurator({
 	containerId: 'game-container',
 	width: screen.width,
 	height: screen.height
 });
 
 const game = new GameConfigurator(app);
-
-const map = new MapConfigurator(app);
-map.configureMap({
+const levelOne = new MapConfigurator(app, {
+	mapName: 'Level one',
 	defaultTileHeight: 128,
 	defaultTileWidth: 128,
 	mapImageHeight: 896,
 	mapImageWidth: 640,
-	mapImage: ImagePath.map
+	mapImageSrc: ImagePath.terrain,
+	mapTemplate: firstLevelTemplate,
+	environmentX: 128,
+	environmentY: 384,
+	menuOptions:[]
 });
 
-game.configureGame({ maps: [{ level: 1, map: map }] });
 
+game.configureGame({
+	maps: [
+		{ level: 1, map: levelOne }
+	]
+}).then(() => 
+	game.startGame()
+);
 
-const offsetHeight = screen.height - document.body.scrollHeight;
-
-const demonImageList = [];
-const towerList = [];
-const platformList = [];
-const demonsList = [];
+// const demonImageList = [];
+// const towerList = [];
+// const platformList = [];
+// const demonsList = [];
 // const smPlasmaCannonAudio = new Audio('../audio/smPlasmaCannonAudio.mp3');
 // const smCannonAudio = new Audio('../audio/smCannonAudio.mp3');
 
+  
+
+// const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
+
+// const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
+// const demonBossImage = Utilities.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+// private createTowersImages() {
+// 	const simpleCannonTowerImage = Utilities.createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
+// }
+		   
 // makeCanvasReadKeyboardClick();
 // configureMap({
 //   mapWidth: screen.width,
@@ -94,30 +112,7 @@ const demonsList = [];
 //   { image: simpleCannonTowerImage, price: 250, length: 64 - (4 * 10.6 / 2) },
 //   { image: platformImage, price: 50, length: 64 - (3 * 10.6 / 2) }];
 
-// function drawMenu() {
-//   const menuXStart = screen.width / 2.5;
-//   const menuYStart = screen.height - (offsetHeight * 2.5 - scrollY);
-//   const textAdditionHeight = 15;
 
-//   for (let index = 0; index < 3; index++) {
-//     tryDetectMenuHover(menuXStart, menuYStart, index);
-//     ctx.drawImage(menuItemsList[index].image, 0, 0, defaultTileWidth, defaultTileHeight, menuXStart + index * defaultTileWidth, menuYStart, defaultTileWidth, defaultTileHeight);
-//     drawPrice(menuXStart, menuYStart, index, textAdditionHeight);
-//   }
-// }
-
-// function tryDetectMenuHover(menuXStart, menuYStart, index) {
-//   const rect = new Path2D();
-//   const textAdditionHeight = 30;
-//   rect.rect(menuXStart + defaultTileWidth * index, menuYStart, defaultTileWidth, defaultTileHeight + textAdditionHeight);
-//   if (ctx.isPointInPath(rect, cursorX, cursorY) && !isPicked && (userStatsProxy.userMoney - menuItemsList[index].price >= 0)) {
-//     ctx.fillStyle = '#cc0e0e61';
-//     menuHoverItem = menuItemsList[index].image;
-//   }
-//   else
-//     ctx.fillStyle = '#00000061';
-//   ctx.fill(rect);
-// }
 
 // let isPicked = false;
 // function tryDrawPicked() {
