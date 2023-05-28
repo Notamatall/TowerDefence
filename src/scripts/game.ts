@@ -1,60 +1,29 @@
 import '@/styles/game.css';
 import '@/styles/game.scss';
-import { IImageAsset, ImagePath } from '@/types/game';
-import Utilities from '@/utilities/utilities'
-import App from '@/scripts/index';
+import { CanvasContext } from '@/scripts/canvas';
+import GameConfigurator from './gameConfigurator';
 import MapConfigurator from './mapConfigurator';
-export default class Game {
+import { ImagePath } from '@/types';
 
-	public async init() {
-		const mapImage = this.getMapTemplateImage();
-		const mapTemplatePromise = this.loadImages({ mapImage });
-		const map = await Promise.all(mapTemplatePromise);
-		this.currentMap = new MapConfigurator();
+const app = new CanvasContext({
+	containerId: 'game-container',
+	width: screen.width,
+	height: screen.height
+});
 
-		this.currentMap.configureMap(screen.height, screen.width)
-		App.context.drawImage(map[0].img, 0, 160, 288, 160, 250, 250, 288, 160);
-		// const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
+const game = new GameConfigurator(app);
 
-		// const simplePlasmaTowerImage = Utilities.createImage(1408, 128, '../sprites/Red/Weapons/turret_02_mk1.png');
-		// const demonBossImage = Utilities.createImage(3456, 320, '../sprites/demonBoss/demonBoss288_160.png');
+const map = new MapConfigurator(app);
+map.configureMap({
+	defaultTileHeight: 128,
+	defaultTileWidth: 128,
+	mapImageHeight: 896,
+	mapImageWidth: 640,
+	mapImage: ImagePath.map
+});
 
-	}
+game.configureGame({ maps: [{ level: 1, map: map }] });
 
-	currentMap?: MapConfigurator;
-	allAssetsLoaded: boolean = false;
-
-
-	private loadImages(images: { [keyof: string]: HTMLImageElement }): Promise<IImageAsset>[] {
-		const promisesList: Promise<IImageAsset>[] =
-			Object.entries(images)
-				.map((imageObj) => waitForImageToLoad(imageObj[1], imageObj[0]));
-
-		function waitForImageToLoad(imageElement: HTMLImageElement, key: string): Promise<IImageAsset> {
-			return new Promise((
-				resolve: (obj: IImageAsset) => void,
-				reject: (message: string) => void
-			) => {
-				imageElement.onload = () => resolve({ img: imageElement, key: key });
-				imageElement.onerror = () => reject(`${key} load was not successful`);
-			})
-		}
-
-		return promisesList;
-	}
-
-	private getMapTemplateImage(): HTMLImageElement {
-		return Utilities.createImage(896, 640, ImagePath.map);
-	}
-
-	private createTowersImages() {
-		const simpleCannonTowerImage = Utilities.createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
-
-	}
-}
-
-const game = new Game();
-game.init();
 
 const offsetHeight = screen.height - document.body.scrollHeight;
 

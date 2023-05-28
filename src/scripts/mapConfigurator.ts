@@ -1,16 +1,41 @@
-import App from '@/scripts/index'
-export default class MapConfigurator {
+import Utilities from "@/utilities/utilities";
+import { CanvasContext } from "./canvas";
+import Configurator from './configurator';
+import { IImageAsset, ImagePath, MapConfigurationOptions } from "@/types";
 
-	configureMap(mapWidth: number, mapHeight: number,
-		//tileWidth, tileHeight
-	) {
-		App.canvas.width = mapWidth;
-		App.canvas.height = mapHeight;
-		// defaultTileHeight = tileHeight;
-		// defaultTileWidth = tileWidth;
-		// defineTurnPlaces();
+export default class MapConfigurator extends Configurator {
+	constructor(canvasContext: CanvasContext) {
+		super(canvasContext);
 	}
 
+	private defaultTileWidth: number = 0;
+	private defaultTileHeight: number = 0;
+	private mapImageWidth: number = 0;
+	private mapImageHeight: number = 0;
+	private mapImageSrc: string = '';
+	innerMapImage!: HTMLImageElement;
+
+
+	get mapImage(): HTMLImageElement {
+		return this.innerMapImage;
+	}
+
+	configureMap(options: MapConfigurationOptions) {
+		this.defaultTileHeight = options.defaultTileHeight;
+		this.defaultTileWidth = options.defaultTileWidth;
+		this.mapImageHeight = options.mapImageHeight;
+		this.mapImageWidth = options.mapImageWidth;
+		this.mapImageSrc = options.mapImage;
+		// defineTurnPlaces();
+
+	}
+
+	async loadMapImage(): Promise<void> {
+		const mapImage = Utilities.createImage(this.mapImageWidth, this.mapImageHeight, this.mapImageSrc);
+		const mapTemplatePromise = Utilities.loadImages({ mapImage });
+		const val = await Promise.all(mapTemplatePromise);
+		this.innerMapImage = val[0].img;
+	}
 }
 
 
