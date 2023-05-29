@@ -2,7 +2,6 @@ import { ProvidePlugin } from "webpack";
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import fs from 'fs';
 
 /**

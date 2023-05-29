@@ -1,12 +1,12 @@
 import '../styles/game.css';
 import '@/styles/game.scss';
-import { CanvasConfigurator } from '@/scripts/canvasConfigurator';
+import { CanvasBuilder } from './canvasBuilder';
 import GameConfigurator from './gameConfigurator';
 import MapConfigurator from './mapConfigurator';
 import { ImagePath } from '@/types/imagePath';
-import { firstLevelTemplate } from './mapTemplates/mapTemplates';
+import { firstLevelMenu, firstLevelTemplate } from './mapTemplates/mapTemplates';
 
-const app = new CanvasConfigurator({
+const app = new CanvasBuilder({
 	containerId: 'game-container',
 	width: screen.width,
 	height: screen.height
@@ -23,7 +23,7 @@ const levelOne = new MapConfigurator(app, {
 	mapTemplate: firstLevelTemplate,
 	environmentX: 128,
 	environmentY: 384,
-	menuOptions:[]
+	menuOptions: firstLevelMenu
 });
 
 
@@ -31,7 +31,7 @@ game.configureGame({
 	maps: [
 		{ level: 1, map: levelOne }
 	]
-}).then(() => 
+}).then(() =>
 	game.startGame()
 );
 
@@ -42,7 +42,7 @@ game.configureGame({
 // const smPlasmaCannonAudio = new Audio('../audio/smPlasmaCannonAudio.mp3');
 // const smCannonAudio = new Audio('../audio/smCannonAudio.mp3');
 
-  
+
 
 // const platformImage = Utilities.createImage(768, 640, ' ../sprites/Red/Towers/towers_walls_blank.png');
 
@@ -51,7 +51,7 @@ game.configureGame({
 // private createTowersImages() {
 // 	const simpleCannonTowerImage = Utilities.createImage(1024, 128, ' ../sprites/Red/Weapons/turret_01_mk1.png');
 // }
-		   
+
 // makeCanvasReadKeyboardClick();
 // configureMap({
 //   mapWidth: screen.width,
@@ -204,7 +204,7 @@ game.configureGame({
 //     if (menuHoverItem == platformImage) {
 //       if (map[clickIndexY][clickIndexX].index == 0
 //         && !platformList?.find(platform => platform.x == offsetX && platform.y == offsetY)) {
-//         payPriceForNewItem();
+//         payPriceForNewItem(); 
 //         platformList.push({ x: offsetX, y: offsetY });
 //       }
 //       return;
@@ -250,34 +250,6 @@ game.configureGame({
 // function payPriceForNewItem() {
 //   const itemPrice = menuItemsList.find(item => item.image == menuHoverItem).price;
 //   userStatsProxy.userMoney = userStatsProxy.userMoney - itemPrice;
-// }
-
-// function getTowerInitValues() {
-//   let initData = {};
-//   switch (menuHoverItem) {
-//     case simplePlasmaTowerImage:
-//       {
-//         initData.startFrame = 0;
-//         initData.framesAmount = 10;
-//         initData.frameRate = 5;
-//         initData.attackDamage = 50;
-//         initData.attackRadius = 300;
-//       }
-//       break;
-//     case simpleCannonTowerImage:
-//       {
-//         initData.startFrame = 0;
-//         initData.framesAmount = 7;
-//         initData.frameRate = 5;
-//         initData.attackDamage = 30;
-//         initData.attackRadius = 275;
-//       }
-//       break;
-//     default:
-//       initData = null;
-//       break;
-//   }
-//   return initData;
 // }
 
 // function isPlatformWithoutTower(clickIndexX, clickIndexY, offsetX, offsetY) {

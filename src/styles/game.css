@@ -6,7 +6,7 @@ html {
 
 #game__hp-money-bar {
 	position: fixed;
-	width: 150px;
+	width: 120px;
 	display: flex;
 	flex-direction: column;
 	right: 70px;
@@ -20,8 +20,9 @@ html {
 }
 
 #game__money-container {
-	color: goldenrod;
-
+	color: gold;
+	display: flex;
+	gap: 10px;
 }
 
 #game__money-container.active {
@@ -45,7 +46,9 @@ html {
 }
 
 #game__hp-container {
-	color: rgba(178, 50, 50, 0.804);
+	color: rgba(245, 6, 6, 0.804);
+	display: flex;
+	gap: 10px;
 }
 
 #game__sound-icon {
@@ -62,17 +65,37 @@ html {
 	display: flex;
 	position: fixed;
 	justify-content: center;
-	width: 100%;
-	top: 80%;
+	left: 50%;
+	transform: translate(-50%, 0);
+	top: 75%;
 }
 
 .game__menu-item-wrapper {
 	background: rgba(44, 44, 44, 0.725);
 	border: solid;
 	margin: 5px;
+	flex: 0 0 auto;
 }
 
-.game__menu-item {
+.game__menu-item-title {
+	text-align: center;
+	padding: 5px;
+	font-family: gameMenuTitle;
+}
+
+.game__menu-item-price {
+	text-align: center;
+	padding: 10px;
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+	font-size: 20px;
+	font-family: gameMenuPrice;
+	color: gold;
+	border-top: black 2px solid;
+}
+
+.game__menu-item-img {
 	background: url('../assets/sprites/towers/supremeLaserCannon.png');
 	background-repeat: no-repeat;
 	background-position: 0 0;
@@ -82,4 +105,14 @@ html {
 
 .game__menu-item-wrapper:hover {
 	opacity: 0.6;
+}
+
+@font-face {
+	font-family: gameMenuTitle;
+	src: url(./fonts/AquireBold-8Ma60.otf);
+}
+
+@font-face {
+	font-family: gameMenuPrice;
+	src: url(./fonts/Aquire-BW0ox.otf);
 }

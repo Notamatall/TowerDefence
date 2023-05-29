@@ -1,10 +1,10 @@
 import { GameConfigurationOptions, ILevelMap } from '@/types';
 import MapConfigurator from './mapConfigurator';
-import { CanvasConfigurator } from './canvasConfigurator';
+import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
 
 export default class GameConfigurator extends Configurator {
-	constructor(canvasContext: CanvasConfigurator) {
+	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
 	}
 
@@ -13,7 +13,7 @@ export default class GameConfigurator extends Configurator {
 
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
 		this.setMaps(options.maps);
-		await this.currentMap.loadMapImage();
+		await this.currentMap.configureMap();
 		//this.context.drawImage(this.currentMap.mapImage, 0, 160, 288, 160, 250, 250, 288, 160);
 	}
 
@@ -31,7 +31,9 @@ export default class GameConfigurator extends Configurator {
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
+		this.currentMap.tryDrawPicked();
 	}
+
 
 	startGame() {
 		this.animate();

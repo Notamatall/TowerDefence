@@ -3,16 +3,14 @@ import { Configuration, EntryObject, config } from 'webpack';
 import plugins from './plugins'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import fs from 'fs'
-
 const webpackConfiguration: Configuration = {
 	entry: getEntry(),
 	mode: 'development',
 	devtool: 'source-map',
-	experiments: { layers: true },
 	module: {
 		rules: [
 			{
-				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				test: /\.(png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf)$/i,
 				type: 'asset/resource',
 			},
 			{
@@ -66,6 +64,10 @@ normalizedWebpackOptions.devServer = {
 	static: './dist',
 	hot: true,
 	open: ['/menu.html'],
+	// index: 'menu.html',
+	// historyApiFallback: {
+	// 	index: 'menu.html'
+	// }
 };
 
 
@@ -73,7 +75,9 @@ function getEntry(): EntryObject {
 	const entryFilenames = fs.readdirSync('./src/html').map(filename => filename.replace(/\.[^/.]+$/, ""));
 	const webpackEntry: EntryObject = {};
 	entryFilenames.forEach(filename => {
-		webpackEntry[filename] = { import: `./src/scripts/${filename}.ts`, layer: 'js' };
+		webpackEntry[filename] = {
+			import: `./src/scripts/${filename}`
+		};
 	});
 	return webpackEntry;
 }

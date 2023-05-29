@@ -1,11 +1,13 @@
 import Utilities from "@/utilities/utilities";
-import { CanvasConfigurator } from "./canvasConfigurator";
+import { CanvasBuilder } from "./canvasBuilder";
 import Configurator from './configurator';
-import { MapConfigurationOptions } from "@/types";
+import { IImageAsset, IMenuItem, MapConfigurationOptions } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
-
+import { IMenuOption } from "@/types/index"
+import { Dictionary } from "lodash";
+import { Towers } from "./towers";
 export default class MapConfigurator extends Configurator {
-	constructor(canvasContext: CanvasConfigurator, options: MapConfigurationOptions) {
+	constructor(canvasContext: CanvasBuilder, options: MapConfigurationOptions) {
 		super(canvasContext);
 		this.mapName = options.mapName;
 		this.defaultTileHeight = options.defaultTileHeight;
@@ -17,6 +19,7 @@ export default class MapConfigurator extends Configurator {
 		this.environmentY = options.environmentY;
 		this.environmentX = options.environmentX;
 		this.offsetHeight = screen.height - document.body.scrollHeight;
+		this.menuOptions = options.menuOptions;
 
 		// defineTurnPlaces();
 	}
@@ -24,6 +27,7 @@ export default class MapConfigurator extends Configurator {
 	private readonly toRadiance = Math.PI / 180;
 
 	//properties
+	private menuOptions: IMenuOption[];
 	private mapName: string;
 	private defaultTileWidth: number;
 	private defaultTileHeight: number;
@@ -36,6 +40,9 @@ export default class MapConfigurator extends Configurator {
 	private environmentX: number;
 	private environmentY: number;
 	private offsetHeight: number;
+	private isMenuItemPicked: boolean = false;
+	private pickedMenuItem: IMenuItem | null = null;
+	private menuItems: IMenuItem[] = [];
 
 	get mapImage(): HTMLImageElement {
 		if (this.innerMapImage === null)
@@ -43,11 +50,37 @@ export default class MapConfigurator extends Configurator {
 		return this.innerMapImage;
 	}
 
-	async loadMapImage(): Promise<void> {
+	async configureMap(): Promise<void> {
+		await this.loadMapImage();
+		await this.createMenu();
+		this.registerOnMouseMoveHandlerForMenuItems();
+	}
+
+	private async loadMapImage(): Promise<void> {
 		const mapImage = Utilities.createImage(this.mapImageWidth, this.mapImageHeight, this.mapImageSrc);
 		const mapTemplatePromise = Utilities.loadImages({ mapImage });
-		const val = await Promise.all(mapTemplatePromise);
-		this.innerMapImage = val[0].img;
+		const imageAsset = await Promise.all(mapTemplatePromise);
+		this.innerMapImage = imageAsset[0].img;
+	}
+
+	private async loadMenuItemsImages(): Promise<void> {
+		let keyValueList: Dictionary<HTMLImageElement> = {};
+		for (let index = 0; index < this.menuOptions.length; index++) {
+			const option = this.menuOptions[index];
+			const menuItemImage = Utilities.createImage(this.defaultTileWidth, this.defaultTileHeight, option.itemImageSrc);
+			keyValueList[option.name] = menuItemImage;
+		}
+		const promises = Utilities.loadImages(keyValueList);
+		const imageAssets = await Promise.all(promises);
+
+		for (let index = 0; index < imageAssets.length; index++) {
+			const option = this.menuOptions[index];
+			this.menuItems.push({
+				towerId: option.towerId,
+				itemImage: imageAssets[index].img
+			})
+		}
+
 	}
 
 	drawMap() {
@@ -90,21 +123,142 @@ export default class MapConfigurator extends Configurator {
 		this.context.restore();
 	}
 
-	createMenu() {
+	async createMenu() {
+		await this.loadMenuItemsImages();
 		Utilities.tryCatchWrapper(() => {
 			const menuPlaceholder = document.getElementById('game__menu-placeholder');
 			if (_.isNil(menuPlaceholder))
 				throw new Error(`Menu placeholder was not found - ${this.mapName}`);
 
+			const gameMenu = document.createElement('div');
+			gameMenu.id = 'game__menu';
 
-			// document.createElement('div')
+			gameMenu.onmouseenter = () => {
+				this.isMenuItemPicked = false;
+				this.pickedMenuItem = null
+			};
 
+			gameMenu.onmousemove = (e) => {
+				this.setCursorCoordinates(e);
+			};
 
-			// menuPlaceholder.appendChild()
-		})
+			for (let index = 0; index < this.menuOptions.length; index++) {
+				const option = this.menuOptions[index];
+				const wrapper = getMenuItemWrapper();
+				const title = getMenuItemTitle(option.name);
+				const img = getMenuItemImg(option.itemImageSrc);
+				const price = getMenuItemPrice(option.price);
+				addChildsToWrapper(wrapper, title, img, price);
 
+				wrapper.onclick = (e: MouseEvent) => this.onMenuItemClickHandler(e, this.menuItems[index])
+				gameMenu.appendChild(wrapper);
+			}
 
+			function getMenuItemWrapper(): HTMLDivElement {
+				const gameMenuItemWrapper = document.createElement('div');
+				gameMenuItemWrapper.classList.add('game__menu-item-wrapper');
+				return gameMenuItemWrapper;
+			}
+
+			function getMenuItemTitle(title: string): HTMLDivElement {
+				const gameMenuItemTitle = document.createElement('div');
+				gameMenuItemTitle.classList.add('game__menu-item-title');
+				gameMenuItemTitle.innerText = title;
+				return gameMenuItemTitle;
+			}
+
+			function getMenuItemImg(img: string): HTMLDivElement {
+				const gameMenuItemImg = document.createElement('div');
+				gameMenuItemImg.classList.add('game__menu-item-img');
+				gameMenuItemImg.style.background = `url(${img})`;
+				return gameMenuItemImg;
+			}
+
+			function getMenuItemPrice(price: number): HTMLDivElement {
+				const gameMenuItemPrice = document.createElement('div');
+				gameMenuItemPrice.classList.add('game__menu-item-price');
+				const coinIconElement = document.createElement('i');
+				const priceHolderElemnt = document.createElement('span');
+				coinIconElement.classList.add(...['fa-solid', 'fa-coins']);
+				priceHolderElemnt.innerText = price.toString();
+
+				gameMenuItemPrice.appendChild(priceHolderElemnt)
+				gameMenuItemPrice.appendChild(coinIconElement)
+
+				return gameMenuItemPrice;
+			}
+
+			function addChildsToWrapper(wrapper: HTMLDivElement, ...args: HTMLDivElement[]) {
+				for (let index = 0; index < args.length; index++) {
+					const element = args[index];
+					wrapper.appendChild(element);
+				}
+			}
+
+			menuPlaceholder.appendChild(gameMenu);
+		});
 	}
+
+	private onMenuItemClickHandler(event: MouseEvent, menuItem: IMenuItem) {
+		if (this.isMenuItemPicked)
+			return;
+		this.pickedMenuItem = menuItem;
+		this.isMenuItemPicked = true;
+
+		event.stopImmediatePropagation();
+	}
+
+
+	protected registerOnMouseMoveHandlerForMenuItems() {
+		const onMouseMove = (e: MouseEvent) => {
+			if (!this.isMenuItemPicked)
+				this.pickedMenuItem = null;
+			this.setCursorCoordinates(e);
+		}
+
+		this.registerMouseMoveEventHandler(onMouseMove);
+	}
+
+	tryDrawPicked() {
+
+		if (this.pickedMenuItem) {
+
+			const centeredX = this.cursorX - (this.defaultTileWidth / 2);
+			const centeredY = this.cursorY - (this.defaultTileHeight / 2);
+
+			this.context.globalAlpha = 0.4;
+			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
+			this.context.globalAlpha = 1;
+
+			function tryGetPickedRadius(towerId: number) {
+				switch (towerId) {
+					case Towers.singleBarrelCannon.id:
+						return Towers.singleBarrelCannon.attackRadius;
+					case Towers.simpleLaserCannon.id:
+						return Towers.simpleLaserCannon.attackRadius;
+					default:
+						return null;
+				}
+			}
+
+			const radius = tryGetPickedRadius(this.pickedMenuItem.towerId);
+
+			if (radius) {
+				this.drawRadius('rgba(137, 11, 11, 0.600)',
+					centeredX + (this.defaultTileWidth / 2),
+					centeredY + (this.defaultTileHeight / 2),
+					radius);
+			}
+		}
+	}
+
+	private drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
+		this.context.strokeStyle = color;
+		this.context.beginPath();
+		this.context.roundRect(xDraw - radius, yDraw - radius, radius * 2, radius * 2, 360);
+		this.context.stroke();
+	}
+
 
 	// drawMenu() {
 	// 	const menuXStart = screen.width / 2.5;

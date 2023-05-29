@@ -1,6 +1,6 @@
 import { ICanvasContextOptions } from "@/types";
 import Utilities from "@/utilities/utilities";
-class CanvasConfigurator {
+class CanvasBuilder {
 	constructor(options: ICanvasContextOptions) {
 		this.loadHtmlCanvas();
 		this.appendCanvasToContainer(options.containerId);
@@ -10,6 +10,9 @@ class CanvasConfigurator {
 
 	context!: CanvasRenderingContext2D;
 	canvas!: HTMLCanvasElement;
+
+	cursorX!: number;
+	cursorY!: number;
 
 	private appendCanvasToContainer(containerId: string) {
 		Utilities.tryCatchWrapper(() => {
@@ -40,4 +43,4 @@ class CanvasConfigurator {
 	}
 }
 
-export { CanvasConfigurator };
+export { CanvasBuilder };

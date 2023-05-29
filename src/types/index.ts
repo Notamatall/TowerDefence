@@ -36,7 +36,12 @@ export interface ILevelMap {
 }
 
 export interface IMenuOption {
+	towerId: number;
 	itemImageSrc: string;
 	price: number;
 	name: string;
+}
+export interface IMenuItem {
+	towerId: number;
+	itemImage: HTMLImageElement;
 }
