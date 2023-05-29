@@ -5,7 +5,7 @@ html {
 }
 
 #game__hp-money-bar {
-	position: absolute;
+	position: fixed;
 	width: 150px;
 	display: flex;
 	flex-direction: column;
@@ -73,11 +73,11 @@ html {
 }
 
 .game__menu-item {
-	/* background: url('../assets/sprites/Red/Weapons/turret_02_mk1.png'); */
+	background: url('../assets/sprites/towers/supremeLaserCannon.png');
 	background-repeat: no-repeat;
 	background-position: 0 0;
-	/* height: 128px;
-	width: 128px; */
+	height: 128px;
+	width: 128px;
 }
 
 .game__menu-item-wrapper:hover {
