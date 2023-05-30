@@ -1,5 +1,4 @@
 import { IMenuOption } from "@/types";
-import { ImagePath } from "@/types/imagePath";
 import { Towers } from "../towers";
 function c(index, angle?: number, dirX?: number, dirY?: number, order?: number): IMapTemplateCell {
 	return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
@@ -26,34 +25,9 @@ export const firstLevelTemplate: IMapTemplateCell[][] = [
 ];
 
 export const firstLevelMenu: IMenuOption[] = [
-	{
-		towerId: Towers.singleBarrelCannon.id,
-		itemImageSrc: ImagePath.singleBarrelCannon,
-		price: 350,
-		name: 'Turret'
-	},
-	{
-		towerId: Towers.simpleLaserCannon.id,
-		itemImageSrc: ImagePath.simpleLaserCannon,
-		price: 350,
-		name: 'Laser Cannon'
-	},
-	{
-		towerId: 0,
-		itemImageSrc: ImagePath.platform,
-		price: 50,
-		name: 'Platform'
-	},
-	{
-		towerId: 3,
-		itemImageSrc: ImagePath.supremeLaserCannon,
-		price: 700,
-		name: 'supreme Laser Cannon'
-	},
-	{
-		towerId: 4,
-		itemImageSrc: ImagePath.supremeLaserCannonPlus,
-		price: 500,
-		name: 'double Barrel Cannon Plus'
-	},
+	Towers.getMenuOption(Towers.list.platform),
+	Towers.getMenuOption(Towers.list.singleBarrelCannon),
+	Towers.getMenuOption(Towers.list.doubleBarrelCannon),
+	Towers.getMenuOption(Towers.list.simpleLaserCannon),
+	Towers.getMenuOption(Towers.list.advancedLaserCannon),
 ]

@@ -18,7 +18,6 @@ export default class MapConfigurator extends Configurator {
 		this.mapTemplate = options.mapTemplate;
 		this.environmentY = options.environmentY;
 		this.environmentX = options.environmentX;
-		this.offsetHeight = screen.height - document.body.scrollHeight;
 		this.menuOptions = options.menuOptions;
 
 		// defineTurnPlaces();
@@ -39,10 +38,19 @@ export default class MapConfigurator extends Configurator {
 	private innerMapImage: HTMLImageElement | null = null
 	private environmentX: number;
 	private environmentY: number;
-	private offsetHeight: number;
-	private isMenuItemPicked: boolean = false;
-	private pickedMenuItem: IMenuItem | null = null;
 	private menuItems: IMenuItem[] = [];
+
+	public isMenuItemPicked: boolean = false;
+	public pickedMenuItem: IMenuItem | null = null;
+
+
+	get tileWidth() {
+		return this.defaultTileWidth;
+	}
+
+	get tileHeight() {
+		return this.defaultTileHeight;
+	}
 
 	get mapImage(): HTMLImageElement {
 		if (this.innerMapImage === null)
@@ -127,61 +135,73 @@ export default class MapConfigurator extends Configurator {
 		await this.loadMenuItemsImages();
 		Utilities.tryCatchWrapper(() => {
 
-			const menuPlaceholder = document.createElement('i');
-			menuPlaceholder.classList.add(...['fa-solid', 'fa-shop', 'game__menu-placeholder']);
+			const menuPlaceholder = getMenuPlaceholder();
+			if (menuPlaceholder === null)
+				throw new Error('Menu placeholder was not found');
 
-			const gameMenu = document.createElement('div');
+			const shopIcon = getShopIcon();
+			const gameMenu = getGameMenu.call(this);
+			createMenuItems.call(this);
 
-			gameMenu.id = 'game__menu';
-
-			menuPlaceholder.onclick = () => {
-				if (gameMenu.style.display === 'flex')
-					gameMenu.style.display = 'none';
-				else
-					gameMenu.style.display = 'flex';
+			function createMenuItems(this: MapConfigurator) {
+				for (let index = 0; index < this.menuOptions.length; index++) {
+					const option = this.menuOptions[index];
+					const wrapper = getMenuItemWrapper();
+					const title = getMenuItemTitle(option.name);
+					const img = getMenuItemImg(option.itemImageSrc);
+					const price = getMenuItemPrice(option.price);
+					addChildsToWrapper(wrapper, title, img, price);
+					wrapper.onclick = (e: MouseEvent) => this.onMenuItemClickHandler(e, this.menuItems[index])
+					gameMenu.appendChild(wrapper);
+				}
 			}
-
-			gameMenu.onmouseenter = () => {
-				this.isMenuItemPicked = false;
-				this.pickedMenuItem = null
-			};
-
-			gameMenu.onmousemove = (e) => {
-				this.setCursorCoordinates(e);
-			};
-
-			for (let index = 0; index < this.menuOptions.length; index++) {
-				const option = this.menuOptions[index];
-				const wrapper = getMenuItemWrapper();
-				const title = getMenuItemTitle(option.name);
-				const img = getMenuItemImg(option.itemImageSrc);
-				const price = getMenuItemPrice(option.price);
-				addChildsToWrapper(wrapper, title, img, price);
-
-				wrapper.onclick = (e: MouseEvent) => this.onMenuItemClickHandler(e, this.menuItems[index])
-				gameMenu.appendChild(wrapper);
+			function getMenuPlaceholder() {
+				const menuPlaceholder = document.createElement('div');
+				menuPlaceholder.id = 'game__menu-placeholder';
+				return menuPlaceholder;
 			}
+			function getGameMenu(this: MapConfigurator) {
+				const gameMenu = document.createElement('div');
+				gameMenu.id = 'game__menu';
 
+				gameMenu.onmouseenter = () => {
+					this.pickedMenuItem = null
+				};
+
+				gameMenu.onmousemove = (e) => {
+					this.setCursorCoordinates(e);
+				};
+
+				return gameMenu;
+			}
+			function getShopIcon(): HTMLElement {
+				const shopIcon = document.createElement('i');
+				shopIcon.classList.add(...['fa-solid', 'fa-shop', 'game__menu-shop-icon']);
+				shopIcon.onclick = () => {
+					if (gameMenu.style.display === 'flex')
+						gameMenu.style.display = 'none';
+					else
+						gameMenu.style.display = 'flex';
+				}
+				return shopIcon
+			}
 			function getMenuItemWrapper(): HTMLDivElement {
 				const gameMenuItemWrapper = document.createElement('div');
 				gameMenuItemWrapper.classList.add('game__menu-item-wrapper');
 				return gameMenuItemWrapper;
 			}
-
 			function getMenuItemTitle(title: string): HTMLDivElement {
 				const gameMenuItemTitle = document.createElement('div');
 				gameMenuItemTitle.classList.add('game__menu-item-title');
 				gameMenuItemTitle.innerText = title;
 				return gameMenuItemTitle;
 			}
-
 			function getMenuItemImg(img: string): HTMLDivElement {
 				const gameMenuItemImg = document.createElement('div');
 				gameMenuItemImg.classList.add('game__menu-item-img');
 				gameMenuItemImg.style.background = `url(${img})`;
 				return gameMenuItemImg;
 			}
-
 			function getMenuItemPrice(price: number): HTMLDivElement {
 				const gameMenuItemPrice = document.createElement('div');
 				gameMenuItemPrice.classList.add('game__menu-item-price');
@@ -195,7 +215,6 @@ export default class MapConfigurator extends Configurator {
 
 				return gameMenuItemPrice;
 			}
-
 			function addChildsToWrapper(wrapper: HTMLDivElement, ...args: HTMLDivElement[]) {
 				for (let index = 0; index < args.length; index++) {
 					const element = args[index];
@@ -203,24 +222,21 @@ export default class MapConfigurator extends Configurator {
 				}
 			}
 
-			this.canvasContainer.appendChild(menuPlaceholder);
+			menuPlaceholder.appendChild(shopIcon);
 			menuPlaceholder.appendChild(gameMenu);
+			this.canvasContainer.appendChild(menuPlaceholder);
 		});
 	}
 
 	private onMenuItemClickHandler(event: MouseEvent, menuItem: IMenuItem) {
 		event.stopImmediatePropagation();
-		// if (this.isMenuItemPicked)
-		// 	return;
+
 		this.pickedMenuItem = menuItem;
-		this.isMenuItemPicked = true;
 	}
 
 
 	protected registerOnMouseMoveHandlerForMenuItems() {
 		const onMouseMove = (e: MouseEvent) => {
-			if (!this.isMenuItemPicked)
-				this.pickedMenuItem = null;
 			this.setCursorCoordinates(e);
 		}
 
@@ -238,18 +254,8 @@ export default class MapConfigurator extends Configurator {
 			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
 			this.context.globalAlpha = 1;
 
-			function tryGetPickedRadius(towerId: number) {
-				switch (towerId) {
-					case Towers.singleBarrelCannon.id:
-						return Towers.singleBarrelCannon.attackRadius;
-					case Towers.simpleLaserCannon.id:
-						return Towers.simpleLaserCannon.attackRadius;
-					default:
-						return null;
-				}
-			}
 
-			const radius = tryGetPickedRadius(this.pickedMenuItem.towerId);
+			const radius = Towers.getTowerRadiusById(this.pickedMenuItem.towerId);
 
 			if (radius) {
 				this.drawRadius('rgba(252, 22, 555, 0.1)',

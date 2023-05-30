@@ -69,6 +69,7 @@ html {
 	display: none;
 	position: relative;
 	font-size: 15px;
+	gap: 5px;
 	/* justify-content: center;
 	left: 50%;
 	transform: translate(-50%, 0);
@@ -78,10 +79,10 @@ html {
 .game__menu-item-wrapper {
 	background: rgba(44, 44, 44, 0.725);
 	border: solid;
-	margin: 5px;
 	flex: 0 0 auto;
 	display: flex;
-    flex-direction: column;
+  flex-direction: column;
+	color: cadetblue;
 	max-width: 128px;
 }
 
@@ -101,7 +102,7 @@ html {
 	font-size: 20px;
 	font-family: gameMenuPrice;
 	color: gold;
-	border-top: black 2px solid;
+	border-top: cadetblue 3px solid;
 }
 
 .game__menu-item-img {
@@ -113,17 +114,20 @@ html {
 }
 
 .game__menu-item-wrapper:hover {
-	opacity: 0.6;
+	opacity: 0.7;
 }
 
-.game__menu-placeholder{
+#game__menu-placeholder{
 	  display: flex !important;
-    font-size: 30px;
     position: fixed;
     top: 25px;
     left: 25px;
 }
 
+.game__menu-shop-icon{
+	font-size: 40px;
+	height: fit-content;
+}
 
 
 @font-face {
