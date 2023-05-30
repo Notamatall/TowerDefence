@@ -135,7 +135,7 @@ export default class MapConfigurator extends Configurator {
 		await this.loadMenuItemsImages();
 		Utilities.tryCatchWrapper(() => {
 
-			const menuPlaceholder = getMenuPlaceholder();
+			const menuPlaceholder = getMenuPlaceholder.call(this);
 			if (menuPlaceholder === null)
 				throw new Error('Menu placeholder was not found');
 
@@ -155,22 +155,21 @@ export default class MapConfigurator extends Configurator {
 					gameMenu.appendChild(wrapper);
 				}
 			}
-			function getMenuPlaceholder() {
+			function getMenuPlaceholder(this: MapConfigurator) {
 				const menuPlaceholder = document.createElement('div');
 				menuPlaceholder.id = 'game__menu-placeholder';
+				menuPlaceholder.onmousemove = (e) => {
+					this.setCursorCoordinates(e);
+				};
 				return menuPlaceholder;
 			}
 			function getGameMenu(this: MapConfigurator) {
 				const gameMenu = document.createElement('div');
 				gameMenu.id = 'game__menu';
 
-				gameMenu.onmouseenter = () => {
-					this.pickedMenuItem = null
-				};
-
-				gameMenu.onmousemove = (e) => {
-					this.setCursorCoordinates(e);
-				};
+				// gameMenu.onmouseenter = () => {
+				// 	this.pickedMenuItem = null
+				// };
 
 				return gameMenu;
 			}
