@@ -126,12 +126,20 @@ export default class MapConfigurator extends Configurator {
 	async createMenu() {
 		await this.loadMenuItemsImages();
 		Utilities.tryCatchWrapper(() => {
-			const menuPlaceholder = document.getElementById('game__menu-placeholder');
-			if (_.isNil(menuPlaceholder))
-				throw new Error(`Menu placeholder was not found - ${this.mapName}`);
+
+			const menuPlaceholder = document.createElement('i');
+			menuPlaceholder.classList.add(...['fa-solid', 'fa-shop', 'game__menu-placeholder']);
 
 			const gameMenu = document.createElement('div');
+
 			gameMenu.id = 'game__menu';
+
+			menuPlaceholder.onclick = () => {
+				if (gameMenu.style.display === 'flex')
+					gameMenu.style.display = 'none';
+				else
+					gameMenu.style.display = 'flex';
+			}
 
 			gameMenu.onmouseenter = () => {
 				this.isMenuItemPicked = false;
@@ -195,17 +203,17 @@ export default class MapConfigurator extends Configurator {
 				}
 			}
 
+			this.canvasContainer.appendChild(menuPlaceholder);
 			menuPlaceholder.appendChild(gameMenu);
 		});
 	}
 
 	private onMenuItemClickHandler(event: MouseEvent, menuItem: IMenuItem) {
-		if (this.isMenuItemPicked)
-			return;
+		event.stopImmediatePropagation();
+		// if (this.isMenuItemPicked)
+		// 	return;
 		this.pickedMenuItem = menuItem;
 		this.isMenuItemPicked = true;
-
-		event.stopImmediatePropagation();
 	}
 
 
@@ -226,7 +234,7 @@ export default class MapConfigurator extends Configurator {
 			const centeredX = this.cursorX - (this.defaultTileWidth / 2);
 			const centeredY = this.cursorY - (this.defaultTileHeight / 2);
 
-			this.context.globalAlpha = 0.4;
+			this.context.globalAlpha = 0.7;
 			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
 			this.context.globalAlpha = 1;
 
@@ -244,7 +252,7 @@ export default class MapConfigurator extends Configurator {
 			const radius = tryGetPickedRadius(this.pickedMenuItem.towerId);
 
 			if (radius) {
-				this.drawRadius('rgba(137, 11, 11, 0.600)',
+				this.drawRadius('rgba(252, 22, 555, 0.1)',
 					centeredX + (this.defaultTileWidth / 2),
 					centeredY + (this.defaultTileHeight / 2),
 					radius);
@@ -253,10 +261,14 @@ export default class MapConfigurator extends Configurator {
 	}
 
 	private drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
-		this.context.strokeStyle = color;
+
+		this.context.strokeStyle = 'green';
+		this.context.fillStyle = color;
 		this.context.beginPath();
+
 		this.context.roundRect(xDraw - radius, yDraw - radius, radius * 2, radius * 2, 360);
 		this.context.stroke();
+		this.context.fill();
 	}
 
 

@@ -7,9 +7,9 @@ import { ImagePath } from '@/types/imagePath';
 import { firstLevelMenu, firstLevelTemplate } from './mapTemplates/mapTemplates';
 
 const app = new CanvasBuilder({
-	containerId: 'game-container',
+	containerId: 'game__container',
 	width: screen.width,
-	height: screen.height
+	height: screen.availHeight
 });
 
 const game = new GameConfigurator(app);
@@ -204,7 +204,7 @@ game.configureGame({
 //     if (menuHoverItem == platformImage) {
 //       if (map[clickIndexY][clickIndexX].index == 0
 //         && !platformList?.find(platform => platform.x == offsetX && platform.y == offsetY)) {
-//         payPriceForNewItem(); 
+//         payPriceForNewItem();
 //         platformList.push({ x: offsetX, y: offsetY });
 //       }
 //       return;

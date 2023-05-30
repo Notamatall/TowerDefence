@@ -3,9 +3,11 @@ import Utilities from "@/utilities/utilities";
 class CanvasBuilder {
 	constructor(options: ICanvasContextOptions) {
 		this.loadHtmlCanvas();
+		this.canvasContainer = this.getCanvasContainerById(options.containerId);
 		this.appendCanvasToContainer(options.containerId);
-		this.canvas.width = screen.width;
-		this.canvas.height = screen.height;
+		this.setCorrectContainerHeight(options.containerId, options.height);
+		this.canvas.width = options.width;
+		this.canvas.height = options.height;
 	}
 
 	context!: CanvasRenderingContext2D;
@@ -13,10 +15,32 @@ class CanvasBuilder {
 
 	cursorX!: number;
 	cursorY!: number;
+	readonly canvasContainer: HTMLElement;
+
+	private setCorrectContainerHeight(containerId: string, height: number) {
+		Utilities.tryCatchWrapper(() => {
+			const container = document.getElementById(containerId);
+			if (container !== null)
+				container.style.maxHeight = height + 'px';
+			else
+				throw new Error('container was not found')
+		})
+
+	}
+
+	private getCanvasContainerById(containerId: string) {
+		return Utilities.tryCatchWrapper(() => {
+			const container = document.getElementById(containerId);
+			if (container !== null)
+				return container;
+			else
+				throw new Error('container was not found')
+		})
+	}
 
 	private appendCanvasToContainer(containerId: string) {
 		Utilities.tryCatchWrapper(() => {
-			const container = document.getElementById(containerId)
+			const container = document.getElementById(containerId);
 			if (container !== null)
 				container.appendChild(this.canvas)
 			else

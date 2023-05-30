@@ -28,6 +28,10 @@ export default class Configurator {
 		this.cursorY = event.clientY - rect.top;
 	}
 
+	protected get canvasContainer(): HTMLElement {
+		return this.canvasBuilder.canvasContainer;
+	}
+
 	protected get canvas(): HTMLCanvasElement {
 		return this.canvasBuilder.canvas;
 	}

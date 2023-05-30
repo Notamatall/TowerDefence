@@ -43,5 +43,17 @@ export const firstLevelMenu: IMenuOption[] = [
 		itemImageSrc: ImagePath.platform,
 		price: 50,
 		name: 'Platform'
-	}
+	},
+	{
+		towerId: 3,
+		itemImageSrc: ImagePath.supremeLaserCannon,
+		price: 700,
+		name: 'supreme Laser Cannon'
+	},
+	{
+		towerId: 4,
+		itemImageSrc: ImagePath.supremeLaserCannonPlus,
+		price: 500,
+		name: 'double Barrel Cannon Plus'
+	},
 ]

@@ -1,7 +1,11 @@
 body,
 html {
-	height: 100%;
 	background: #000000;
+  margin: 0;
+}
+
+#game__container{
+  overflow-y: hidden;
 }
 
 #game__hp-money-bar {
@@ -62,12 +66,13 @@ html {
 }
 
 #game__menu {
-	display: flex;
-	position: fixed;
-	justify-content: center;
+	display: none;
+	position: relative;
+	font-size: 15px;
+	/* justify-content: center;
 	left: 50%;
 	transform: translate(-50%, 0);
-	top: 75%;
+	top: 75%; */
 }
 
 .game__menu-item-wrapper {
@@ -75,9 +80,13 @@ html {
 	border: solid;
 	margin: 5px;
 	flex: 0 0 auto;
+	display: flex;
+    flex-direction: column;
+	max-width: 128px;
 }
 
 .game__menu-item-title {
+	flex: 1 1 auto;
 	text-align: center;
 	padding: 5px;
 	font-family: gameMenuTitle;
@@ -106,6 +115,16 @@ html {
 .game__menu-item-wrapper:hover {
 	opacity: 0.6;
 }
+
+.game__menu-placeholder{
+	  display: flex !important;
+    font-size: 30px;
+    position: fixed;
+    top: 25px;
+    left: 25px;
+}
+
+
 
 @font-face {
 	font-family: gameMenuTitle;
