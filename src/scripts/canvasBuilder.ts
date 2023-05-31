@@ -3,19 +3,35 @@ import Utilities from "@/utilities/utilities";
 class CanvasBuilder {
 	constructor(options: ICanvasContextOptions) {
 		this.loadHtmlCanvas();
-		this.canvasContainer = this.getCanvasContainerById(options.containerId);
-		this.appendCanvasToContainer(options.containerId);
-		this.setCorrectContainerHeight(options.containerId, options.height);
+		this.canvasContainer = this.createCanvasContainer();
+		this.appendCanvasToContainer(this.canvasContainer.id);
+		this.setCorrectContainerHeight(this.canvasContainer.id, options.height);
 		this.canvas.width = options.width;
 		this.canvas.height = options.height;
 	}
 
-	context!: CanvasRenderingContext2D;
-	canvas!: HTMLCanvasElement;
+	public context!: CanvasRenderingContext2D;
+	public canvas!: HTMLCanvasElement;
+	public cursorX!: number;
+	public cursorY!: number;
 
-	cursorX!: number;
-	cursorY!: number;
-	readonly canvasContainer: HTMLElement;
+	readonly canvasContainer!: HTMLElement;
+
+	private createCanvasContainer() {
+		const canvasContainer = document.createElement('div');
+		const canvasContainerUniqueId = uniqueId();
+		canvasContainer.id = canvasContainerUniqueId;
+		canvasContainer.classList.add('game__container');
+
+		function uniqueId() {
+			const dateString = Date.now().toString(36);
+			const randomness = Math.random().toString(36).substring(2);
+			return dateString + randomness;
+		};
+
+		document.body.appendChild(canvasContainer);
+		return canvasContainer;
+	}
 
 	private setCorrectContainerHeight(containerId: string, height: number) {
 		Utilities.tryCatchWrapper(() => {

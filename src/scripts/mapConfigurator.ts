@@ -1,7 +1,7 @@
 import Utilities from "@/utilities/utilities";
 import { CanvasBuilder } from "./canvasBuilder";
 import Configurator from './configurator';
-import { IImageAsset, IMenuItem, MapConfigurationOptions } from "@/types";
+import { IImageAsset, IMenuItem, IUserStats, MapConfigurationOptions } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 import { IMenuOption } from "@/types/index"
 import { Dictionary } from "lodash";
@@ -19,7 +19,7 @@ export default class MapConfigurator extends Configurator {
 		this.environmentY = options.environmentY;
 		this.environmentX = options.environmentX;
 		this.menuOptions = options.menuOptions;
-
+		this.mapDefaultUserStats = options.defaultUserStats;
 		// defineTurnPlaces();
 	}
 	//constants
@@ -40,9 +40,26 @@ export default class MapConfigurator extends Configurator {
 	private environmentY: number;
 	private menuItems: IMenuItem[] = [];
 
-	public isMenuItemPicked: boolean = false;
+	private currentHpElement: HTMLSpanElement | null = null;
+	private currentCoinsElement: HTMLSpanElement | null = null;
+	private mapDefaultUserStats: IUserStats;
+
 	public pickedMenuItem: IMenuItem | null = null;
 
+	get isMenuItemPicked(): boolean {
+		return this.pickedMenuItem !== null;
+	}
+	get defaultUserStats() {
+		return this.mapDefaultUserStats;
+	}
+
+	get hpElement() {
+		return this.currentHpElement;
+	}
+
+	get coinsElement() {
+		return this.currentCoinsElement;
+	}
 
 	get tileWidth() {
 		return this.defaultTileWidth;
@@ -52,16 +69,97 @@ export default class MapConfigurator extends Configurator {
 		return this.defaultTileHeight;
 	}
 
+	get menuOptionsList(): IMenuOption[] {
+		return this.menuOptions;
+	}
+
 	get mapImage(): HTMLImageElement {
 		if (this.innerMapImage === null)
 			throw new Error(`Map image for ${this.mapName} was not loaded correctly`);
 		return this.innerMapImage;
 	}
 
-	async configureMap(): Promise<void> {
+	public async configureMap(): Promise<void> {
 		await this.loadMapImage();
 		await this.createMenu();
-		this.registerOnMouseMoveHandlerForMenuItems();
+		this.registerOnMouseMoveEventHandlerForMap();
+		this.configureHpMoneyContainer();
+
+	}
+
+	public drawMap() {
+		for (let i = 0; i < this.mapTemplate.length; i++)
+			for (let j = 0; j < this.mapTemplate[i].length; j++) {
+				let cell = this.mapTemplate[i][j];
+				this.drawRotatedImage(this.mapImage,
+					this.defaultTileWidth * j + this.defaultTileWidth / 2,
+					i * this.defaultTileHeight + this.defaultTileHeight / 2,
+					cell.index * this.environmentX,
+					this.environmentY,
+					this.defaultTileWidth,
+					this.defaultTileHeight,
+					-(this.defaultTileWidth / 2),
+					-(this.defaultTileHeight / 2),
+					this.defaultTileWidth,
+					this.defaultTileHeight,
+					cell.angle);
+			}
+	}
+
+	public tryDrawPickedMenuItem() {
+
+		if (this.pickedMenuItem) {
+
+			const centeredX = this.cursorX - (this.defaultTileWidth / 2);
+			const centeredY = this.cursorY - (this.defaultTileHeight / 2);
+
+			this.context.globalAlpha = 0.7;
+			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
+			this.context.globalAlpha = 1;
+
+
+			const radius = Towers.getTowerRadiusById(this.pickedMenuItem.towerId);
+
+			if (radius) {
+				this.drawRadius('rgba(252, 22, 555, 0.1)',
+					centeredX + (this.defaultTileWidth / 2),
+					centeredY + (this.defaultTileHeight / 2),
+					radius);
+			}
+		}
+	}
+
+	public drawRotatedImage(image: HTMLImageElement,
+		xDraw: number,
+		yDraw: number,
+		pX: number,
+		pY: number,
+		getByX: number,
+		getByY: number,
+		offsetX: number,
+		offsetY: number,
+		totalX: number,
+		totalY: number,
+		angle?: number) {
+
+		this.context.save();
+		this.context.translate(xDraw, yDraw);
+		if (angle)
+			this.context.rotate(angle * this.toRadiance);
+		this.context.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
+		this.context.restore();
+	}
+
+	public getClickedMapIndexY(mousePosY: number): number {
+		const canvasRect = this.canvas.getBoundingClientRect();
+		const clickIndexY = Math.round((mousePosY - canvasRect.top - this.tileHeight / 2) / this.tileHeight);
+		return clickIndexY;
+	}
+
+	public getClickedMapIndexX(mousePosX: number): number {
+		const canvasRect = this.canvas.getBoundingClientRect();
+		const clickIndexX = Math.round((mousePosX - canvasRect.left - this.tileWidth / 2) / this.tileWidth);
+		return clickIndexX;
 	}
 
 	private async loadMapImage(): Promise<void> {
@@ -91,47 +189,7 @@ export default class MapConfigurator extends Configurator {
 
 	}
 
-	drawMap() {
-		for (let i = 0; i < this.mapTemplate.length; i++)
-			for (let j = 0; j < this.mapTemplate[i].length; j++) {
-				let cell = this.mapTemplate[i][j];
-				this.drawRotatedImage(this.mapImage,
-					this.defaultTileWidth * j + this.defaultTileWidth / 2,
-					i * this.defaultTileHeight + this.defaultTileHeight / 2,
-					cell.index * this.environmentX,
-					this.environmentY,
-					this.defaultTileWidth,
-					this.defaultTileHeight,
-					-(this.defaultTileWidth / 2),
-					-(this.defaultTileHeight / 2),
-					this.defaultTileWidth,
-					this.defaultTileHeight,
-					cell.angle);
-			}
-	}
-
-	drawRotatedImage(image: HTMLImageElement,
-		xDraw: number,
-		yDraw: number,
-		pX: number,
-		pY: number,
-		getByX: number,
-		getByY: number,
-		offsetX: number,
-		offsetY: number,
-		totalX: number,
-		totalY: number,
-		angle?: number) {
-
-		this.context.save();
-		this.context.translate(xDraw, yDraw);
-		if (angle)
-			this.context.rotate(angle * this.toRadiance);
-		this.context.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
-		this.context.restore();
-	}
-
-	async createMenu() {
+	private async createMenu() {
 		await this.loadMenuItemsImages();
 		Utilities.tryCatchWrapper(() => {
 
@@ -157,25 +215,23 @@ export default class MapConfigurator extends Configurator {
 			}
 			function getMenuPlaceholder(this: MapConfigurator) {
 				const menuPlaceholder = document.createElement('div');
-				menuPlaceholder.id = 'game__menu-placeholder';
+				menuPlaceholder.classList.add('game__menu-placeholder');
 				menuPlaceholder.onmousemove = (e) => {
 					this.setCursorCoordinates(e);
 				};
 				return menuPlaceholder;
 			}
+
 			function getGameMenu(this: MapConfigurator) {
 				const gameMenu = document.createElement('div');
-				gameMenu.id = 'game__menu';
-
-				// gameMenu.onmouseenter = () => {
-				// 	this.pickedMenuItem = null
-				// };
-
+				gameMenu.classList.add('game__menu');
 				return gameMenu;
 			}
+
 			function getShopIcon(): HTMLElement {
-				const shopIcon = document.createElement('i');
-				shopIcon.classList.add(...['fa-solid', 'fa-shop', 'game__menu-shop-icon']);
+				const shopIcon = document.createElement('img');
+				shopIcon.src = '../assets/icons/shop.png'
+				shopIcon.classList.add('game__menu-shop-icon');
 				shopIcon.onclick = () => {
 					if (gameMenu.style.display === 'flex')
 						gameMenu.style.display = 'none';
@@ -184,23 +240,27 @@ export default class MapConfigurator extends Configurator {
 				}
 				return shopIcon
 			}
+
 			function getMenuItemWrapper(): HTMLDivElement {
 				const gameMenuItemWrapper = document.createElement('div');
 				gameMenuItemWrapper.classList.add('game__menu-item-wrapper');
 				return gameMenuItemWrapper;
 			}
+
 			function getMenuItemTitle(title: string): HTMLDivElement {
 				const gameMenuItemTitle = document.createElement('div');
 				gameMenuItemTitle.classList.add('game__menu-item-title');
 				gameMenuItemTitle.innerText = title;
 				return gameMenuItemTitle;
 			}
+
 			function getMenuItemImg(img: string): HTMLDivElement {
 				const gameMenuItemImg = document.createElement('div');
 				gameMenuItemImg.classList.add('game__menu-item-img');
 				gameMenuItemImg.style.background = `url(${img})`;
 				return gameMenuItemImg;
 			}
+
 			function getMenuItemPrice(price: number): HTMLDivElement {
 				const gameMenuItemPrice = document.createElement('div');
 				gameMenuItemPrice.classList.add('game__menu-item-price');
@@ -214,6 +274,7 @@ export default class MapConfigurator extends Configurator {
 
 				return gameMenuItemPrice;
 			}
+
 			function addChildsToWrapper(wrapper: HTMLDivElement, ...args: HTMLDivElement[]) {
 				for (let index = 0; index < args.length; index++) {
 					const element = args[index];
@@ -227,42 +288,62 @@ export default class MapConfigurator extends Configurator {
 		});
 	}
 
+	private configureHpMoneyContainer() {
+		const hpMoneyContainer = creatHpMoneyBarContainer();
+		const moneyContainer = createMoneyContainer.call(this);
+		const hpContainer = createHpContainer.call(this);
+
+		function creatHpMoneyBarContainer(): HTMLDivElement {
+			const hpMoneyContainer = document.createElement('div');
+			hpMoneyContainer.classList.add('game__hp-money-container');
+			return hpMoneyContainer;
+		}
+
+		function createMoneyContainer(this: MapConfigurator) {
+			const moneyContainer = document.createElement('div');
+			moneyContainer.classList.add('game__money-container');
+
+			const coinIconElement = document.createElement('i');
+			coinIconElement.classList.add(...['fa-solid', 'fa-coins', 'game__money-container-coin']);
+			moneyContainer.appendChild(coinIconElement);
+
+			const coinsElement = document.createElement('span');
+			this.currentCoinsElement = coinsElement;
+			moneyContainer.appendChild(coinsElement);
+
+			return moneyContainer;
+		}
+
+		function createHpContainer(this: MapConfigurator) {
+			const moneyContainer = document.createElement('div');
+			moneyContainer.classList.add('game__hp-container');
+
+			const heartIconElement = document.createElement('i');
+			heartIconElement.classList.add(...['fa-solid', 'fa-heart', 'game__hp-container-heart']);
+			moneyContainer.appendChild(heartIconElement);
+
+			const hpElement = document.createElement('span');
+			this.currentHpElement = hpElement;
+			moneyContainer.appendChild(hpElement);
+			return moneyContainer;
+		}
+
+		hpMoneyContainer.appendChild(moneyContainer);
+		hpMoneyContainer.appendChild(hpContainer);
+		this.canvasContainer.appendChild(hpMoneyContainer);
+	}
+
 	private onMenuItemClickHandler(event: MouseEvent, menuItem: IMenuItem) {
 		event.stopImmediatePropagation();
-
 		this.pickedMenuItem = menuItem;
 	}
 
-
-	protected registerOnMouseMoveHandlerForMenuItems() {
+	private registerOnMouseMoveEventHandlerForMap() {
 		const onMouseMove = (e: MouseEvent) => {
 			this.setCursorCoordinates(e);
 		}
 
-		this.registerMouseMoveEventHandler(onMouseMove);
-	}
-
-	tryDrawPicked() {
-
-		if (this.pickedMenuItem) {
-
-			const centeredX = this.cursorX - (this.defaultTileWidth / 2);
-			const centeredY = this.cursorY - (this.defaultTileHeight / 2);
-
-			this.context.globalAlpha = 0.7;
-			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
-			this.context.globalAlpha = 1;
-
-
-			const radius = Towers.getTowerRadiusById(this.pickedMenuItem.towerId);
-
-			if (radius) {
-				this.drawRadius('rgba(252, 22, 555, 0.1)',
-					centeredX + (this.defaultTileWidth / 2),
-					centeredY + (this.defaultTileHeight / 2),
-					radius);
-			}
-		}
+		this.addMouseMoveEventHandler(onMouseMove);
 	}
 
 	private drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
@@ -275,7 +356,6 @@ export default class MapConfigurator extends Configurator {
 		this.context.stroke();
 		this.context.fill();
 	}
-
 
 	// drawMenu() {
 	// 	const menuXStart = screen.width / 2.5;

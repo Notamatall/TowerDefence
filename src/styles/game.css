@@ -1,38 +1,11 @@
 body,
 html {
 	background: #000000;
-  margin: 0;
+	margin: 0;
 }
 
-#game__container{
-  overflow-y: hidden;
-}
-
-#game__hp-money-bar {
-	position: fixed;
-	width: 120px;
-	display: flex;
-	flex-direction: column;
-	right: 70px;
-	top: 35px;
-	justify-content: space-evenly;
-	min-height: 80px;
-	padding-left: 10px;
-	background-color: rgba(0, 0, 0, 0.347);
-	font-weight: 700;
-	font-size: 20px;
-}
-
-#game__money-container {
-	color: gold;
-	display: flex;
-	gap: 10px;
-}
-
-#game__money-container.active {
-	animation-duration: 1.5s;
-	animation-name: slidein;
-	animation-iteration-count: 2;
+.game__container {
+	overflow-y: hidden;
 }
 
 @keyframes slidein {
@@ -49,13 +22,49 @@ html {
 	}
 }
 
-#game__hp-container {
-	color: rgba(245, 6, 6, 0.804);
+.game__hp-money-container {
+	position: fixed;
+	width: 120px;
 	display: flex;
-	gap: 10px;
+	flex-direction: column;
+	right: 50px;
+	top: 35px;
+	padding-left: 10px;
+	gap: 15px;
+	font-size: 22px;
 }
 
-#game__sound-icon {
+.game__money-container {
+	position: relative;
+	width: 150px;
+	display: flex;
+	align-items: center;
+	height: 25px;
+	font-family: gameMenuTitle;
+	color: gold;
+	gap: 15px;
+}
+
+.game__money-container-coin {
+	font-size: 30px;
+}
+
+.game__hp-container {
+	display: flex;
+	position: relative;
+	width: 150px;
+	align-items: center;
+	height: 25px;
+	font-family: gameMenuTitle;
+	color: #ff1212;
+	gap: 15px;
+}
+
+.game__hp-container-heart {
+	font-size: 30px;
+}
+
+.game__sound-icon {
 	position: absolute;
 	right: 250px;
 	top: 35px;
@@ -65,15 +74,12 @@ html {
 	min-height: 20px;
 }
 
-#game__menu {
+.game__menu {
+	margin: 0px 15px;
 	display: none;
 	position: relative;
 	font-size: 15px;
 	gap: 5px;
-	/* justify-content: center;
-	left: 50%;
-	transform: translate(-50%, 0);
-	top: 75%; */
 }
 
 .game__menu-item-wrapper {
@@ -81,7 +87,7 @@ html {
 	border: solid;
 	flex: 0 0 auto;
 	display: flex;
-  flex-direction: column;
+	flex-direction: column;
 	color: cadetblue;
 	max-width: 128px;
 }
@@ -117,16 +123,16 @@ html {
 	opacity: 0.7;
 }
 
-#game__menu-placeholder{
-	  display: flex !important;
-    position: fixed;
-    top: 25px;
-    left: 25px;
+.game__menu-placeholder {
+	display: flex !important;
+	position: fixed;
+	top: 25px;
+	left: 25px;
 }
 
-.game__menu-shop-icon{
-	font-size: 40px;
-	height: fit-content;
+.game__menu-shop-icon {
+	height: 70px;
+	width: 70px;
 }
 
 

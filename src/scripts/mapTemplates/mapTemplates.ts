@@ -1,4 +1,4 @@
-import { IMenuOption } from "@/types";
+import { IMenuOption, IUserStats } from "@/types";
 import { Towers } from "../towers";
 function c(index, angle?: number, dirX?: number, dirY?: number, order?: number): IMapTemplateCell {
 	return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
@@ -31,3 +31,8 @@ export const firstLevelMenu: IMenuOption[] = [
 	Towers.getMenuOption(Towers.list.simpleLaserCannon),
 	Towers.getMenuOption(Towers.list.advancedLaserCannon),
 ]
+
+export const firstLevelUserStats: IUserStats = {
+	userHP: 15,
+	userCoins: 600
+}

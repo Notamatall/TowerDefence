@@ -8,8 +8,9 @@ export default class Configurator {
 
 	private readonly canvasBuilder: CanvasBuilder;
 	private mouseMoveEventHandlers: ((ev: MouseEvent) => any | null)[] = [];
+	private mouseClickHandlers: ((ev: MouseEvent) => any | null)[] = [];
 
-	protected registerMouseMoveEventHandler(mouseMoveEventHandler: (ev: MouseEvent) => any | null) {
+	protected addMouseMoveEventHandler(mouseMoveEventHandler: (ev: MouseEvent) => any | null) {
 		this.mouseMoveEventHandlers.push(mouseMoveEventHandler);
 		this.canvasBuilder.canvas.addEventListener('mousemove', mouseMoveEventHandler);
 	}
@@ -20,6 +21,19 @@ export default class Configurator {
 			this.mouseMoveEventHandlers.slice(indexToRemove, 1);
 		}
 		this.canvasBuilder.canvas.removeEventListener('mousemove', mouseMoveEventHandlerToRemove);
+	}
+
+	protected addMouseClickEventHandler(clickEventHandler: (ev: MouseEvent) => any | null) {
+		this.mouseClickHandlers.push(clickEventHandler);
+		this.canvasBuilder.canvas.addEventListener('click', clickEventHandler);
+	}
+
+	protected removeMouseClickEventHandler(clickEventHandlerToRemove: (ev: MouseEvent) => any | null) {
+		const indexToRemove = this.mouseClickHandlers.findIndex(eventHandler => eventHandler === clickEventHandlerToRemove);
+		if (indexToRemove) {
+			this.mouseClickHandlers.slice(indexToRemove, 1);
+		}
+		this.canvasBuilder.canvas.removeEventListener('mousemove', clickEventHandlerToRemove);
 	}
 
 	protected setCursorCoordinates(event: MouseEvent) {

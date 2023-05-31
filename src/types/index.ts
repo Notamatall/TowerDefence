@@ -18,10 +18,10 @@ export interface MapConfigurationOptions {
 	environmentX: number;
 	environmentY: number;
 	menuOptions: IMenuOption[];
+	defaultUserStats: IUserStats;
 }
 
 export interface ICanvasContextOptions {
-	containerId: string;
 	width: number;
 	height: number;
 }
@@ -45,3 +45,9 @@ export interface IMenuItem {
 	towerId: number;
 	itemImage: HTMLImageElement;
 }
+export interface IUserStats {
+	userHP: number,
+	userCoins: number
+}
+
+export type UserStatsKey = keyof IUserStats; 

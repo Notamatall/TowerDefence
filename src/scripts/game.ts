@@ -4,10 +4,9 @@ import { CanvasBuilder } from './canvasBuilder';
 import GameConfigurator from './gameConfigurator';
 import MapConfigurator from './mapConfigurator';
 import { ImagePath } from '@/types/imagePath';
-import { firstLevelMenu, firstLevelTemplate } from './mapTemplates/mapTemplates';
+import { firstLevelMenu, firstLevelTemplate, firstLevelUserStats } from './mapTemplates/mapTemplates';
 
 const app = new CanvasBuilder({
-	containerId: 'game__container',
 	width: screen.width,
 	height: screen.availHeight
 });
@@ -23,7 +22,8 @@ const levelOne = new MapConfigurator(app, {
 	mapTemplate: firstLevelTemplate,
 	environmentX: 128,
 	environmentY: 384,
-	menuOptions: firstLevelMenu
+	menuOptions: firstLevelMenu,
+	defaultUserStats: firstLevelUserStats
 });
 
 
