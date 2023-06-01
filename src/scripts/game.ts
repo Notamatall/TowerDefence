@@ -35,6 +35,7 @@ game.configureGame({
 	game.startGame()
 );
 
+
 // const demonImageList = [];
 // const towerList = [];
 // const platformList = [];

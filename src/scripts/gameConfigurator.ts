@@ -2,6 +2,7 @@ import { GameConfigurationOptions, ILevelMap, IMenuItem, IMenuOption, IUserStats
 import MapConfigurator from './mapConfigurator';
 import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
+import { ITowerWithLocation, ITower, Towers } from './towers';
 
 export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
@@ -10,14 +11,14 @@ export default class GameConfigurator extends Configurator {
 	private maps: ILevelMap[] = [];
 	private currentMap!: MapConfigurator;
 	private userStatsProxy: IUserStats | null = null;
-
+	private platformListLocations: ITowerWithLocation[] = [];
 
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
 		this.setMaps(options.maps);
 		await this.currentMap.configureMap();
 		this.registerUserStatsProxy(this.currentMap);
 		this.registerOnCanvasClick();
-
+		//await Towers.loadTowersImages(this.currentMap.tileHeight, this.currentMap.tileWidth);
 		//this.context.drawImage(this.currentMap.mapImage, 0, 160, 288, 160, 250, 250, 288, 160);
 	}
 
@@ -66,7 +67,19 @@ export default class GameConfigurator extends Configurator {
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
+		this.drawPlatforms();
 		this.currentMap.tryDrawPickedMenuItem();
+	}
+
+	private drawPlatforms() {
+		for (const platform of this.platformListLocations)
+			this.context.drawImage(platform.img, 0, 0,
+				this.currentMap.tileWidth,
+				this.currentMap.tileHeight,
+				platform.xLocation,
+				platform.yLocation,
+				this.currentMap.tileWidth,
+				this.currentMap.tileHeight);
 	}
 
 	private setMaps(maps: ILevelMap[]) {
@@ -86,55 +99,62 @@ export default class GameConfigurator extends Configurator {
 			const clickIndexX = this.currentMap.getClickedMapIndexX(e.clientX);
 			const tileStartXCoordinate = clickIndexX * this.currentMap.tileWidth;
 			const tileStartYCoordinate = clickIndexY * this.currentMap.tileHeight;
-			if (this.currentMap.isMenuItemPicked) {
-				if (this.isEnoughMoney() === false) {
-					return;
+
+			if (this.currentMap.pickedMenuItem === null)
+				return;
+
+			if (this.isEnoughMoney() === false)
+				return;
+
+			if (Towers.isPlatform(this.currentMap.pickedMenuItem.towerId)) {
+				if (this.currentMap.canBuildOnTile(clickIndexX, clickIndexY) && this.isPlatformBuildOnTile(tileStartXCoordinate, tileStartYCoordinate) === false) {
+					this.payPriceForNewItem();
+					this.platformListLocations.push({
+						xLocation: tileStartXCoordinate,
+						yLocation: tileStartYCoordinate,
+						img: this.currentMap.pickedMenuItem.itemImage
+					});
 				}
 
+				return;
 			}
 
-			this.addMouseClickEventHandler(clickEvenHandler)
+			const towerData = Towers.getTowerById(this.currentMap.pickedMenuItem.towerId)
 
-
-
-
-
-			// if (this.currentMap.pickedMenuItem != null) {
-			// 	this.currentMap.isMenuItemPicked = true;
-			// 	return;
+			// if (isPlatformWithoutTower(clickIndexX, clickIndexY, offsetX, offsetY)) {
+			// 	payPriceForNewItem();
+			// 	createTower({
+			// 		image: menuHoverItem,
+			// 		offsetX: offsetX,
+			// 		offsetY: offsetY,
+			// 		startFrame: towerData.startFrame,
+			// 		framesAmount: towerData.framesAmount,
+			// 		frameRate: towerData.frameRate,
+			// 		width: defaultTileWidth,
+			// 		height: defaultTileHeight,
+			// 		attackDamage: towerData.attackDamage,
+			// 		attackRadius: towerData.attackRadius,
+			// 	})
 			// }
 
 
-			// 	if (menuHoverItem == platformImage) {
-			// 		if (map[clickIndexY][clickIndexX].index == 0
-			// 			&& !platformList?.find(platform => platform.x == offsetX && platform.y == offsetY)) {
-			// 			payPriceForNewItem();
-			// 			platformList.push({ x: offsetX, y: offsetY });
-			// 		}
-			// 		return;
-			// 	}
-
-
-			// 	const towerData = getTowerInitValues();
-
-			// 	if (isPlatformWithoutTower(clickIndexX, clickIndexY, offsetX, offsetY)) {
-			// 		payPriceForNewItem();
-			// 		createTower({
-			// 			image: menuHoverItem,
-			// 			offsetX: offsetX,
-			// 			offsetY: offsetY,
-			// 			startFrame: towerData.startFrame,
-			// 			framesAmount: towerData.framesAmount,
-			// 			frameRate: towerData.frameRate,
-			// 			width: defaultTileWidth,
-			// 			height: defaultTileHeight,
-			// 			attackDamage: towerData.attackDamage,
-			// 			attackRadius: towerData.attackRadius,
-			// 		})
-			// 	}
-			// }
 		}
+		this.addMouseClickEventHandler(clickEvenHandler)
+	}
 
+	private payPriceForNewItem() {
+		if (this.IsUserStatsProxyNull(this.userStatsProxy))
+			throw new Error('User stats proxy is null');
+
+		if (this.IsPickedMenuItemNull(this.currentMap.pickedMenuItem))
+			throw new Error('PickedMenuItem is null');
+
+		const pickedItemPrice = this.currentMap.getPriceByTowerId(this.currentMap.pickedMenuItem.towerId);
+		this.userStatsProxy.userCoins = this.userStatsProxy.userCoins - pickedItemPrice;
+	}
+
+	private isPlatformBuildOnTile(tileStartXCoordinate: number, tileStartYCoordinate: number) {
+		return this.platformListLocations.find(platform => platform.xLocation == tileStartXCoordinate && platform.yLocation == tileStartYCoordinate) !== undefined;
 	}
 
 	private isEnoughMoney() {
@@ -144,11 +164,11 @@ export default class GameConfigurator extends Configurator {
 		if (this.IsPickedMenuItemNull(this.currentMap.pickedMenuItem))
 			throw new Error('PickedMenuItem is null');
 
-		if (isEnoughtToBuyPicked(this.userStatsProxy.userCoins, this.currentMap.menuOptionsList, this.currentMap.pickedMenuItem))
+		if (isEnoughtToBuyPicked(this.userStatsProxy.userCoins, this.currentMap, this.currentMap.pickedMenuItem.towerId))
 			return true;
 
-		function isEnoughtToBuyPicked(currentBalance: number, menuItems: IMenuOption[], pickedItem: IMenuItem) {
-			return currentBalance - menuItems.find(item => item.towerId === pickedItem.towerId)!.price >= 0;
+		function isEnoughtToBuyPicked(currentBalance: number, currentMap: MapConfigurator, pickedItemId: number) {
+			return (currentBalance - currentMap.getPriceByTowerId(pickedItemId)) >= 0;
 		}
 		return false;
 	}

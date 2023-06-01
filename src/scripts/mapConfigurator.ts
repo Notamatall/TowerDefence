@@ -38,7 +38,7 @@ export default class MapConfigurator extends Configurator {
 	private innerMapImage: HTMLImageElement | null = null
 	private environmentX: number;
 	private environmentY: number;
-	private menuItems: IMenuItem[] = [];
+	public menuItems: IMenuItem[] = [];
 
 	private currentHpElement: HTMLSpanElement | null = null;
 	private currentCoinsElement: HTMLSpanElement | null = null;
@@ -79,12 +79,23 @@ export default class MapConfigurator extends Configurator {
 		return this.innerMapImage;
 	}
 
+	get platformImage(): HTMLImageElement {
+		return this.menuItems.find(x => x.towerId == Towers.list.platform.id)!.itemImage;
+	}
+
 	public async configureMap(): Promise<void> {
 		await this.loadMapImage();
 		await this.createMenu();
 		this.registerOnMouseMoveEventHandlerForMap();
 		this.configureHpMoneyContainer();
+	}
 
+	public canBuildOnTile(indexX: number, indexY: number): boolean {
+		return this.mapTemplate[indexY][indexX].index === 0;
+	}
+
+	public getPriceByTowerId(towerId: number): number {
+		return this.menuOptions.find(item => item.towerId === towerId)!.price;
 	}
 
 	public drawMap() {
@@ -183,7 +194,9 @@ export default class MapConfigurator extends Configurator {
 			const option = this.menuOptions[index];
 			this.menuItems.push({
 				towerId: option.towerId,
-				itemImage: imageAssets[index].img
+				itemImage: imageAssets[index].img,
+				name: option.name,
+				price: option.price
 			})
 		}
 
@@ -357,40 +370,9 @@ export default class MapConfigurator extends Configurator {
 		this.context.fill();
 	}
 
-	// drawMenu() {
-	// 	const menuXStart = screen.width / 2.5;
-	// 	const menuYStart = screen.height - (this.offsetHeight * 2.5 - scrollY);
-	// 	const textAdditionHeight = 15;
-
-	// 	for (let index = 0; index < 3; index++) {
-	// 		tryDetectMenuHover.call(this, menuXStart, menuYStart, index);
-	// 		ctx.drawImage(menuItemsList[index].image, 0, 0, defaultTileWidth, defaultTileHeight, menuXStart + index * defaultTileWidth, menuYStart, defaultTileWidth, defaultTileHeight);
-	// 		drawPrice(menuXStart, menuYStart, index, textAdditionHeight);
-	// 	}
-
-	// 	function tryDetectMenuHover(this:MapConfigurator, menuXStart:number, menuYStart:number, index:number) {
-	// 		const rect = new Path2D();
-	// 		const textAdditionHeight = 30;
-	// 		rect.rect(menuXStart + this.defaultTileWidth * index, menuYStart, this.defaultTileWidth, defaultTileHeight + textAdditionHeight);
-	// 		if (ctx.isPointInPath(rect, cursorX, cursorY) && !isPicked && (userStatsProxy.userMoney - menuItemsList[index].price >= 0)) {
-	// 			ctx.fillStyle = '#cc0e0e61';
-	// 			menuHoverItem = menuItemsList[index].image;
-	// 		}
-	// 		else
-	// 			ctx.fillStyle = '#00000061';
-	// 		ctx.fill(rect);
-	// 	}
-
-
-	// }
-
 }
 
 
-
-// const hpContainer = document.getElementById('game__hp-container');
-// const moneyContainer = document.getElementById('game__money-container');
-// const hpMoneyContainer = document.getElementById('game__hp-money-bar');
 
 // const soundContainer = document.getElementById('game__sound-icon');
 

@@ -1,5 +1,7 @@
 import { IMenuOption } from "@/types";
 import { ImagePath } from "@/types/imagePath";
+import Utilities from "@/utilities/utilities";
+import { Dictionary } from "lodash";
 
 type TowerType = {
 	platform: ITower,
@@ -14,6 +16,34 @@ type TowerType = {
 }
 
 export class Towers {
+	static isPlatform(id: number) {
+		return Towers.list.platform.id == id;
+	}
+
+	// static async loadTowersImages(defaultTileHeight: number, defaultTileWidth: number) {
+
+	// 	let keyValueList: Dictionary<HTMLImageElement> = {};
+
+	// 	for (const key in this.list) {
+	// 		const tower: ITower = this.list[key];
+	// 		const towerImage = Utilities.createImage(defaultTileWidth, defaultTileHeight, tower.itemImageSrc);
+	// 		keyValueList[key] = towerImage;
+	// 	}
+
+	// 	const promises = Utilities.loadImages(keyValueList);
+	// 	const imageAssets = await Promise.all(promises);
+
+	// 	for (let index = 0; index < imageAssets.length; index++) {
+	// 		const tower: ITower = this.list[imageAssets[index].key];
+	// 		tower.itemImage = imageAssets[index].img;
+	// 	}
+	// 	console.log(this.list)
+	// }
+
+	static getTowerById(towerId: number): undefined | ITower {
+		return Object.entries(this.list).find(tower => tower[1].id === towerId)?.[1];
+	}
+
 	static list: TowerType = {
 		platform: {
 			id: 0,
@@ -132,17 +162,22 @@ export class Towers {
 				return element.attackRadius
 		}
 	}
-
 }
 
 export interface ITower {
 	id: number;
-	startFrame: number;
-	framesAmount: number;
-	frameRate: number;
-	attackDamage: number;
-	attackRadius: number | null;
+	startFrame?: number;
+	framesAmount?: number;
+	frameRate?: number;
+	attackDamage?: number;
+	attackRadius?: number | null;
 	itemImageSrc: string;
+	itemImage?: HTMLImageElement;
 	price: number;
 	name: string;
+}
+export interface ITowerWithLocation {
+	xLocation: number;
+	yLocation: number;
+	img: HTMLImageElement;
 }

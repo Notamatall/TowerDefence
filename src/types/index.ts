@@ -44,6 +44,8 @@ export interface IMenuOption {
 export interface IMenuItem {
 	towerId: number;
 	itemImage: HTMLImageElement;
+	price: number;
+	name: string;
 }
 export interface IUserStats {
 	userHP: number,
