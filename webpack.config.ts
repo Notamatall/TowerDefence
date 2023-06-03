@@ -3,6 +3,7 @@ import { Configuration, EntryObject, config } from 'webpack';
 import plugins from './plugins'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import fs from 'fs'
+
 const webpackConfiguration: Configuration = {
 	entry: getEntry(),
 	mode: 'development',
@@ -44,6 +45,7 @@ const webpackConfiguration: Configuration = {
 				}
 			},
 		],
+
 	},
 	output: {
 		clean: true,
@@ -53,10 +55,12 @@ const webpackConfiguration: Configuration = {
 	resolve: {
 		extensions: ['.ts', '.js', '.png'],
 		alias: {
-			'@': path.resolve(__dirname, 'src')
+			'@': path.resolve(__dirname, 'src'),
+			'~': path.resolve(__dirname, 'src/assets/sprites'),
 		},
 	},
 	plugins: plugins,
+
 };
 const normalizedWebpackOptions = config.getNormalizedWebpackOptions(webpackConfiguration);
 normalizedWebpackOptions.devServer = {

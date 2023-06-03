@@ -1,7 +1,6 @@
 import { CanvasBuilder } from "./canvasBuilder";
 
 export default class Configurator {
-
 	constructor(canvasBuilder: CanvasBuilder) {
 		this.canvasBuilder = canvasBuilder
 	}
@@ -40,6 +39,10 @@ export default class Configurator {
 		const rect = this.canvas.getBoundingClientRect();
 		this.cursorX = event.clientX - rect.left;
 		this.cursorY = event.clientY - rect.top;
+	}
+
+	protected get canvasAccessor(): CanvasBuilder {
+		return this.canvasBuilder;
 	}
 
 	protected get canvasContainer(): HTMLElement {

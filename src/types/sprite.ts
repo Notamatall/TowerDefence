@@ -1,31 +1,43 @@
 export default class Sprite {
-	constructor(id, x, y, startFrame, framesAmount, frameRate, height, width) {
-		this.id = id;
-		this.x = x;
-		this.y = y;
-		this.startFrame = startFrame;
-		this.currentFrame = startFrame;
-		this.framesAmount = framesAmount;
-		this.frameRate = frameRate;
-		this.height = height;
-		this.width = width;
-		this.center = { x: x + (width / 2), y: y + (height / 2) }
+	constructor(spriteInfo: ISpriteInitializer) {
+		this.xFramesStart = spriteInfo.xFramesStart;
+		this.yFramesStart = spriteInfo.yFramesStart;
+		this.pxHeight = spriteInfo.pxHeight;
+		this.pxWidth = spriteInfo.pxWidth;
+		this.framesAmount = spriteInfo.framesAmount - 1;
+		this.displayX = spriteInfo.dispayX ? spriteInfo.dispayX : this.pxWidth / 2;
+		this.displayY = spriteInfo.dispayY ? spriteInfo.dispayY : this.pxHeight / 2;
+		this.image = spriteInfo.image ? spriteInfo.image : new Image();
+		this.uniqueXCorrelation = spriteInfo.uniqueXCorrelation ? spriteInfo.uniqueXCorrelation : 0;
+		this.uniqueYCorrelation = spriteInfo.uniqueYCorrelation ? spriteInfo.uniqueYCorrelation : 0;
+		this.rotated = spriteInfo.rotated ? spriteInfo.rotated : false;
 	}
 
-	//Frame
-	id = null;
-	changeFrameCount = 0;
-	frameRate = 0;
-	startFrame = 0;
-	framesAmount = 0;
-	currentFrame = 0;
-	center = {};
 
-	//Size
-	height = 0;
-	width = 0;
+	readonly displayX: number;
+	readonly displayY: number;
+	readonly framesAmount: number;
+	readonly pxHeight: number;
+	readonly pxWidth: number;
+	readonly xFramesStart: number;
+	readonly yFramesStart: number;
+	readonly uniqueXCorrelation: number;
+	readonly uniqueYCorrelation: number;
+	readonly rotated: boolean;
+	image: HTMLImageElement;
+}
 
-	//Location
-	x = 0;
-	y = 0;
+
+export interface ISpriteInitializer {
+	xFramesStart: number;
+	yFramesStart: number;
+	uniqueXCorrelation?: number;
+	uniqueYCorrelation?: number;
+	framesAmount: number;
+	pxHeight: number;
+	pxWidth: number;
+	dispayX?: number;
+	dispayY?: number;
+	image?: HTMLImageElement;
+	rotated?: boolean;
 }

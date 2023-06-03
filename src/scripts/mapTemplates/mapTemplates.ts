@@ -1,5 +1,5 @@
-import { IMenuOption, IUserStats } from "@/types";
-import { Towers } from "../towers";
+import { IUserStats } from "@/types";
+import { TowerType } from "@/types/towersTypes";
 function c(index, angle?: number, dirX?: number, dirY?: number, order?: number): IMapTemplateCell {
 	return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
 }
@@ -24,13 +24,7 @@ export const firstLevelTemplate: IMapTemplateCell[][] = [
 	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
 ];
 
-export const firstLevelMenu: IMenuOption[] = [
-	Towers.getMenuOption(Towers.list.platform),
-	Towers.getMenuOption(Towers.list.singleBarrelCannon),
-	Towers.getMenuOption(Towers.list.doubleBarrelCannon),
-	Towers.getMenuOption(Towers.list.simpleLaserCannon),
-	Towers.getMenuOption(Towers.list.advancedLaserCannon),
-]
+export const firstLevelMenu: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'supremeLaserCannonPlus', 'supremeLaserCannon']
 
 export const firstLevelUserStats: IUserStats = {
 	userHP: 15,

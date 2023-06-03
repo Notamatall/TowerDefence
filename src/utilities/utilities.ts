@@ -1,22 +1,27 @@
 import { IImageAsset } from "@/types";
 
+export type KeyImageType<T> = {
+	[key in keyof T]: HTMLImageElement
+};
+
 export default class Utilities {
-	static createImage(width: number,
-		height: number,
-		src: string) {
+
+	static readonly toRadiance = Math.PI / 180;
+	static readonly toDegrees = 180 / Math.PI;
+
+	static createImage(src: string, height?: number, width?: number) {
 		const image = new Image(width, height);
 		image.src = src;
 		return image;
 	}
 
-	static loadImages(images: { [keyof: string]: HTMLImageElement }): Promise<IImageAsset>[] {
-		const promisesList: Promise<IImageAsset>[] =
-			Object.entries(images)
-				.map((imageObj) => waitForImageToLoad(imageObj[1], imageObj[0]));
+	static loadImages<T>(images: KeyImageType<T>): Promise<IImageAsset<T>>[] {
+		const promisesList: Promise<IImageAsset<T>>[] =
+			Object.entries<HTMLImageElement>(images).map((imageObj) => waitForImageToLoad(imageObj[1], imageObj[0] as T));
 
-		function waitForImageToLoad(imageElement: HTMLImageElement, key: string): Promise<IImageAsset> {
+		function waitForImageToLoad(imageElement: HTMLImageElement, key: T): Promise<IImageAsset<T>> {
 			return new Promise((
-				resolve: (obj: IImageAsset) => void,
+				resolve: (obj: IImageAsset<T>) => void,
 				reject: (message: string) => void
 			) => {
 				imageElement.onload = () => resolve({ img: imageElement, key: key });
@@ -28,6 +33,47 @@ export default class Utilities {
 	}
 
 
+	static drawFlippedImage(context: CanvasRenderingContext2D,
+		image: HTMLImageElement,
+		xDraw: number,
+		yDraw: number,
+		pX: number,
+		pY: number,
+		getByX: number,
+		getByY: number,
+		offsetX: number,
+		offsetY: number,
+		totalX: number,
+		totalY: number) {
+		context.save();
+		context.translate(xDraw, yDraw);
+		context.scale(-1, 1);
+		context.drawImage(image, pX, pY, getByX, getByY, -offsetX, offsetY, totalX, totalY);
+		context.restore();
+	}
+
+
+	static drawRotatedImage(context: CanvasRenderingContext2D,
+		image: HTMLImageElement,
+		xDraw: number,
+		yDraw: number,
+		pX: number,
+		pY: number,
+		getByX: number,
+		getByY: number,
+		offsetX: number,
+		offsetY: number,
+		totalX: number,
+		totalY: number,
+		angle?: number) {
+
+		context.save();
+		context.translate(xDraw, yDraw);
+		if (angle)
+			context.rotate(angle * this.toRadiance);
+		context.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
+		context.restore();
+	}
 
 	static tryCatchWrapper(context: () => any) {
 		try {

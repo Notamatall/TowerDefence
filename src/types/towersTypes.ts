@@ -117,3 +117,74 @@
 //       }
 //   }
 // }
+
+
+
+export interface ITower extends ITowerInitializer {
+	itemImage: HTMLImageElement;
+}
+
+export interface ITowerInitializer {
+	type: TowerType;
+	startFrame: number | null;
+	framesAmount: number | null;
+	frameRate: number | null;
+	attackDamage: number | null;
+	attackRadius: number | null;
+	itemImageSrc: string;
+	price: number;
+	name: string;
+}
+
+
+export class Tower implements ITower {
+	constructor(tower: ITower, xLocation: number, yLocation: number) {
+		this.type = tower.type;
+		this.startFrame = tower.startFrame;
+		this.framesAmount = tower.framesAmount;
+		this.frameRate = tower.frameRate;
+		this.attackDamage = tower.attackDamage;
+		this.attackRadius = tower.attackRadius;
+
+		if (tower.itemImage === undefined)
+			throw new Error('Tower image cannot be undefined');
+		this.itemImage = tower.itemImage;
+		this.type = tower.type;
+		this.itemImageSrc = tower.itemImageSrc;
+		this.price = tower.price;
+		this.name = tower.name;
+		this.xLocation = xLocation;
+		this.yLocation = yLocation;
+	}
+
+	type: TowerType;
+	startFrame: number | null;
+	framesAmount: number | null;
+	frameRate: number | null;
+	attackDamage: number | null;
+	attackRadius: number | null;
+	itemImage: HTMLImageElement;
+	itemImageSrc: string;
+	price: number;
+	name: string;
+	xLocation: number;
+	yLocation: number;
+}
+
+export type TowerType = 'platform' |
+	'singleBarrelCannon' |
+	'doubleBarrelCannon' |
+	'doubleBarrelCannonPlus' |
+	'tripleBarrelCannon' |
+	'simpleLaserCannon' |
+	'advancedLaserCannon' |
+	'supremeLaserCannon' |
+	'supremeLaserCannonPlus';
+
+export type DefaultTowerType = {
+	[keyof in TowerType]: ITowerInitializer
+}
+
+export type InitializedTowerType = {
+	[keyof in TowerType]: ITower
+}

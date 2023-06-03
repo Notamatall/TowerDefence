@@ -1,9 +1,11 @@
 import MapConfigurator from '@/scripts/mapConfigurator';
 import { IMapTemplateCell } from '@/scripts/mapTemplates/mapTemplates';
+import { TowerType } from './towersTypes';
 
-export interface IImageAsset {
+
+export interface IImageAsset<T> {
 	img: HTMLImageElement;
-	key: string
+	key: T
 }
 
 
@@ -17,7 +19,7 @@ export interface MapConfigurationOptions {
 	mapTemplate: IMapTemplateCell[][];
 	environmentX: number;
 	environmentY: number;
-	menuOptions: IMenuOption[];
+	menuOptions: TowerType[];
 	defaultUserStats: IUserStats;
 }
 
@@ -35,21 +37,19 @@ export interface ILevelMap {
 	map: MapConfigurator;
 }
 
-export interface IMenuOption {
-	towerId: number;
-	itemImageSrc: string;
-	price: number;
-	name: string;
-}
-export interface IMenuItem {
-	towerId: number;
-	itemImage: HTMLImageElement;
-	price: number;
-	name: string;
-}
 export interface IUserStats {
 	userHP: number,
 	userCoins: number
 }
+
+
+export interface TurnPosition {
+	xTurnStart: number;
+	yTurnStart: number;
+	dirX: number;
+	dirY: number;
+	order: number;
+}
+
 
 export type UserStatsKey = keyof IUserStats; 
