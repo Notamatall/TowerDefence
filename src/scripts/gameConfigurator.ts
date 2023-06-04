@@ -2,10 +2,10 @@ import { GameConfigurationOptions, ILevelMap, IUserStats, UserStatsKey } from '@
 import MapConfigurator from './mapConfigurator';
 import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
-import { Tower, ITower, TowerType } from '@/types/towersTypes';
+import { Tower, ITower, TowerType, ITowerInitializer } from '@/types/towersTypes';
 import Towers from './towers';
 import Enemies from './enemies';
-import Enemy, { IEnemy } from '@/types/enemyTypes';
+import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
 
 
 export default class GameConfigurator extends Configurator {
@@ -26,14 +26,18 @@ export default class GameConfigurator extends Configurator {
 		await this.currentMap.configureMap();
 		this.registerUserStatsProxy(this.currentMap);
 		this.registerOnCanvasClick();
-		this.enemiesList.push(new Enemy(3, this.createEnemy(Enemies.list.dragon, -1000, 1000), this.canvasAccessor));
-		this.enemiesList.push(new Enemy(1, this.createEnemy(Enemies.list.jinn, 0, 128), this.canvasAccessor));
-		this.enemiesList.push(new Enemy(2, this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
 
-		this.enemiesList.push(new Enemy(4, this.createEnemy(Enemies.list.smallDragon, -256, 128), this.canvasAccessor));
-		this.enemiesList.push(new Enemy(5, this.createEnemy(Enemies.list.medusa, -512, 128), this.canvasAccessor));
-		this.enemiesList.push(new Enemy(6, this.createEnemy(Enemies.list.demon, -256, 128), this.canvasAccessor));
-		this.enemiesList.push(new Enemy(7, this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, - 256 * index, 128), this.canvasAccessor));
+
+		}
+
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
+
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -256, 128), this.canvasAccessor));
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -512, 128), this.canvasAccessor));
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, -256, 128), this.canvasAccessor));
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
 
 	}
 
@@ -42,15 +46,20 @@ export default class GameConfigurator extends Configurator {
 	}
 
 
-	private createEnemy(enemyInitializer, posX, posY) {
+	private createEnemy(enemyInitializer: IEnemyInitializer, positionX: number, positionY: number) {
+		let lastEnemyId = 0;
+		if (_.isEmpty(this.enemiesList) === false)
+			lastEnemyId = _.last(this.enemiesList)!.enemyId;
+		const nextId = lastEnemyId + 1;
 
 		const enemy: IEnemy = {
 			...enemyInitializer,
+			enemyId: nextId,
 			dealDamage: (damage) => this.dealDamage(damage),
 			releseEnemyAfterPass: (enemyId) => this.releseEnemyAfterPass(enemyId),
 			turnPositions: Array.from(this.currentMap.turnPlaces),
-			positionX: posX,
-			positionY: posY,
+			positionX: positionX,
+			positionY: positionY,
 			moveDirX: 1,
 			moveDirY: 0
 		}
@@ -96,31 +105,35 @@ export default class GameConfigurator extends Configurator {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
 		this.drawPlatforms();
-		this.drawTowers();
+		//this.drawTowers();
 		this.currentMap.tryDrawPickedMenuItem();
-		for (const demon of this.enemiesList)
-			demon.update();
+
+		for (const tower of this.towersList)
+			tower.update();
+
+		for (const enemy of this.enemiesList)
+			enemy.update();
 
 	}
 
 	private drawPlatforms() {
 		for (const platform of this.platformList)
-			this.context.drawImage(platform.itemImage, 0, 0,
+			this.context.drawImage(platform.sprite.image, 0, 0,
 				this.currentMap.tileWidth,
 				this.currentMap.tileHeight,
-				platform.xLocation,
-				platform.yLocation,
+				platform.positionX,
+				platform.positionY,
 				this.currentMap.tileWidth,
 				this.currentMap.tileHeight);
 	}
 
 	private drawTowers() {
 		for (const tower of this.towersList)
-			this.context.drawImage(tower.itemImage, 0, 0,
+			this.context.drawImage(tower.sprite.image, 0, 0,
 				this.currentMap.tileWidth,
 				this.currentMap.tileHeight,
-				tower.xLocation,
-				tower.yLocation,
+				tower.positionX,
+				tower.positionY,
 				this.currentMap.tileWidth,
 				this.currentMap.tileHeight);
 	}
@@ -152,22 +165,73 @@ export default class GameConfigurator extends Configurator {
 			if (Towers.isPlatform(this.currentMap.pickedMenuItem.type)) {
 				if (this.currentMap.canBuildOnTile(clickIndexX, clickIndexY) && this.isPlatformBuildOnTile(tileStartXCoordinate, tileStartYCoordinate) === false) {
 					this.payPriceForNewItem();
-					this.platformList.push(new Tower(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate));
+					const platform = this.getTowerFromTemplate(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate);
+					this.addPlatform(platform);
 				}
 				return;
 			}
 
 			if (this.isPlatformWithoutTower(clickIndexX, clickIndexY, tileStartXCoordinate, tileStartYCoordinate)) {
 				this.payPriceForNewItem();
-				this.createTower(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate);
+				const tower = this.getTowerFromTemplate(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate);
+				this.addTower(tower);
 			}
 		}
 
 		this.addMouseClickEventHandler(clickEvenHandler)
 	}
 
-	private createTower(towerTemplate: ITower, tileStartXCoordinate: number, tileStartYCoordinate: number) {
-		this.towersList.push(new Tower(towerTemplate, tileStartXCoordinate, tileStartYCoordinate))
+	addTower(tower: Tower) {
+		this.towersList.push(tower);
+	}
+
+	addPlatform(tower: Tower) {
+		this.platformList.push(tower);
+	}
+
+	private getTowerFromTemplate(towerTemplate: ITowerInitializer, positionX: number, positionY: number): Tower {
+		let lastTowerId = 0;
+		if (_.isEmpty(this.towersList) === false)
+			lastTowerId = _.last(this.towersList)!.towerId;
+		const nextId = lastTowerId + 1;
+		const towerInitializer: ITower = {
+			...towerTemplate,
+			getAttackTargetInRadius: (searchRadius) => this.getAttackTargetInRadius(searchRadius),
+			removeTargetForTowers: (target) => this.removeTargetForTowers(target),
+			positionX: positionX,
+			positionY: positionY,
+			towerId: lastTowerId + nextId
+		}
+
+		return new Tower(towerInitializer, this.canvasAccessor);
+	}
+
+	private removeTargetForTowers(target: Enemy) {
+		if (_.isNull(this.userStatsProxy))
+			throw new Error('User stats cannot be null');
+
+		this.userStatsProxy.userCoins = this.userStatsProxy.userCoins + target.deathReward;
+		this.enemiesList.splice(this.enemiesList.findIndex(enemy => enemy.enemyId == target.enemyId), 1);
+		for (const tower of this.towersList) {
+			if (tower.attackTarget == target) {
+				tower.currentFrameChangeValue = 0;
+				tower.currentSpriteFrame = 0;
+				tower.attackTarget = null;
+				tower.animate()
+			}
+		}
+	}
+
+	private getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined {
+		for (const enemy of this.enemiesList) {
+			if (this.context.isPointInPath(
+				searchRadius,
+				enemy.imageCenter.centerX,
+				enemy.imageCenter.centerY)) {
+				return enemy;
+			}
+		}
+		return undefined;
 	}
 
 	private isPlatformWithoutTower(clickIndexX: number, clickIndexY: number, tileStartXCoordinate: number, tileStartYCoordinate: number) {
@@ -176,9 +240,8 @@ export default class GameConfigurator extends Configurator {
 			&& !this.isTowerBuildOnTile(tileStartXCoordinate, tileStartYCoordinate);
 	}
 
-
 	private isTowerBuildOnTile(tileStartXCoordinate: number, tileStartYCoordinate: number) {
-		return this.towersList.find(platform => platform.xLocation == tileStartXCoordinate && platform.yLocation == tileStartYCoordinate) !== undefined;
+		return this.towersList.find(platform => platform.positionX == tileStartXCoordinate && platform.positionY == tileStartYCoordinate) !== undefined;
 	}
 
 	private payPriceForNewItem() {
@@ -193,7 +256,7 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private isPlatformBuildOnTile(tileStartXCoordinate: number, tileStartYCoordinate: number) {
-		return this.platformList.find(platform => platform.xLocation == tileStartXCoordinate && platform.yLocation == tileStartYCoordinate) !== undefined;
+		return this.platformList.find(platform => platform.positionX == tileStartXCoordinate && platform.positionY == tileStartYCoordinate) !== undefined;
 	}
 
 	private isEnoughMoney() {
@@ -216,7 +279,7 @@ export default class GameConfigurator extends Configurator {
 		return proxy === null;
 	}
 
-	private isPickedMenuItemNull(pickedMenuItem: ITower | null): pickedMenuItem is null {
+	private isPickedMenuItemNull(pickedMenuItem: ITowerInitializer | null): pickedMenuItem is null {
 		return pickedMenuItem === null;
 	}
 

@@ -4,12 +4,12 @@ import Configurator from "@/scripts/configurator";
 import { CanvasBuilder } from "@/scripts/canvasBuilder";
 import Utilities from "@/utilities/utilities";
 
-export default class Enemy extends Configurator {
-	constructor(enemyId: number, enemyInitializer: IEnemy, canvasAccessor: CanvasBuilder) {
-		super(canvasAccessor);
+export default class Enemy {
+	constructor(enemyInitializer: IEnemy, canvasAccessor: CanvasBuilder) {
+		this.context = canvasAccessor.context;
 		this.sprite = enemyInitializer.sprite;
 		this.frameChangeRate = enemyInitializer.frameChangeRate;
-		this.enemyId = enemyId;
+		this.enemyId = enemyInitializer.enemyId;
 		this.moveDirX = enemyInitializer.moveDirX;
 		this.moveDirY = enemyInitializer.moveDirY;
 		this.moveSpeed = enemyInitializer.moveSpeed;
@@ -37,9 +37,9 @@ export default class Enemy extends Configurator {
 	private positionX: number;
 	private positionY: number;
 	private sprite: Sprite;
-
+	private context: CanvasRenderingContext2D;
 	private totalHP: number;
-	private currentHp: number;
+
 	private turnPositions: TurnPosition[];
 
 	private moveDirX: number;
@@ -50,24 +50,28 @@ export default class Enemy extends Configurator {
 	private currentSpriteFrame: number = 0;
 	private currentFrameChangeValue: number = 0;
 
-	private deathReward: number;
+	public readonly deathReward: number;
 	private damageOnPass: number;
 
 	private healthBarHeight = 5;
 	private healthBarWidth = 64;
-	private imageCenter: IImageCenter;
+
+	public imageCenter: IImageCenter;
+	public currentHp: number;
 
 	get type() {
 		return this.innerType;
 	}
 
+	get center() {
+		return this.imageCenter;
+	}
 	update() {
 
 		this.move()
 		this.animate();
-		//this.drawHp();
+		this.drawHp();
 		this.drawCurrentSpriteFrame();
-
 	}
 
 	drawCurrentSpriteFrame() {
@@ -105,8 +109,6 @@ export default class Enemy extends Configurator {
 	}
 
 	move() {
-		this.context.fillStyle = 'black'
-		this.context.fillRect(this.imageCenter.centerX, this.imageCenter.centerY, 10, 10);
 		this.tryTurn();
 		this.positionX = this.getNewPositionAfterMove(this.positionX, this.moveSpeed, this.moveDirX);
 		this.positionY = this.getNewPositionAfterMove(this.positionY, this.moveSpeed, this.moveDirY);
@@ -177,8 +179,6 @@ export default class Enemy extends Configurator {
 			this.currentSpriteFrame++;
 			this.currentFrameChangeValue = 0;
 		}
-
-
 		function isTimeToChangeFrame(this: Enemy) {
 			return this.frameChangeRate === this.currentFrameChangeValue
 		}
@@ -193,30 +193,30 @@ export default class Enemy extends Configurator {
 		}
 	}
 
-
-
-
-	// drawHp() {
-	// 	this.context.fillStyle = '#c31010df';
-	// 	const percentage = this.currentHp / this.totalHP;
-	// 	if (percentage < 0)
-	// 		return;
-	// 	// ctx.fillRect(this.center.x, this.center.y - 500, 2, 1000);
-	// 	// ctx.fillRect(this.center.x - 500, this.center.y, 1000, 2);
-	// 	this.context.fillRect(this.center.x - this.width / 2.5, this.center.y - this.height / 4, this.healthBarWidth * percentage, this.healthBarHeight);
-	// }
+	drawHp() {
+		this.context.fillStyle = '#c31010df';
+		const percentage = this.currentHp / this.totalHP;
+		if (percentage < 0)
+			return;
+		// ctx.fillRect(this.center.x, this.center.y - 500, 2, 1000);
+		// ctx.fillRect(this.center.x - 500, this.center.y, 1000, 2);
+		this.context.fillRect(this.imageCenter.centerX,
+			this.imageCenter.centerY - this.sprite.pxHeight / 2,
+			this.healthBarWidth * percentage,
+			this.healthBarHeight);
+	}
 
 }
 
 export interface IEnemy extends IEnemyInitializer {
 	dealDamage: (damage: number) => void;
 	releseEnemyAfterPass: (enemyId: number) => void;
-
 	turnPositions: TurnPosition[];
 	positionX: number;
 	positionY: number;
 	moveDirX: number;
 	moveDirY: number;
+	enemyId: number;
 }
 
 
@@ -235,10 +235,6 @@ export interface IEnemyInitializer {
 
 export type DefaultEnemyType = {
 	[keyof in EnemyType]: IEnemyInitializer
-}
-
-export type InitializedEnemyType = {
-	[keyof in EnemyType]: IEnemy
 }
 
 export interface IImageCenter {

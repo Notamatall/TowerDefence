@@ -1,10 +1,9 @@
 import { IImageAsset } from "@/types";
 import { ImagePath } from "@/types/imagePath";
-import { DefaultTowerType, InitializedTowerType, ITower, TowerType } from "@/types/towersTypes";
+import Sprite from "@/types/sprite";
+import { DefaultTowerType, ITower, ITowerInitializer, TowerType } from "@/types/towersTypes";
 import Utilities, { KeyImageType } from "@/utilities/utilities";
-
-
-
+import plasmaGunFire from '@/audio/plasma_gun_05.mp3'
 
 class TowerTemplates {
 
@@ -13,109 +12,107 @@ class TowerTemplates {
 		const defaultTowers: DefaultTowerType = {
 			platform: {
 				type: 'platform',
-				startFrame: null,
-				framesAmount: null,
-				frameRate: null,
-				attackDamage: null,
-				attackRadius: null,
-				itemImageSrc: ImagePath.platform,
 				price: 50,
-				name: 'Platform'
+				name: 'Platform',
+				itemImageSrc: ImagePath.platform,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 0, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 })
 			},
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
-				startFrame: 0,
-				framesAmount: 7,
+				framesAmount: 8,
 				frameRate: 5,
 				attackDamage: 30,
 				attackRadius: 180,
 				itemImageSrc: ImagePath.singleBarrelCannon,
+				fireAudio: new Audio(plasmaGunFire),
 				price: 200,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Single barrel cannon'
 			},
 			doubleBarrelCannon: {
 				type: 'doubleBarrelCannon',
-				startFrame: 0,
-				framesAmount: 10,
+				framesAmount: 8,
 				frameRate: 5,
 				attackDamage: 50,
 				attackRadius: 190,
 				itemImageSrc: ImagePath.doubleBarrelCannon,
 				price: 350,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Double barrel cannon'
 			},
 			doubleBarrelCannonPlus: {
 				type: 'doubleBarrelCannonPlus',
-				startFrame: 0,
-				framesAmount: 10,
+				framesAmount: 8,
 				frameRate: 5,
 				attackDamage: 70,
 				attackRadius: 210,
 				itemImageSrc: ImagePath.doubleBarrelCannonPlus,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Double barrel cannon +'
 			},
 			tripleBarrelCannon: {
 				type: 'tripleBarrelCannon',
-				startFrame: 0,
-				framesAmount: 10,
+				framesAmount: 8,
 				frameRate: 5,
 				attackDamage: 100,
 				attackRadius: 210,
 				itemImageSrc: ImagePath.tripleBarrelCannon,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 750,
 				name: 'Triple barrel cannon'
 			},
 			simpleLaserCannon: {
 				type: 'simpleLaserCannon',
-				startFrame: 0,
 				framesAmount: 10,
 				frameRate: 6,
 				attackDamage: 45,
 				attackRadius: 240,
 				itemImageSrc: ImagePath.simpleLaserCannon,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 300,
 				name: 'Simple laser cannon'
 			},
 			advancedLaserCannon: {
 				type: 'advancedLaserCannon',
-				startFrame: 0,
 				framesAmount: 10,
 				frameRate: 6,
 				attackDamage: 65,
 				attackRadius: 250,
 				itemImageSrc: ImagePath.advancedLaserCannon,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Advanced laser cannon'
 			},
 			supremeLaserCannon: {
 				type: 'supremeLaserCannon',
-				startFrame: 0,
 				framesAmount: 10,
 				frameRate: 6,
 				attackDamage: 100,
 				attackRadius: 270,
 				itemImageSrc: ImagePath.supremeLaserCannon,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 780,
 				name: 'Supreme laser cannon'
 			},
 			supremeLaserCannonPlus: {
 				type: 'supremeLaserCannonPlus',
-				startFrame: 0,
 				framesAmount: 10,
 				frameRate: 6,
 				attackDamage: 140,
 				attackRadius: 270,
 				itemImageSrc: ImagePath.supremeLaserCannonPlus,
+				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 1000,
 				name: 'Supreme laser cannon +'
 			}
 		}
-		const initializedTowers: InitializedTowerType = _.merge({} as InitializedTowerType, defaultTowers);
+
 		const towersKeyImage: KeyImageType<TowerType> = getKeyImageFromDefault(defaultTowers);
 		const towerLoadedImages = await Promise.all(Utilities.loadImages<TowerType>(towersKeyImage));
-		assignLoadedImages(towerLoadedImages, initializedTowers);
-		this.list = initializedTowers;
+		assignLoadedImages(towerLoadedImages, defaultTowers);
+		//	const result = await Promise.all(checkAudioLoaded(defaultTowers));
+		this.list = defaultTowers;
 
 		function getKeyImageFromDefault(defaultTowers: DefaultTowerType) {
 			const keysImages: KeyImageType<TowerType> = {} as KeyImageType<TowerType>;
@@ -126,25 +123,48 @@ class TowerTemplates {
 			}
 			return keysImages;
 		}
-		function assignLoadedImages(loadedImages: IImageAsset<TowerType>[], initializedTowers: InitializedTowerType) {
+
+		function checkAudioLoaded(initializedTowers: DefaultTowerType) {
+			const audioPromises: Promise<HTMLAudioElement>[] = []
+			for (const key in initializedTowers) {
+				const tower: ITower = defaultTowers[key];
+				if (tower.fireAudio) {
+					tower.fireAudio.load();
+					//	audioPromises.push(waitForAudioToLoad(tower.fireAudio));
+				}
+			}
+
+			function waitForAudioToLoad(audio: HTMLAudioElement): Promise<HTMLAudioElement> {
+				return new Promise((
+					resolve: (value: HTMLAudioElement) => void,
+					reject: (message: string) => void
+				) => {
+					audio.onload = () => resolve(audio);
+					audio.onerror = () => reject(`audio load was not successful`);
+				})
+			}
+			return audioPromises;
+		}
+
+		function assignLoadedImages(loadedImages: IImageAsset<TowerType>[], initializedTowers: DefaultTowerType) {
 			for (const imageAsset of loadedImages)
-				initializedTowers[imageAsset.key].itemImage = imageAsset.img;
+				initializedTowers[imageAsset.key].sprite.image = imageAsset.img;
 		}
 	}
 
-	list: InitializedTowerType = {} as InitializedTowerType;
+	list: DefaultTowerType = {} as DefaultTowerType;
 
 	isPlatform(type: TowerType) {
 		return this.list.platform.type == type;
 	}
 
-	getTowerByType(type: TowerType): undefined | ITower {
+	getTowerByType(type: TowerType): undefined | ITowerInitializer {
 		return Object.entries(this.list).find(tower => tower[1].type === type)?.[1];
 	}
 
-	getTowerRadiusByType(towerType: TowerType): number | null {
+	getTowerRadiusByType(towerType: TowerType): number | undefined {
 		for (const key in this.list) {
-			const tower: ITower = this.list[key];
+			const tower: ITowerInitializer = this.list[key];
 			if (tower.type === towerType)
 				return tower.attackRadius
 		}

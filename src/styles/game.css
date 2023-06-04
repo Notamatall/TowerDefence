@@ -36,7 +36,6 @@ html {
 
 .game__money-container {
 	position: relative;
-	width: 150px;
 	display: flex;
 	align-items: center;
 	height: 25px;
@@ -52,7 +51,6 @@ html {
 .game__hp-container {
 	display: flex;
 	position: relative;
-	width: 150px;
 	align-items: center;
 	height: 25px;
 	font-family: gameMenuTitle;
@@ -135,6 +133,13 @@ html {
 	width: 70px;
 }
 
+#game__background-audio-btn {
+	position: fixed;
+	right: 15px;
+	top: 35px;
+	font-size: 25px;
+	color: white;
+}
 
 @font-face {
 	font-family: gameMenuTitle;

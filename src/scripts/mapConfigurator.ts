@@ -4,7 +4,7 @@ import Configurator from './configurator';
 import { IUserStats, MapConfigurationOptions, TurnPosition } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 import Towers from "./towers";
-import { TowerType, ITower } from "@/types/towersTypes";
+import { TowerType, ITower, ITowerInitializer } from "@/types/towersTypes";
 export default class MapConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder, options: MapConfigurationOptions) {
 		super(canvasContext);
@@ -24,7 +24,7 @@ export default class MapConfigurator extends Configurator {
 
 	//properties
 	private menuOptions: TowerType[];
-	private mapAvailableTowers: ITower[] = [];
+	private mapAvailableTowers: ITowerInitializer[] = [];
 	private mapName: string;
 	private defaultTileWidth: number;
 	private defaultTileHeight: number;
@@ -42,8 +42,7 @@ export default class MapConfigurator extends Configurator {
 	private currentCoinsElement: HTMLSpanElement | null = null;
 	private mapDefaultUserStats: IUserStats;
 
-	public pickedMenuItem: ITower | null = null;
-
+	public pickedMenuItem: ITowerInitializer | null = null;
 
 	get turnPlaces() {
 		return this.mapTurnPlaces;
@@ -117,7 +116,7 @@ export default class MapConfigurator extends Configurator {
 			const centeredY = this.cursorY - (this.defaultTileHeight / 2);
 
 			this.context.globalAlpha = 0.7;
-			this.context.drawImage(this.pickedMenuItem.itemImage, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
+			this.context.drawImage(this.pickedMenuItem.sprite.image, 0, 0, 128, 128, centeredX, centeredY, 128, 128);
 			this.context.globalAlpha = 1;
 
 			const radius = Towers.getTowerRadiusByType(this.pickedMenuItem.type);
@@ -297,7 +296,7 @@ export default class MapConfigurator extends Configurator {
 		this.canvasContainer.appendChild(hpMoneyContainer);
 	}
 
-	private onMenuItemClickHandler(event: MouseEvent, menuItem: ITower) {
+	private onMenuItemClickHandler(event: MouseEvent, menuItem: ITowerInitializer) {
 		event.stopImmediatePropagation();
 		this.pickedMenuItem = menuItem;
 	}
@@ -342,29 +341,3 @@ export default class MapConfigurator extends Configurator {
 			this.mapTurnPlaces.sort((a, b) => a.order - b.order);
 	}
 }
-
-
-
-// const soundContainer = document.getElementById('game__sound-icon');
-
-// soundContainer.style.backgroundImage = 'url(../sprites/icon-mute.png)';
-// let sound = true;
-
-// soundContainer.onclick = () => {
-//   sound = !sound;
-//   if (sound)
-//     soundContainer.style.backgroundImage = 'url(../sprites/icon-unmute.png)';
-//   else
-//     soundContainer.style.backgroundImage = 'url(../sprites/icon-mute.png)';
-
-// }
-
-
-// const drawFlippedImage = (image, xDraw, yDraw, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY) => {
-//   ctx.save();
-//   ctx.translate(xDraw, yDraw);
-//   ctx.scale(-1, 1);
-//   ctx.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
-//   ctx.restore();
-// }
-

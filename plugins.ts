@@ -30,7 +30,11 @@ const copyWebpackPlugin = new CopyWebpackPlugin({
 	patterns: [{
 		from: './src/assets',
 		to: './assets'
-	},]
+	},
+	{
+		from: './src/assets/icon',
+		to: 'favicon.ico'
+	}]
 });
 
 const htmlFilesNames = getHtmlFilesNames();

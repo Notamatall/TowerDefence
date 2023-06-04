@@ -75,6 +75,17 @@ export default class Utilities {
 		context.restore();
 	}
 
+	// const drawRotatedImage = (image, xDraw, yDraw, pX, pY, angle, getByX, getByY, offsetX, offsetY, totalX, totalY) => {
+	// 	ctx.save();
+	// 	ctx.translate(xDraw, yDraw);
+	// 	ctx.rotate(angle * toRadiance);
+	// 	ctx.drawImage(image, pX, pY, getByX, getByY, offsetX, offsetY, totalX, totalY);
+	// 	ctx.restore();
+	// }
+
+
+
+
 	static tryCatchWrapper(context: () => any) {
 		try {
 			return context();

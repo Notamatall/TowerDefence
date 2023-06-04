@@ -24,9 +24,9 @@ export const firstLevelTemplate: IMapTemplateCell[][] = [
 	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
 ];
 
-export const firstLevelMenu: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'supremeLaserCannonPlus', 'supremeLaserCannon']
+export const firstLevelMenu: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'supremeLaserCannonPlus', 'supremeLaserCannon', 'tripleBarrelCannon']
 
 export const firstLevelUserStats: IUserStats = {
 	userHP: 15,
-	userCoins: 600
+	userCoins: 800
 }

@@ -1,174 +1,181 @@
-
-// class Tower extends SpriteGeneralInfo {
-//   constructor({ image, id, x, y, startFrame, framesAmount, frameRate, height, width, attackRadius, attackDamage }) {
-//     super(id, x, y, startFrame, framesAmount, frameRate, height, width);
-//     this.attackRadius = attackRadius;
-//     this.attackDamage = attackDamage;
-//     this.image = image;
-//     this.circle = new Path2D();
-//     this.circle.arc(this.center.x, this.center.y, this.attackRadius, 0, 2 * Math.PI);
-//   }
-//   circle;
-//   image;
-//   angle = 0;
-//   attackDamage = 0;
-//   attackRadius = 0;
-//   attackattackTarget = null;
-//   audioList = [];
-
-//   animate() {
-//     this.changeFrameCount++;
-//     this.tryChangeAnimationFrame();
-//     return this.tryRestartAnimation();
-//   }
-
-//   tryChangeAnimationFrame() {
-//     if (this.frameRate == this.changeFrameCount) {
-//       this.currentFrame++;
-//       this.changeFrameCount = 0;
-//     }
-//   }
-
-//   tryRestartAnimation() {
-//     if (this.currentFrame == this.framesAmount) {
-//       this.currentFrame = this.startFrame;
-//       return true;
-//     }
-//     return false;
-//   }
-
-//   update() {
-
-//     if (this.attackTarget != null)
-//       this.attack();
-//     else
-//       this.searchAttackTarget();
-//     const spriteStartAngle = 90;
-//     drawRotatedImage(this.image, this.center.x, this.center.y, this.currentFrame * this.width, 0, this.angle + spriteStartAngle, this.width, 128, -(this.width / 2), -(this.height / 2), 128, 128);
-//   }
+import { CanvasBuilder } from "@/scripts/canvasBuilder";
+import Enemy, { IImageCenter } from "./enemyTypes";
+import Sprite from "./sprite";
+import Utilities from "@/utilities/utilities";
 
 
-//   attack() {
-//     if (!this.isInAttackRadius()) {
-//       this.attackTarget = null;
-//       this.currentFrame = this.startFrame;
-//     }
-//     else {
-//       this.fireAndRotate();
-//     }
-//   }
+export class Tower {
+	constructor(towerInitializer: ITower, canvasAccessor: CanvasBuilder) {
+		this.type = towerInitializer.type;
+		this.context = canvasAccessor.context;
+		this.framesAmount = towerInitializer.framesAmount ? towerInitializer.framesAmount : 0;
+		this.frameChangeRate = towerInitializer.frameRate ? towerInitializer.frameRate : 0;
+		this.attackDamage = towerInitializer.attackDamage ? towerInitializer.attackDamage : 0;
+		this.attackRadius = towerInitializer.attackRadius ? towerInitializer.attackRadius : 0;
+		this.towerId = towerInitializer.towerId;
+		this.getAttackTargetInRadius = towerInitializer.getAttackTargetInRadius;
+		this.removeTargetForTowers = towerInitializer.removeTargetForTowers;
+		this.type = towerInitializer.type;
+		this.price = towerInitializer.price;
+		this.name = towerInitializer.name;
+		this.positionX = towerInitializer.positionX;
+		this.positionY = towerInitializer.positionY;
+		this.sprite = towerInitializer.sprite;
 
-//   isInAttackRadius() {
-//     return ctx.isPointInPath(this.circle, this.attackTarget.center.x, this.attackTarget.center.y)
-//   }
+		this.imageCenter = {
+			centerX: this.positionX + this.sprite.pxWidth / 2,
+			centerY: this.positionY + this.sprite.pxHeight / 2
+		}
 
-//   fireAndRotate() {
-//     this.angle = this.getAngleToattackTarget();
-//     if (this.animate()) {
-//       this.playShotAudio();
-//       this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
-//       if (this.attackTarget.currentHp <= 0) {
-//         this.onEnemyDeath();
-//       }
-//     }
-//   }
+		if (this.attackRadius) {
+			this.towerCircleRadius = new Path2D();
+			this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
+		}
+		this.audio = towerInitializer.fireAudio;
 
-//   onEnemyDeath() {
-//     const target = this.attackTarget;
-//     userStatsProxy.userMoney = userStatsProxy.userMoney + target.reward;
-//     demonsList.splice(demonsList.findIndex(demon => demon.id == this.attackTarget.id), 1);
-//     for (const tower of towerList) {
-//       if (tower.attackTarget == target) {
-//         tower.currentFrame = tower.startFrame;
-//         tower.attackTarget = null;
-//         tower.animate()
-//       }
-//     }
-//   }
+	}
+	private audio: HTMLAudioElement | undefined;
 
-//   searchAttackTarget() {
-//     for (const demon of demonsList) {
-//       if (ctx.isPointInPath(this.circle, demon.center.x, demon.center.y)) {
-//         this.attackTarget = demon;
-//         this.currentFrame = this.startFrame;
-//         return;
-//       }
-//     }
-//   }
+	private towerCircleRadius?: Path2D;
+	private getAttackTargetInRadius: (searchRadius: Path2D) => Enemy | undefined;
+	private removeTargetForTowers: (target: Enemy) => void;
+	private context: CanvasRenderingContext2D;
+	private imageCenter: IImageCenter;
+	private rotationAngle: number = 0;
 
-//   getAngleToattackTarget() {
-//     let angle = Math.atan2(this.attackTarget.center.y - this.center.y, this.attackTarget.center.x - this.center.x);
-//     return angle * (180 / Math.PI);
-//   }
+	private type: TowerType;
+	private framesAmount: number;
+	private frameChangeRate: number;
+	private attackDamage: number;
+	private attackRadius: number;
+	private price: number;
+	private name: string;
 
-//   playShotAudio() {
-//     if (sound)
-//       switch (this.image) {
-//         case simplePlasmaTowerImage:
-//           smPlasmaCannonAudio.load()
-//           smPlasmaCannonAudio.play().catch(e => e);
-//           break;
-//         case simpleCannonTowerImage:
-//           smCannonAudio.load();
-//           smCannonAudio.play().catch(e => e);
-//           break;
-//         default:
-//           break;
-//       }
-//   }
-// }
+	public currentFrameChangeValue: number = 0;
+	public currentSpriteFrame: number = 0;
+	public attackTarget: Enemy | null = null;
+	public positionX: number;
+	public positionY: number;
+	public sprite: Sprite;
+	public readonly towerId: number;
 
 
+	update() {
 
-export interface ITower extends ITowerInitializer {
-	itemImage: HTMLImageElement;
-}
+		if (hasTarget.call(this))
+			this.attack();
+		else
+			this.searchAttackTarget();
 
-export interface ITowerInitializer {
-	type: TowerType;
-	startFrame: number | null;
-	framesAmount: number | null;
-	frameRate: number | null;
-	attackDamage: number | null;
-	attackRadius: number | null;
-	itemImageSrc: string;
-	price: number;
-	name: string;
-}
+		this.drawTower();
 
-
-export class Tower implements ITower {
-	constructor(tower: ITower, xLocation: number, yLocation: number) {
-		this.type = tower.type;
-		this.startFrame = tower.startFrame;
-		this.framesAmount = tower.framesAmount;
-		this.frameRate = tower.frameRate;
-		this.attackDamage = tower.attackDamage;
-		this.attackRadius = tower.attackRadius;
-
-		if (tower.itemImage === undefined)
-			throw new Error('Tower image cannot be undefined');
-		this.itemImage = tower.itemImage;
-		this.type = tower.type;
-		this.itemImageSrc = tower.itemImageSrc;
-		this.price = tower.price;
-		this.name = tower.name;
-		this.xLocation = xLocation;
-		this.yLocation = yLocation;
+		function hasTarget(this: Tower) {
+			return this.attackTarget != null
+		}
 	}
 
-	type: TowerType;
-	startFrame: number | null;
-	framesAmount: number | null;
-	frameRate: number | null;
-	attackDamage: number | null;
-	attackRadius: number | null;
-	itemImage: HTMLImageElement;
-	itemImageSrc: string;
-	price: number;
-	name: string;
-	xLocation: number;
-	yLocation: number;
+	private drawTower() {
+		const spriteStartAngle = 90;
+		const sprite = this.sprite;
+
+		Utilities.drawRotatedImage(
+			this.context,
+			sprite.image,
+			this.imageCenter.centerX,
+			this.imageCenter.centerY,
+			this.currentSpriteFrame * sprite.pxWidth, 0,
+			sprite.pxWidth,
+			128,
+			-(sprite.pxWidth / 2),
+			-(sprite.pxHeight / 2),
+			128,
+			128,
+			this.rotationAngle + spriteStartAngle);
+
+	}
+
+	searchAttackTarget() {
+		const target = this.getAttackTargetInRadius(this.towerCircleRadius!)
+		if (target) {
+			this.attackTarget = target;
+			this.currentSpriteFrame = 0;
+			this.currentFrameChangeValue = 0;
+		}
+	}
+
+	attack() {
+		if (isInAttackRadius.call(this) === false) {
+			this.attackTarget = null;
+			this.currentSpriteFrame = 0;
+		}
+		else {
+			this.fireAndRotate();
+		}
+
+		function isInAttackRadius(this: Tower) {
+			return this.context.isPointInPath(this.towerCircleRadius!,
+				this.attackTarget!.center.centerX,
+				this.attackTarget!.center.centerY)
+		}
+	}
+
+	animate() {
+		this.tryChangeAnimationFrame();
+		return this.tryRestartAnimation();
+	}
+
+	tryRestartAnimation() {
+		if (this.currentSpriteFrame == this.framesAmount) {
+			this.currentSpriteFrame = 0;
+			return true;
+		}
+		return false;
+	}
+
+	tryChangeAnimationFrame() {
+		this.currentFrameChangeValue++;
+		if (isTimeToChangeFrame.call(this)) {
+			this.currentSpriteFrame++;
+			this.currentFrameChangeValue = 0;
+		}
+		function isTimeToChangeFrame(this: Tower) {
+			return this.frameChangeRate === this.currentFrameChangeValue
+		}
+	}
+
+	private getAngleToAttackTarget() {
+		let angle = Math.atan2(this.attackTarget!.center.centerY - this.imageCenter.centerY, this.attackTarget!.center.centerX - this.imageCenter.centerX);
+		return angle * (180 / Math.PI);
+	}
+
+	private fireAndRotate() {
+		if (this.attackTarget === null)
+			return;
+
+		this.rotationAngle = this.getAngleToAttackTarget();
+		if (this.animate()) {
+			this.playShotAudio();
+			this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
+			if (this.attackTarget.currentHp <= 0) {
+				this.onEnemyKilled();
+			}
+		}
+	}
+
+	playShotAudio() {
+		if (this.audio) {
+			//	this.audio.load()
+			//this.audio.pause();
+			this.audio.play().catch(e => e);
+		}
+	}
+
+	onEnemyKilled() {
+		if (this.attackTarget === null)
+			throw new Error('Attack target is null - cannot be possible');
+		this.removeTargetForTowers(this.attackTarget);
+	}
+
 }
 
 export type TowerType = 'platform' |
@@ -185,6 +192,23 @@ export type DefaultTowerType = {
 	[keyof in TowerType]: ITowerInitializer
 }
 
-export type InitializedTowerType = {
-	[keyof in TowerType]: ITower
+export interface ITower extends ITowerInitializer {
+	positionY: number;
+	positionX: number;
+	towerId: number;
+	getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined;
+	removeTargetForTowers(target: Enemy): void;
+}
+
+export interface ITowerInitializer {
+	type: TowerType;
+	fireAudio?: HTMLAudioElement;
+	framesAmount?: number;
+	frameRate?: number;
+	attackDamage?: number;
+	attackRadius?: number;
+	itemImageSrc: string;
+	price: number;
+	name: string;
+	sprite: Sprite;
 }

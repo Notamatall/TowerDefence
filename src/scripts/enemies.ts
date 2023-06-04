@@ -1,4 +1,4 @@
-import Enemy, { DefaultEnemyType, EnemyType, IEnemy, IEnemyInitializer, InitializedEnemyType } from "@/types/enemyTypes";
+import Enemy, { DefaultEnemyType, EnemyType, IEnemy, IEnemyInitializer } from "@/types/enemyTypes";
 import Utilities, { KeyImageType } from "@/utilities/utilities";
 import { ImagePath } from '@/types/imagePath';
 import { IImageAsset } from "@/types";
@@ -88,11 +88,11 @@ class EnemiesTemplates {
 			},
 		} as DefaultEnemyType;
 
-		const initializedEnemies: InitializedEnemyType = _.merge({} as InitializedEnemyType, defaultEnemies);
+
 		const enemiesKeyImage: KeyImageType<EnemyType> = getKeyImageFromDefault(defaultEnemies);
 		const enemiesLoadedImages = await Promise.all(Utilities.loadImages<EnemyType>(enemiesKeyImage));
-		assignLoadedImages(enemiesLoadedImages, initializedEnemies);
-		this.list = initializedEnemies;
+		assignLoadedImages(enemiesLoadedImages, defaultEnemies);
+		this.list = defaultEnemies;
 
 		function getKeyImageFromDefault(defaultEnemies: DefaultEnemyType) {
 			const keysImages = <KeyImageType<EnemyType>>{};
@@ -103,7 +103,7 @@ class EnemiesTemplates {
 			}
 			return keysImages;
 		}
-		function assignLoadedImages(loadedImages: IImageAsset<EnemyType>[], initializedTowers: InitializedEnemyType) {
+		function assignLoadedImages(loadedImages: IImageAsset<EnemyType>[], initializedTowers: DefaultEnemyType) {
 			for (const imageAsset of loadedImages) {
 				initializedTowers[imageAsset.key].sprite.image = imageAsset.img;
 			}
