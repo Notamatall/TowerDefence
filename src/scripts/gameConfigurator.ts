@@ -6,11 +6,15 @@ import { Tower, ITower, TowerType, ITowerInitializer } from '@/types/towersTypes
 import Towers from './towers';
 import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
+import { update } from 'lodash';
+import { debug } from 'console';
+import Utilities from '@/utilities/utilities';
 
 
 export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
+
 	}
 	private maps: ILevelMap[] = [];
 	private currentMap!: MapConfigurator;
@@ -18,7 +22,11 @@ export default class GameConfigurator extends Configurator {
 	private platformList: Tower[] = [];
 	private towersList: Tower[] = [];
 	private enemiesList: Enemy[] = [];
-	count: number = 0;
+	private towerSellUpgradeElement!: HTMLDivElement;
+	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
+	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
+
+
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
 		this.setMaps(options.maps);
 		await Towers.init(this.currentMap.tileWidth, this.currentMap.tileHeight);
@@ -27,6 +35,7 @@ export default class GameConfigurator extends Configurator {
 		this.registerUserStatsProxy(this.currentMap);
 		this.registerOnCanvasClick();
 		this.registerEscape();
+		this.setTowerMenuElement();
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -2000 - 256 * index, 128), this.canvasAccessor));
 		}
@@ -44,6 +53,13 @@ export default class GameConfigurator extends Configurator {
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, -256, 128), this.canvasAccessor));
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
 
+	}
+
+	setTowerMenuElement() {
+		const towerSellUpgradeElement = document.getElementById('game__update-tower-menu');
+		if (towerSellUpgradeElement === null)
+			throw new Error('Tower upgrade menu does not exist');
+		this.towerSellUpgradeElement = towerSellUpgradeElement as HTMLDivElement;
 	}
 
 	public startGame() {
@@ -120,15 +136,9 @@ export default class GameConfigurator extends Configurator {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
 		this.drawPlatforms();
-		//this.drawTowers();
+		this.drawTowers();
+		this.drawEnemies();
 		this.currentMap.tryDrawPickedMenuItem();
-
-		for (const tower of this.towersList)
-			tower.update();
-
-		for (const enemy of this.enemiesList)
-			enemy.update();
-
 	}
 
 	private drawPlatforms() {
@@ -144,13 +154,12 @@ export default class GameConfigurator extends Configurator {
 
 	private drawTowers() {
 		for (const tower of this.towersList)
-			this.context.drawImage(tower.sprite.image, 0, 0,
-				this.currentMap.tileWidth,
-				this.currentMap.tileHeight,
-				tower.positionX,
-				tower.positionY,
-				this.currentMap.tileWidth,
-				this.currentMap.tileHeight);
+			tower.update();
+	}
+
+	private drawEnemies() {
+		for (const enemy of this.enemiesList)
+			enemy.update();
 	}
 
 	private setMaps(maps: ILevelMap[]) {
@@ -164,42 +173,118 @@ export default class GameConfigurator extends Configurator {
 		}
 	}
 
+	private handleTowerSellUpdate(coordinates: {
+		clickIndexX: number;
+		clickIndexY: number;
+		tileStartXCoordinate: number;
+		tileStartYCoordinate: number;
+	}) {
+		const sellButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
+		const upgradeButton = this.towerSellUpgradeElement.lastElementChild as HTMLButtonElement;
+
+		if (this.isPlatformWithTower(coordinates.clickIndexX, coordinates.clickIndexY, coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate)) {
+			const towerToSellUpgrade = this.getTowerBuildOnTile(coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate);
+			if (towerToSellUpgrade !== undefined) {
+				setUpgradeSellMenuAroundTowerSelected(towerToSellUpgrade, this.towerSellUpgradeElement)
+
+				if (_.isNull(sellButton) || _.isNull(upgradeButton))
+					throw new Error("Buttons were not found");
+
+
+				const sellTower = (e: MouseEvent) => {
+					const sellingPercent = 0.75;
+					this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins + towerToSellUpgrade.towerPrice * sellingPercent;
+					this.removeTower(towerToSellUpgrade.towerId);
+					sellButton.removeEventListener('click', sellTower, false)
+					this.towerSellUpgradeElement.style.display = 'none';
+				}
+
+				if (towerToSellUpgrade.towerUpgradeType) {
+
+					const upgradeTemplate = Towers.getTowerByType(towerToSellUpgrade.towerUpgradeType);
+					if (upgradeTemplate === undefined)
+						throw new Error("Buttons were not found");
+
+					if (this.isEnoughMoneyForPurchase(upgradeTemplate.price)) {
+
+						const upgradeTowerEvent = (e: MouseEvent) => {
+							this.upgradeTower(towerToSellUpgrade, upgradeTemplate);
+							this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins - towerToSellUpgrade.towerPrice;
+							sellButton.removeEventListener('click', upgradeTowerEvent, false)
+						}
+
+						this.upgradeTowerEvent = upgradeTowerEvent;
+						upgradeButton.addEventListener("click", upgradeTowerEvent, false);
+					}
+				}
+
+				this.sellTowerEvent = sellTower;
+				sellButton.addEventListener("click", sellTower, false);
+
+				function setUpgradeSellMenuAroundTowerSelected(selectedTower: Tower, menu: HTMLDivElement) {
+					menu.style.left = selectedTower.positionX + 'px';
+					menu.style.top = selectedTower.positionY - 20 + 'px';
+					menu.style.display = 'flex'
+				}
+			}
+		}
+	}
+
+
 	private registerOnCanvasClick() {
 		const clickEvenHandler = (e: MouseEvent) => {
-			const clickIndexY = this.currentMap.getClickedMapIndexY(e.clientY);
-			const clickIndexX = this.currentMap.getClickedMapIndexX(e.clientX);
-			const tileStartXCoordinate = clickIndexX * this.currentMap.tileWidth;
-			const tileStartYCoordinate = clickIndexY * this.currentMap.tileHeight;
-
+			const coordinates = getMapCoordinatesByMouseClick(e, this.currentMap);
 			if (this.currentMap.pickedMenuItem === null) {
-				if (this.isPlatformWithTower(clickIndexX, clickIndexY, tileStartXCoordinate, tileStartYCoordinate)) {
-					console.log('hello')
-				}
+				this.clearEventsOnSellUpdateElementButtons();
+				this.handleTowerSellUpdate(coordinates);
 				return;
 			}
 
-
-			if (this.isEnoughMoney() === false)
+			if (this.isEnoughMoneyForPurchase(Towers.getTowerPriceByType(this.currentMap.pickedMenuItem.type)) === false)
 				return;
 
 			if (Towers.isPlatform(this.currentMap.pickedMenuItem.type)) {
-				if (this.currentMap.canBuildOnTile(clickIndexX, clickIndexY) && this.isPlatformBuildOnTile(tileStartXCoordinate, tileStartYCoordinate) === false) {
+				if (this.currentMap.canBuildOnTile(coordinates.clickIndexX, coordinates.clickIndexY) &&
+					this.isPlatformBuildOnTile(coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate) === false) {
 					this.payPriceForNewItem();
-					const platform = this.getTowerFromTemplate(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate);
+					const platform = this.getTowerFromTemplate(this.currentMap.pickedMenuItem,
+						coordinates.tileStartXCoordinate,
+						coordinates.tileStartYCoordinate);
 					this.addPlatform(platform);
 				}
 				return;
 			}
 
-			if (this.isPlatformWithoutTower(clickIndexX, clickIndexY, tileStartXCoordinate, tileStartYCoordinate)) {
+			if (this.isPlatformWithoutTower(coordinates.clickIndexX, coordinates.clickIndexY, coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate)) {
 				this.payPriceForNewItem();
-				const tower = this.getTowerFromTemplate(this.currentMap.pickedMenuItem, tileStartXCoordinate, tileStartYCoordinate);
+				const tower = this.getTowerFromTemplate(this.currentMap.pickedMenuItem, coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate);
 				this.addTower(tower);
 			}
 		}
-
+		function getMapCoordinatesByMouseClick(e: MouseEvent, currentMap: MapConfigurator) {
+			const clickIndexY = currentMap.getClickedMapIndexY(e.clientY);
+			const clickIndexX = currentMap.getClickedMapIndexX(e.clientX);
+			const tileStartXCoordinate = clickIndexX * currentMap.tileWidth;
+			const tileStartYCoordinate = clickIndexY * currentMap.tileHeight;
+			return {
+				clickIndexX,
+				clickIndexY,
+				tileStartXCoordinate,
+				tileStartYCoordinate,
+			}
+		}
 		this.addMouseClickEventHandler(clickEvenHandler)
 	}
+
+	private clearEventsOnSellUpdateElementButtons() {
+		const sellButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
+		const upgradeButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
+		if (this.sellTowerEvent)
+			sellButton.removeEventListener('click', this.sellTowerEvent, false)
+		if (this.upgradeTowerEvent)
+			upgradeButton.removeEventListener('click', this.upgradeTowerEvent, false)
+	}
+
 
 	addTower(tower: Tower) {
 		this.towersList.push(tower);
@@ -224,6 +309,17 @@ export default class GameConfigurator extends Configurator {
 		}
 
 		return new Tower(towerInitializer, this.canvasAccessor);
+	}
+
+	removeTower(towerId: number) {
+		this.towersList.splice(this.towersList.findIndex(tower => tower.towerId === towerId), 1);
+	}
+
+	upgradeTower(towerToUpgrade: Tower, upgradeTemplate: ITowerInitializer) {
+		const upgradedTower = this.getTowerFromTemplate(upgradeTemplate, towerToUpgrade.positionX, towerToUpgrade.positionY);
+		console.log(upgradedTower)
+		this.addTower(upgradedTower);
+		this.removeTower(towerToUpgrade.towerId);
 	}
 
 	private removeTargetForTowers(target: Enemy) {
@@ -270,6 +366,10 @@ export default class GameConfigurator extends Configurator {
 		return this.towersList.find(platform => platform.positionX == tileStartXCoordinate && platform.positionY == tileStartYCoordinate) !== undefined;
 	}
 
+	private getTowerBuildOnTile(tileStartXCoordinate: number, tileStartYCoordinate: number) {
+		return this.towersList.find(platform => platform.positionX == tileStartXCoordinate && platform.positionY == tileStartYCoordinate);
+	}
+
 	private payPriceForNewItem() {
 		if (this.isUserStatsProxyNull(this.userStatsProxy))
 			throw new Error('User stats proxy is null');
@@ -285,20 +385,12 @@ export default class GameConfigurator extends Configurator {
 		return this.platformList.find(platform => platform.positionX == tileStartXCoordinate && platform.positionY == tileStartYCoordinate) !== undefined;
 	}
 
-	private isEnoughMoney() {
+	private isEnoughMoneyForPurchase(purchasePrice: number) {
 		if (this.isUserStatsProxyNull(this.userStatsProxy))
 			throw new Error('User stats proxy is null');
 
-		if (this.isPickedMenuItemNull(this.currentMap.pickedMenuItem))
-			throw new Error('PickedMenuItem is null');
-
-		if (isEnoughtToBuyPicked(this.userStatsProxy.userCoins, this.currentMap.pickedMenuItem.type))
-			return true;
-
-		function isEnoughtToBuyPicked(currentBalance: number, pickedItemType: TowerType) {
-			return (currentBalance - Towers.getTowerPriceByType(pickedItemType)) >= 0;
-		}
-		return false;
+		const currentBalance = this.userStatsProxy.userCoins;
+		return currentBalance - purchasePrice >= 0;
 	}
 
 	private isUserStatsProxyNull(proxy: IUserStats | null): proxy is null {

@@ -228,11 +228,11 @@ export default class MapConfigurator extends Configurator {
 				const gameMenuItemPrice = document.createElement('div');
 				gameMenuItemPrice.classList.add('game__menu-item-price');
 				const coinIconElement = document.createElement('i');
-				const priceHolderElemnt = document.createElement('span');
+				const priceHolderElement = document.createElement('span');
 				coinIconElement.classList.add(...['fa-solid', 'fa-coins']);
-				priceHolderElemnt.innerText = price.toString();
+				priceHolderElement.innerText = price.toString();
 
-				gameMenuItemPrice.appendChild(priceHolderElemnt)
+				gameMenuItemPrice.appendChild(priceHolderElement)
 				gameMenuItemPrice.appendChild(coinIconElement)
 
 				return gameMenuItemPrice;

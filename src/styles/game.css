@@ -8,6 +8,34 @@ html {
 	overflow-y: hidden;
 }
 
+#game__update-tower-menu {
+	display: none;
+	width: 128px;
+	position: absolute;
+	justify-content: space-between;
+	margin-bottom: 30px;
+}
+
+#game__update-tower-menu button {
+	border-radius: 50px;
+	background: rgb(192 50 50 / 48%);
+	height: 40px;
+	width: 40px;
+}
+
+#game__update-tower-menu button:nth-child(1) i {
+	color: #75e075;
+}
+
+#game__update-tower-menu button:nth-child(2) i {
+	color: red;
+}
+
+
+#game__update-tower-menu i {
+	font-size: 30px;
+}
+
 @keyframes slidein {
 	0% {
 		transform: scale(1);

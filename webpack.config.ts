@@ -51,9 +51,10 @@ const webpackConfiguration: Configuration = {
 		clean: true,
 		filename: '[name].js',
 		path: resolve(__dirname, 'dist'),
+		assetModuleFilename: 'assets/[hash][ext][query]'
 	},
 	resolve: {
-		extensions: ['.ts', '.js', '.png'],
+		extensions: ['.ts', '.js', '.png', '.wav', '.mp3'],
 		alias: {
 			'@': path.resolve(__dirname, 'src'),
 			'~': path.resolve(__dirname, 'src/assets/sprites'),

@@ -32,7 +32,8 @@ export class Tower {
 			this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 		}
 		this.audio = new Audio(towerInitializer.fireAudio);
-
+		this.audio.volume = 0.4;
+		this.upgradeType = towerInitializer.upgradeType;
 	}
 	private audio: HTMLAudioElement | undefined;
 
@@ -50,7 +51,7 @@ export class Tower {
 	private attackRadius: number;
 	private price: number;
 	private name: string;
-
+	private upgradeType?: TowerType;
 	public currentFrameChangeValue: number = 0;
 	public currentSpriteFrame: number = 0;
 	public attackTarget: Enemy | null = null;
@@ -59,6 +60,17 @@ export class Tower {
 	public sprite: Sprite;
 	public readonly towerId: number;
 
+	get towerPrice() {
+		return this.price;
+	}
+
+	get towerType() {
+		return this.type;
+	}
+
+	get towerUpgradeType() {
+		return this.upgradeType;
+	}
 
 	update() {
 
@@ -211,4 +223,5 @@ export interface ITowerInitializer {
 	price: number;
 	name: string;
 	sprite: Sprite;
+	upgradeType?: TowerType;
 }

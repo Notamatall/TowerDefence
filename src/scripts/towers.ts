@@ -33,6 +33,7 @@ class TowerTemplates {
 				itemImageSrc: ImagePath.singleBarrelCannon,
 				fireAudio: singleBarrelFire,
 				price: 200,
+				upgradeType: 'doubleBarrelCannon',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Single barrel cannon'
 			},
@@ -44,6 +45,7 @@ class TowerTemplates {
 				attackRadius: 190,
 				itemImageSrc: ImagePath.doubleBarrelCannon,
 				fireAudio: doubleBarrelFire,
+				upgradeType: 'doubleBarrelCannonPlus',
 				price: 350,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Double barrel cannon'
@@ -56,6 +58,7 @@ class TowerTemplates {
 				attackRadius: 210,
 				itemImageSrc: ImagePath.doubleBarrelCannonPlus,
 				fireAudio: doubleBarrelFire,
+				upgradeType: 'tripleBarrelCannon',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Double barrel cannon +'
@@ -80,6 +83,7 @@ class TowerTemplates {
 				attackRadius: 240,
 				itemImageSrc: ImagePath.simpleLaserCannon,
 				fireAudio: smallLaser,
+				upgradeType: 'advancedLaserCannon',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 300,
 				name: 'Simple laser cannon'
@@ -92,6 +96,7 @@ class TowerTemplates {
 				attackRadius: 250,
 				itemImageSrc: ImagePath.advancedLaserCannon,
 				fireAudio: advancedLaser,
+				upgradeType: 'supremeLaserCannon',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Advanced laser cannon'
@@ -104,6 +109,7 @@ class TowerTemplates {
 				attackRadius: 270,
 				itemImageSrc: ImagePath.supremeLaserCannon,
 				fireAudio: supremeLaser,
+				upgradeType: 'supremeLaserCannonPlus',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 780,
 				name: 'Supreme laser cannon'
@@ -137,28 +143,6 @@ class TowerTemplates {
 			}
 			return keysImages;
 		}
-
-		// function checkAudioLoaded(initializedTowers: DefaultTowerType) {
-		// 	const audioPromises: Promise<HTMLAudioElement>[] = []
-		// 	for (const key in initializedTowers) {
-		// 		const tower: ITower = defaultTowers[key];
-		// 		if (tower.fireAudio) {
-		// 			tower.fireAudio.load();
-		// 			//	audioPromises.push(waitForAudioToLoad(tower.fireAudio));
-		// 		}
-		// 	}
-
-		// 	function waitForAudioToLoad(audio: HTMLAudioElement): Promise<HTMLAudioElement> {
-		// 		return new Promise((
-		// 			resolve: (value: HTMLAudioElement) => void,
-		// 			reject: (message: string) => void
-		// 		) => {
-		// 			audio.onload = () => resolve(audio);
-		// 			audio.onerror = () => reject(`audio load was not successful`);
-		// 		})
-		// 	}
-		// 	return audioPromises;
-		// }
 
 		function assignLoadedImages(loadedImages: IImageAsset<TowerType>[], initializedTowers: DefaultTowerType) {
 			for (const imageAsset of loadedImages)
