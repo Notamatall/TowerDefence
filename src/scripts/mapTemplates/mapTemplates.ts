@@ -1,4 +1,5 @@
 import { IUserStats } from "@/types";
+import { EnemyType } from "@/types/enemyTypes";
 import { TowerType } from "@/types/towersTypes";
 function c(index, angle?: number, dirX?: number, dirY?: number, order?: number): IMapTemplateCell {
 	return { index: index, angle: angle, dirX: dirX, dirY: dirY, order: order }
@@ -24,9 +25,11 @@ export const firstLevelTemplate: IMapTemplateCell[][] = [
 	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
 ];
 
-export const firstLevelMenu: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'supremeLaserCannonPlus', 'supremeLaserCannon', 'tripleBarrelCannon']
+export const firstLevelMenu: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon']
 
 export const firstLevelUserStats: IUserStats = {
 	userHP: 15,
-	userCoins: 800
+	userCoins: 5000
 }
+
+export const mostersLevelOne: EnemyType[] = ['jinn', 'lizard', 'smallDragon', 'medusa']

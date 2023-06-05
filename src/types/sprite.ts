@@ -10,9 +10,11 @@ export default class Sprite {
 		this.image = spriteInfo.image ? spriteInfo.image : new Image();
 		this.uniqueXCorrelation = spriteInfo.uniqueXCorrelation ? spriteInfo.uniqueXCorrelation : 0;
 		this.uniqueYCorrelation = spriteInfo.uniqueYCorrelation ? spriteInfo.uniqueYCorrelation : 0;
+		this.hpBarYCorrelation = spriteInfo.hpBarYCorrelation ? spriteInfo.hpBarYCorrelation : 0;
+		this.hpBarXCorrelation = spriteInfo.hpBarXCorrelation ? spriteInfo.hpBarXCorrelation : 0;
+		this.uniqueYCorrelation = spriteInfo.uniqueYCorrelation ? spriteInfo.uniqueYCorrelation : 0;
 		this.rotated = spriteInfo.rotated ? spriteInfo.rotated : false;
 	}
-
 
 	readonly displayX: number;
 	readonly displayY: number;
@@ -23,6 +25,8 @@ export default class Sprite {
 	readonly yFramesStart: number;
 	readonly uniqueXCorrelation: number;
 	readonly uniqueYCorrelation: number;
+	readonly hpBarYCorrelation: number;
+	readonly hpBarXCorrelation: number;
 	readonly rotated: boolean;
 	image: HTMLImageElement;
 }
@@ -33,6 +37,8 @@ export interface ISpriteInitializer {
 	yFramesStart: number;
 	uniqueXCorrelation?: number;
 	uniqueYCorrelation?: number;
+	hpBarXCorrelation?: number;
+	hpBarYCorrelation?: number;
 	framesAmount: number;
 	pxHeight: number;
 	pxWidth: number;

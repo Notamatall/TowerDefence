@@ -5,7 +5,7 @@ import GameConfigurator from './gameConfigurator';
 import MapConfigurator from './mapConfigurator';
 import { ImagePath } from '@/types/imagePath';
 import { firstLevelMenu, firstLevelTemplate, firstLevelUserStats } from './mapTemplates/mapTemplates';
-import myAudioResource from '@/audio/fateOfGalaxy.mp3';
+import myAudioResource from '@/audio/strangerThings.mp3';
 
 const app = new CanvasBuilder({
 	width: screen.width,
@@ -39,17 +39,9 @@ document.body.appendChild(background);
 background.muted = true;
 
 const button: HTMLButtonElement = document.getElementById('game__background-audio-btn') as HTMLButtonElement;
-console.log(button)
 
 button.addEventListener('click', () => {
 	console.log('here')
 	background.muted = false;
 	background.play();
 })
-
-
-
-
-// document.onkeydown = (e) => {
-// 	if (e.code == 'Escape')
-// }

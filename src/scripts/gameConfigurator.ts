@@ -26,13 +26,18 @@ export default class GameConfigurator extends Configurator {
 		await this.currentMap.configureMap();
 		this.registerUserStatsProxy(this.currentMap);
 		this.registerOnCanvasClick();
-
+		this.registerEscape();
 		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, - 256 * index, 128), this.canvasAccessor));
-
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -2000 - 256 * index, 128), this.canvasAccessor));
 		}
 
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -1000 - 256 * index, 128), this.canvasAccessor));
+		}
+
+		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, -128, 128), this.canvasAccessor));
+		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
+		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, -128, 128), this.canvasAccessor));
 
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -256, 128), this.canvasAccessor));
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -512, 128), this.canvasAccessor));
@@ -45,6 +50,9 @@ export default class GameConfigurator extends Configurator {
 		this.animate();
 	}
 
+	private configureEnemiesByLevel() {
+		// mostersLevelOne
+	}
 
 	private createEnemy(enemyInitializer: IEnemyInitializer, positionX: number, positionY: number) {
 		let lastEnemyId = 0;
@@ -101,6 +109,13 @@ export default class GameConfigurator extends Configurator {
 		this.userStatsProxy.userHP = currentMap.defaultUserStats.userHP;
 	}
 
+	private registerEscape() {
+		window.addEventListener('keydown', (e) => {
+			if (e.code === 'Escape') {
+				this.currentMap.pickedMenuItem = null;
+			}
+		})
+	}
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
@@ -156,8 +171,13 @@ export default class GameConfigurator extends Configurator {
 			const tileStartXCoordinate = clickIndexX * this.currentMap.tileWidth;
 			const tileStartYCoordinate = clickIndexY * this.currentMap.tileHeight;
 
-			if (this.currentMap.pickedMenuItem === null)
+			if (this.currentMap.pickedMenuItem === null) {
+				if (this.isPlatformWithTower(clickIndexX, clickIndexY, tileStartXCoordinate, tileStartYCoordinate)) {
+					console.log('hello')
+				}
 				return;
+			}
+
 
 			if (this.isEnoughMoney() === false)
 				return;
@@ -238,6 +258,12 @@ export default class GameConfigurator extends Configurator {
 		return this.currentMap.canBuildOnTile(clickIndexX, clickIndexY)
 			&& this.isPlatformBuildOnTile(tileStartXCoordinate, tileStartYCoordinate)
 			&& !this.isTowerBuildOnTile(tileStartXCoordinate, tileStartYCoordinate);
+	}
+
+	private isPlatformWithTower(clickIndexX: number, clickIndexY: number, tileStartXCoordinate: number, tileStartYCoordinate: number) {
+		return this.currentMap.canBuildOnTile(clickIndexX, clickIndexY)
+			&& this.isPlatformBuildOnTile(tileStartXCoordinate, tileStartYCoordinate)
+			&& this.isTowerBuildOnTile(tileStartXCoordinate, tileStartYCoordinate);
 	}
 
 	private isTowerBuildOnTile(tileStartXCoordinate: number, tileStartYCoordinate: number) {

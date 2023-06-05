@@ -31,7 +31,7 @@ export class Tower {
 			this.towerCircleRadius = new Path2D();
 			this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 		}
-		this.audio = towerInitializer.fireAudio;
+		this.audio = new Audio(towerInitializer.fireAudio);
 
 	}
 	private audio: HTMLAudioElement | undefined;
@@ -202,7 +202,7 @@ export interface ITower extends ITowerInitializer {
 
 export interface ITowerInitializer {
 	type: TowerType;
-	fireAudio?: HTMLAudioElement;
+	fireAudio?: string;
 	framesAmount?: number;
 	frameRate?: number;
 	attackDamage?: number;

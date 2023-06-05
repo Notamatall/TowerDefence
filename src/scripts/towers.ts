@@ -3,7 +3,14 @@ import { ImagePath } from "@/types/imagePath";
 import Sprite from "@/types/sprite";
 import { DefaultTowerType, ITower, ITowerInitializer, TowerType } from "@/types/towersTypes";
 import Utilities, { KeyImageType } from "@/utilities/utilities";
-import plasmaGunFire from '@/audio/plasma_gun_05.mp3'
+
+import singleBarrelFire from '@/audio/shot-dry-strong_F_minor.wav'
+import doubleBarrelFire from '@/audio/doubleBarrel.wav'
+import smallLaser from '@/audio/smallLaser.wav'
+import advancedLaser from '@/audio/advancedLaser.wav'
+import supremeLaser from '@/audio/supremeLaser.wav'
+import supremeLaserPlus from '@/audio/supremeLaserPlus.wav'
+import multiBarrelFire from '@/audio/multiBarrelFire.wav'
 
 class TowerTemplates {
 
@@ -20,11 +27,11 @@ class TowerTemplates {
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
 				framesAmount: 8,
-				frameRate: 5,
+				frameRate: 7,
 				attackDamage: 30,
 				attackRadius: 180,
 				itemImageSrc: ImagePath.singleBarrelCannon,
-				fireAudio: new Audio(plasmaGunFire),
+				fireAudio: singleBarrelFire,
 				price: 200,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Single barrel cannon'
@@ -32,10 +39,11 @@ class TowerTemplates {
 			doubleBarrelCannon: {
 				type: 'doubleBarrelCannon',
 				framesAmount: 8,
-				frameRate: 5,
+				frameRate: 6,
 				attackDamage: 50,
 				attackRadius: 190,
 				itemImageSrc: ImagePath.doubleBarrelCannon,
+				fireAudio: doubleBarrelFire,
 				price: 350,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Double barrel cannon'
@@ -47,6 +55,7 @@ class TowerTemplates {
 				attackDamage: 70,
 				attackRadius: 210,
 				itemImageSrc: ImagePath.doubleBarrelCannonPlus,
+				fireAudio: doubleBarrelFire,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Double barrel cannon +'
@@ -58,6 +67,7 @@ class TowerTemplates {
 				attackDamage: 100,
 				attackRadius: 210,
 				itemImageSrc: ImagePath.tripleBarrelCannon,
+				fireAudio: multiBarrelFire,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 750,
 				name: 'Triple barrel cannon'
@@ -69,6 +79,7 @@ class TowerTemplates {
 				attackDamage: 45,
 				attackRadius: 240,
 				itemImageSrc: ImagePath.simpleLaserCannon,
+				fireAudio: smallLaser,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 300,
 				name: 'Simple laser cannon'
@@ -80,6 +91,7 @@ class TowerTemplates {
 				attackDamage: 65,
 				attackRadius: 250,
 				itemImageSrc: ImagePath.advancedLaserCannon,
+				fireAudio: advancedLaser,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,
 				name: 'Advanced laser cannon'
@@ -91,6 +103,7 @@ class TowerTemplates {
 				attackDamage: 100,
 				attackRadius: 270,
 				itemImageSrc: ImagePath.supremeLaserCannon,
+				fireAudio: supremeLaser,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 780,
 				name: 'Supreme laser cannon'
@@ -102,6 +115,7 @@ class TowerTemplates {
 				attackDamage: 140,
 				attackRadius: 270,
 				itemImageSrc: ImagePath.supremeLaserCannonPlus,
+				fireAudio: supremeLaserPlus,
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 11, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 1000,
 				name: 'Supreme laser cannon +'
@@ -124,27 +138,27 @@ class TowerTemplates {
 			return keysImages;
 		}
 
-		function checkAudioLoaded(initializedTowers: DefaultTowerType) {
-			const audioPromises: Promise<HTMLAudioElement>[] = []
-			for (const key in initializedTowers) {
-				const tower: ITower = defaultTowers[key];
-				if (tower.fireAudio) {
-					tower.fireAudio.load();
-					//	audioPromises.push(waitForAudioToLoad(tower.fireAudio));
-				}
-			}
+		// function checkAudioLoaded(initializedTowers: DefaultTowerType) {
+		// 	const audioPromises: Promise<HTMLAudioElement>[] = []
+		// 	for (const key in initializedTowers) {
+		// 		const tower: ITower = defaultTowers[key];
+		// 		if (tower.fireAudio) {
+		// 			tower.fireAudio.load();
+		// 			//	audioPromises.push(waitForAudioToLoad(tower.fireAudio));
+		// 		}
+		// 	}
 
-			function waitForAudioToLoad(audio: HTMLAudioElement): Promise<HTMLAudioElement> {
-				return new Promise((
-					resolve: (value: HTMLAudioElement) => void,
-					reject: (message: string) => void
-				) => {
-					audio.onload = () => resolve(audio);
-					audio.onerror = () => reject(`audio load was not successful`);
-				})
-			}
-			return audioPromises;
-		}
+		// 	function waitForAudioToLoad(audio: HTMLAudioElement): Promise<HTMLAudioElement> {
+		// 		return new Promise((
+		// 			resolve: (value: HTMLAudioElement) => void,
+		// 			reject: (message: string) => void
+		// 		) => {
+		// 			audio.onload = () => resolve(audio);
+		// 			audio.onerror = () => reject(`audio load was not successful`);
+		// 		})
+		// 	}
+		// 	return audioPromises;
+		// }
 
 		function assignLoadedImages(loadedImages: IImageAsset<TowerType>[], initializedTowers: DefaultTowerType) {
 			for (const imageAsset of loadedImages)

@@ -20,6 +20,7 @@ export default class Enemy {
 		this.damageOnPass = enemyInitializer.damageOnPass;
 		this.positionX = enemyInitializer.positionX;
 		this.positionY = enemyInitializer.positionY;
+
 		this.name = enemyInitializer.name;
 		this.innerType = enemyInitializer.type;
 		this.imageCenter = {
@@ -53,7 +54,7 @@ export default class Enemy {
 	public readonly deathReward: number;
 	private damageOnPass: number;
 
-	private healthBarHeight = 5;
+	private healthBarHeight = 6;
 	private healthBarWidth = 64;
 
 	public imageCenter: IImageCenter;
@@ -165,7 +166,6 @@ export default class Enemy {
 		}
 
 		function getVectorToTurnPosition(this: Enemy) {
-
 			const rangeToTurnX = this.imageCenter.centerX - this.turnPositions[0].xTurnStart;
 			const rangeToTurnY = this.imageCenter.centerY - this.turnPositions[0].yTurnStart;
 			//console.log(rangeToTurnX, rangeToTurnY)
@@ -194,14 +194,13 @@ export default class Enemy {
 	}
 
 	drawHp() {
-		this.context.fillStyle = '#c31010df';
 		const percentage = this.currentHp / this.totalHP;
 		if (percentage < 0)
 			return;
-		// ctx.fillRect(this.center.x, this.center.y - 500, 2, 1000);
-		// ctx.fillRect(this.center.x - 500, this.center.y, 1000, 2);
-		this.context.fillRect(this.imageCenter.centerX,
-			this.imageCenter.centerY - this.sprite.pxHeight / 2,
+
+		this.context.fillStyle = '#c31010df';
+		this.context.fillRect(this.positionX + this.sprite.pxWidth / 2 - this.sprite.hpBarXCorrelation,
+			this.positionY + this.sprite.pxHeight / 2 - this.sprite.hpBarYCorrelation,
 			this.healthBarWidth * percentage,
 			this.healthBarHeight);
 	}

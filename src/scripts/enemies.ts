@@ -14,11 +14,16 @@ class EnemiesTemplates {
 				type: 'demon',
 				frameChangeRate: 10,
 				moveSpeed: 1,
-				totalHP: 500,
+				totalHP: 900,
 				deathReward: 75,
 				damageOnPass: 5,
 				enemyImgSrc: ImagePath.demonMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256, pxWidth: 256, dispayX: 256, dispayY: 256, uniqueXCorrelation: -40, uniqueYCorrelation: 20 })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256,
+					pxWidth: 256, dispayX: 256, dispayY: 256, uniqueXCorrelation: -40, uniqueYCorrelation: 20,
+					hpBarXCorrelation: 65,
+					hpBarYCorrelation: 45
+				})
 			},
 			demonBoss: {
 				name: 'Demon boss',
@@ -29,7 +34,13 @@ class EnemiesTemplates {
 				deathReward: 400,
 				damageOnPass: 25,
 				enemyImgSrc: ImagePath.demonBoss,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 160, framesAmount: 12, pxWidth: 288, pxHeight: 160, dispayX: 288, dispayY: 160, uniqueYCorrelation: 60, rotated: true })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 160,
+					framesAmount: 12, pxWidth: 288, pxHeight: 160, dispayX: 288,
+					dispayY: 160, uniqueYCorrelation: 60, rotated: true,
+					hpBarXCorrelation: 25,
+					hpBarYCorrelation: 30
+				})
 			},
 			medusa: {
 				name: 'Medusa',
@@ -40,7 +51,13 @@ class EnemiesTemplates {
 				deathReward: 300,
 				damageOnPass: 20,
 				enemyImgSrc: ImagePath.medusaMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 4, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 })
+				sprite: new Sprite({
+					xFramesStart: 0,
+					yFramesStart: 0, framesAmount: 4, pxHeight: 128,
+					pxWidth: 128, dispayX: 128, dispayY: 128,
+					hpBarXCorrelation: 35,
+					hpBarYCorrelation: 50
+				})
 			},
 			smallDragon: {
 				name: 'Small dragon',
@@ -51,7 +68,12 @@ class EnemiesTemplates {
 				deathReward: 100,
 				damageOnPass: 10,
 				enemyImgSrc: ImagePath.smallDragonMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 4, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 0, framesAmount: 4,
+					pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128,
+					hpBarXCorrelation: 35,
+					hpBarYCorrelation: 35
+				})
 			},
 			dragon: {
 				name: 'Dragon boss',
@@ -62,7 +84,12 @@ class EnemiesTemplates {
 				deathReward: 200,
 				damageOnPass: 20,
 				enemyImgSrc: ImagePath.dragonMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 5, pxHeight: 256, pxWidth: 256, dispayX: 256, dispayY: 256, uniqueYCorrelation: 30 })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 0, framesAmount: 5, pxHeight: 256, pxWidth: 256,
+					dispayX: 256, dispayY: 256, uniqueYCorrelation: 30,
+					hpBarXCorrelation: 10,
+					hpBarYCorrelation: 25
+				})
 			},
 			jinn: {
 				name: 'Jinn ',
@@ -73,7 +100,12 @@ class EnemiesTemplates {
 				deathReward: 20,
 				damageOnPass: 3,
 				enemyImgSrc: ImagePath.jinnMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 4, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128, uniqueXCorrelation: -20 })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 0, framesAmount: 4, pxHeight: 128,
+					pxWidth: 128, dispayX: 128, dispayY: 128, uniqueXCorrelation: -20,
+					hpBarXCorrelation: 45,
+					hpBarYCorrelation: 50
+				})
 			},
 			lizard: {
 				name: 'Lizard',
@@ -84,7 +116,12 @@ class EnemiesTemplates {
 				deathReward: 60,
 				damageOnPass: 5,
 				enemyImgSrc: ImagePath.lizardMove,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256, pxWidth: 256, dispayX: 256, dispayY: 256, uniqueXCorrelation: -20 })
+				sprite: new Sprite({
+					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256, pxWidth: 256,
+					dispayX: 256, dispayY: 256, uniqueXCorrelation: -20,
+					hpBarXCorrelation: 40,
+					hpBarYCorrelation: 40
+				})
 			},
 		} as DefaultEnemyType;
 

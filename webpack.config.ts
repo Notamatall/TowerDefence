@@ -11,7 +11,7 @@ const webpackConfiguration: Configuration = {
 	module: {
 		rules: [
 			{
-				test: /\.(png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf|mp3|ico)$/i,
+				test: /\.(png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf|mp3|ico|wav)$/i,
 				type: 'asset/resource',
 			},
 			{
