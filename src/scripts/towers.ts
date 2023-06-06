@@ -57,7 +57,7 @@ class TowerTemplates {
 				attackDamage: 70,
 				attackRadius: 210,
 				itemImageSrc: ImagePath.doubleBarrelCannonPlus,
-				fireAudio: doubleBarrelFire,
+				fireAudio: multiBarrelFire,
 				upgradeType: 'tripleBarrelCannon',
 				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 500,

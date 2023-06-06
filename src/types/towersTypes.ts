@@ -32,10 +32,17 @@ export class Tower {
 			this.towerCircleRadius = new Path2D();
 			this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 		}
-		this.audio = new Audio(towerInitializer.fireAudio);
-		this.audio.volume = 0.4;
+		this.setAudio(towerInitializer.fireAudio);
 		this.upgradeType = towerInitializer.upgradeType;
 	}
+
+	private setAudio(audioSrc: string | undefined) {
+		if (this.audio)
+			this.audio.remove();
+		this.audio = new Audio(audioSrc);
+		this.audio.volume = 0.3;
+	}
+
 	private audio: HTMLAudioElement | undefined;
 
 	private towerCircleRadius?: Path2D;
@@ -85,13 +92,19 @@ export class Tower {
 		function hasTarget(this: Tower) {
 			return this.attackTarget != null
 		}
+
 	}
 
 	public upgrade() {
 		if (this.upgradeType) {
 			const upgradeTemplate = Towers.getTowerByType(this.upgradeType);
 			if (upgradeTemplate) {
-				_.merge(this, upgradeTemplate);
+				for (const key in upgradeTemplate) {
+					if (Object.prototype.hasOwnProperty.call(this, key)) {
+						this[key] = upgradeTemplate[key];
+					}
+				}
+				this.setAudio(upgradeTemplate.fireAudio)
 				this.upgradeType = upgradeTemplate.upgradeType;
 			}
 		}
@@ -187,7 +200,7 @@ export class Tower {
 
 	private playShotAudio() {
 		if (this.audio) {
-			this.audio.play().catch(e => e);
+			this.audio.play().catch(e => console.error(e));
 		}
 	}
 

@@ -6,9 +6,6 @@ import { Tower, ITower, TowerType, ITowerInitializer } from '@/types/towersTypes
 import Towers from './towers';
 import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
-import { update } from 'lodash';
-import { debug } from 'console';
-import Utilities from '@/utilities/utilities';
 
 
 export default class GameConfigurator extends Configurator {
@@ -136,6 +133,7 @@ export default class GameConfigurator extends Configurator {
 			}
 		})
 	}
+
 	private count = 0;
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
@@ -208,12 +206,8 @@ export default class GameConfigurator extends Configurator {
 
 				const newUpgradeTowerEvent = (e: MouseEvent) => {
 					if (towerToSellUpgrade.towerUpgradeType) {
-						console.log(towerToSellUpgrade.towerUpgradeType)
-						let upgradeTemplate = Towers.getTowerByType(towerToSellUpgrade!.towerUpgradeType);
-						if (upgradeTemplate === undefined)
-							throw new Error("Buttons were not found");
-
-						if (this.isEnoughMoneyForPurchase(upgradeTemplate!.price)) {
+						const price = Towers.getTowerPriceByType(towerToSellUpgrade.towerUpgradeType);
+						if (this.isEnoughMoneyForPurchase(price)) {
 							towerToSellUpgrade.upgrade();
 							this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins - towerToSellUpgrade.towerPrice;
 						}
