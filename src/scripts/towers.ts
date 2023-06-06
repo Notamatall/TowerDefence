@@ -4,7 +4,7 @@ import Sprite from "@/types/sprite";
 import { DefaultTowerType, ITower, ITowerInitializer, TowerType } from "@/types/towersTypes";
 import Utilities, { KeyImageType } from "@/utilities/utilities";
 
-import singleBarrelFire from '@/audio/shot-dry-strong_F_minor.wav'
+import singleBarrelFire from '@/audio/singleBarrelFire.wav'
 import doubleBarrelFire from '@/audio/doubleBarrel.wav'
 import smallLaser from '@/audio/smallLaser.wav'
 import advancedLaser from '@/audio/advancedLaser.wav'
@@ -27,7 +27,7 @@ class TowerTemplates {
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
 				framesAmount: 8,
-				frameRate: 7,
+				frameRate: 4,
 				attackDamage: 30,
 				attackRadius: 180,
 				itemImageSrc: ImagePath.singleBarrelCannon,

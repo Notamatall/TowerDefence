@@ -43,7 +43,11 @@ export default class GameConfigurator extends Configurator {
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -1000 - 256 * index, 128), this.canvasAccessor));
 		}
+		setInterval(() => {
 
+			console.log(this.count)
+			this.count = 0;
+		}, 1000)
 		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, -128, 128), this.canvasAccessor));
 		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, -128, 128), this.canvasAccessor));
@@ -132,11 +136,15 @@ export default class GameConfigurator extends Configurator {
 			}
 		})
 	}
+	private count = 0;
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
+
+		this.count++;
+
 		this.drawEnemies();
 		this.currentMap.tryDrawPickedMenuItem();
 	}
@@ -190,7 +198,6 @@ export default class GameConfigurator extends Configurator {
 				if (_.isNull(sellButton) || _.isNull(upgradeButton))
 					throw new Error("Buttons were not found");
 
-
 				const sellTower = (e: MouseEvent) => {
 					const sellingPercent = 0.75;
 					this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins + towerToSellUpgrade.towerPrice * sellingPercent;
@@ -199,24 +206,22 @@ export default class GameConfigurator extends Configurator {
 					this.towerSellUpgradeElement.style.display = 'none';
 				}
 
-				if (towerToSellUpgrade.towerUpgradeType) {
+				const newUpgradeTowerEvent = (e: MouseEvent) => {
+					if (towerToSellUpgrade.towerUpgradeType) {
+						console.log(towerToSellUpgrade.towerUpgradeType)
+						let upgradeTemplate = Towers.getTowerByType(towerToSellUpgrade!.towerUpgradeType);
+						if (upgradeTemplate === undefined)
+							throw new Error("Buttons were not found");
 
-					const upgradeTemplate = Towers.getTowerByType(towerToSellUpgrade.towerUpgradeType);
-					if (upgradeTemplate === undefined)
-						throw new Error("Buttons were not found");
-
-					if (this.isEnoughMoneyForPurchase(upgradeTemplate.price)) {
-
-						const upgradeTowerEvent = (e: MouseEvent) => {
-							this.upgradeTower(towerToSellUpgrade, upgradeTemplate);
+						if (this.isEnoughMoneyForPurchase(upgradeTemplate!.price)) {
+							towerToSellUpgrade.upgrade();
 							this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins - towerToSellUpgrade.towerPrice;
-							sellButton.removeEventListener('click', upgradeTowerEvent, false)
 						}
-
-						this.upgradeTowerEvent = upgradeTowerEvent;
-						upgradeButton.addEventListener("click", upgradeTowerEvent, false);
 					}
 				}
+
+				this.upgradeTowerEvent = newUpgradeTowerEvent;
+				upgradeButton.addEventListener("click", newUpgradeTowerEvent, false);
 
 				this.sellTowerEvent = sellTower;
 				sellButton.addEventListener("click", sellTower, false);
@@ -234,12 +239,12 @@ export default class GameConfigurator extends Configurator {
 	private registerOnCanvasClick() {
 		const clickEvenHandler = (e: MouseEvent) => {
 			const coordinates = getMapCoordinatesByMouseClick(e, this.currentMap);
+			this.clearSellUpgradeEvents();
+			this.closeSellUpgradeMenu();
 			if (this.currentMap.pickedMenuItem === null) {
-				this.clearEventsOnSellUpdateElementButtons();
 				this.handleTowerSellUpdate(coordinates);
 				return;
 			}
-
 			if (this.isEnoughMoneyForPurchase(Towers.getTowerPriceByType(this.currentMap.pickedMenuItem.type)) === false)
 				return;
 
@@ -275,14 +280,49 @@ export default class GameConfigurator extends Configurator {
 		}
 		this.addMouseClickEventHandler(clickEvenHandler)
 	}
-
-	private clearEventsOnSellUpdateElementButtons() {
-		const sellButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
+	listAllEventListeners() {
 		const upgradeButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
-		if (this.sellTowerEvent)
-			sellButton.removeEventListener('click', this.sellTowerEvent, false)
+		const allElements = Array.prototype.slice.call(upgradeButton)
+
+
+		const types: any[] = [];
+
+		for (let ev in window) {
+
+			if (/^on/.test(ev)) types[types.length] = ev;
+		}
+
+		let elements: any[] = [];
+		for (let i = 0; i < allElements.length; i++) {
+			const currentElement = allElements[i];
+			for (let j = 0; j < types.length; j++) {
+				if (typeof currentElement[types[j]] === 'function') {
+					elements.push({
+						"node": currentElement,
+						"type": types[j],
+						"func": currentElement[types[j]].toString(),
+					});
+				}
+			}
+		}
+
+		return elements.sort(function (a, b) {
+			return a.type.localeCompare(b.type);
+		});
+	}
+
+	private clearSellUpgradeEvents() {
+		const sellButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
+		const upgradeButton = this.towerSellUpgradeElement.lastElementChild as HTMLButtonElement;
 		if (this.upgradeTowerEvent)
-			upgradeButton.removeEventListener('click', this.upgradeTowerEvent, false)
+			upgradeButton.removeEventListener('click', this.upgradeTowerEvent, false);
+
+		if (this.sellTowerEvent)
+			sellButton.removeEventListener('click', this.sellTowerEvent, false);
+	}
+
+	private closeSellUpgradeMenu() {
+		this.towerSellUpgradeElement.style.display = 'none';
 	}
 
 
@@ -317,7 +357,6 @@ export default class GameConfigurator extends Configurator {
 
 	upgradeTower(towerToUpgrade: Tower, upgradeTemplate: ITowerInitializer) {
 		const upgradedTower = this.getTowerFromTemplate(upgradeTemplate, towerToUpgrade.positionX, towerToUpgrade.positionY);
-		console.log(upgradedTower)
 		this.addTower(upgradedTower);
 		this.removeTower(towerToUpgrade.towerId);
 	}

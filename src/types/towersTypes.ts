@@ -2,6 +2,7 @@ import { CanvasBuilder } from "@/scripts/canvasBuilder";
 import Enemy, { IImageCenter } from "./enemyTypes";
 import Sprite from "./sprite";
 import Utilities from "@/utilities/utilities";
+import Towers from "@/scripts/towers";
 
 
 export class Tower {
@@ -86,6 +87,16 @@ export class Tower {
 		}
 	}
 
+	public upgrade() {
+		if (this.upgradeType) {
+			const upgradeTemplate = Towers.getTowerByType(this.upgradeType);
+			if (upgradeTemplate) {
+				_.merge(this, upgradeTemplate);
+				this.upgradeType = upgradeTemplate.upgradeType;
+			}
+		}
+	}
+
 	private drawTower() {
 		const spriteStartAngle = 90;
 		const sprite = this.sprite;
@@ -106,7 +117,7 @@ export class Tower {
 
 	}
 
-	searchAttackTarget() {
+	private searchAttackTarget() {
 		const target = this.getAttackTargetInRadius(this.towerCircleRadius!)
 		if (target) {
 			this.attackTarget = target;
@@ -115,7 +126,7 @@ export class Tower {
 		}
 	}
 
-	attack() {
+	private attack() {
 		if (isInAttackRadius.call(this) === false) {
 			this.attackTarget = null;
 			this.currentSpriteFrame = 0;
@@ -136,7 +147,7 @@ export class Tower {
 		return this.tryRestartAnimation();
 	}
 
-	tryRestartAnimation() {
+	private tryRestartAnimation() {
 		if (this.currentSpriteFrame == this.framesAmount) {
 			this.currentSpriteFrame = 0;
 			return true;
@@ -144,7 +155,7 @@ export class Tower {
 		return false;
 	}
 
-	tryChangeAnimationFrame() {
+	private tryChangeAnimationFrame() {
 		this.currentFrameChangeValue++;
 		if (isTimeToChangeFrame.call(this)) {
 			this.currentSpriteFrame++;
@@ -174,15 +185,13 @@ export class Tower {
 		}
 	}
 
-	playShotAudio() {
+	private playShotAudio() {
 		if (this.audio) {
-			//	this.audio.load()
-			//this.audio.pause();
 			this.audio.play().catch(e => e);
 		}
 	}
 
-	onEnemyKilled() {
+	private onEnemyKilled() {
 		if (this.attackTarget === null)
 			throw new Error('Attack target is null - cannot be possible');
 		this.removeTargetForTowers(this.attackTarget);
