@@ -47,6 +47,6 @@ export class ImagePath {
 	static plasma = plasma;
 	static blueRing = blueRing;
 	static bigFireExplosion = bigFireExplosion;
-	static bigRingExplosion33 = bigRingExplosion;
+	static bigRingExplosion = bigRingExplosion;
 	static hugeExplosion = hugeExplosion;
 }

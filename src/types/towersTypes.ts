@@ -1,6 +1,6 @@
 import { CanvasBuilder } from "@/scripts/canvasBuilder";
 import Enemy, { IImageCenter } from "./enemyTypes";
-import Sprite from "./sprite";
+import Sprite, { SpriteKeys } from "./sprite";
 import Utilities from "@/utilities/utilities";
 import Towers from "@/scripts/towers";
 import { ImagePath } from "./imagePath";
@@ -35,9 +35,8 @@ export class Tower {
 		}
 		this.setAudio(towerInitializer.fireAudio);
 		this.upgradeType = towerInitializer.upgradeType;
-		this.explosionSprite = new Image();
-		this.explosionSprite.src = ImagePath.bigRingExplosion33;
-
+		this.attackSprite = towerInitializer.attackSprite;
+		console.log(this.attackSprite)
 	}
 
 	private setAudio(audioSrc: string | undefined) {
@@ -50,7 +49,8 @@ export class Tower {
 		drawExplosion: () => void,
 		tryRemoveAnimation: () => void,
 	}[] = [];
-	private explosionSprite: HTMLImageElement;
+
+	private attackSprite?: Sprite;
 	private audio: HTMLAudioElement | undefined;
 
 	private towerCircleRadius?: Path2D;
@@ -121,6 +121,7 @@ export class Tower {
 				}
 				this.setAudio(upgradeTemplate.fireAudio)
 				this.upgradeType = upgradeTemplate.upgradeType;
+				this.attackSprite = upgradeTemplate.attackSprite;
 			}
 		}
 	}
@@ -136,11 +137,11 @@ export class Tower {
 			this.imageCenter.centerY,
 			this.currentSpriteFrame * sprite.pxWidth, 0,
 			sprite.pxWidth,
-			128,
+			sprite.pxHeight,
 			-(sprite.pxWidth / 2),
 			-(sprite.pxHeight / 2),
-			128,
-			128,
+			sprite.displayX,
+			sprite.displayY,
 			this.rotationAngle + spriteStartAngle);
 
 	}
@@ -221,17 +222,17 @@ export class Tower {
 		let count2 = 0;
 		const xPos = this.attackTarget!.imageCenter.centerX - 46 + this.attackTarget!.moveDirX * 23;
 		const yPos = this.attackTarget!.imageCenter.centerY - 46 + this.attackTarget!.moveDirY * 23
-
 		const index = this.explosionPromises.length - 1;
+		const sprite = this.attackSprite!;
 		const shotAnimation = {
 			drawExplosion: () => {
-				// if (count % 2 === 0)
-				count2++;
-				this.context.drawImage(this.explosionSprite, count2 * 128, 0, 128, 128, xPos, yPos, 92, 92);
+				if (count % 2 == 0)
+					count2++;
+				this.context.drawImage(sprite.image, count2 * sprite.pxWidth, 0, sprite.pxWidth, sprite.pxHeight, xPos, yPos, sprite.displayX, sprite.displayY);
 				count++;
 			},
 			tryRemoveAnimation: () => {
-				if (count === 15)
+				if (count === 30)
 					this.explosionPromises.splice(index, 1);
 			}
 		}
@@ -289,3 +290,5 @@ export interface ITowerInitializer {
 	attackSprite?: Sprite;
 	upgradeType?: TowerType;
 }
+
+export type TowerInitializerKeys = keyof ITowerInitializer;

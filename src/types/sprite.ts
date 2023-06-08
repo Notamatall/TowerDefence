@@ -51,3 +51,5 @@ export interface ISpriteInitializer {
 	imageSrc: string;
 	rotated?: boolean;
 }
+
+export type SpriteKeys = keyof ISpriteInitializer;

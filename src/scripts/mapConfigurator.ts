@@ -169,7 +169,7 @@ export default class MapConfigurator extends Configurator {
 					const tower = this.mapAvailableTowers[index];
 					const wrapper = getMenuItemWrapper();
 					const title = getMenuItemTitle(tower.name);
-					const img = getMenuItemImg(tower.itemImageSrc);
+					const img = getMenuItemImg(tower.sprite.imageSrc);
 					const price = getMenuItemPrice(tower.price);
 					addChildsToWrapper(wrapper, title, img, price);
 					wrapper.onclick = (e: MouseEvent) => this.onMenuItemClickHandler(e, this.mapAvailableTowers[index])
