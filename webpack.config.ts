@@ -68,7 +68,6 @@ normalizedWebpackOptions.devServer = {
 	compress: true,
 	static: './dist',
 	hot: true,
-	open: ['/menu.html'],
 	// index: 'menu.html',
 	// historyApiFallback: {
 	// 	index: 'menu.html'

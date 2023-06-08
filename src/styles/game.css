@@ -157,8 +157,9 @@ html {
 }
 
 .game__menu-shop-icon {
-	height: 70px;
-	width: 70px;
+	font-size: 60px;
+	color: #1f0014;
+	height: fit-content;
 }
 
 #game__background-audio-btn {

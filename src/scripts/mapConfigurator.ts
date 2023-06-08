@@ -192,9 +192,10 @@ export default class MapConfigurator extends Configurator {
 			}
 
 			function getShopIcon(): HTMLElement {
-				const shopIcon = document.createElement('img');
-				shopIcon.src = '../assets/icons/shop.png'
-				shopIcon.classList.add('game__menu-shop-icon');
+
+				const shopIcon = document.createElement('i');
+				//shopIcon.src = '../assets/icons/shop.png'
+				shopIcon.classList.add(...['game__menu-shop-icon', 'fa-solid', 'fa-chess-rook']);
 				shopIcon.onclick = () => {
 					if (gameMenu.style.display === 'flex')
 						gameMenu.style.display = 'none';

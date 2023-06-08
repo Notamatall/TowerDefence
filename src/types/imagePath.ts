@@ -15,6 +15,7 @@ import demonMove from '~/monsters/demon/demonMove.png'
 import jinnMove from '~/monsters/jinn/jinnMove.png'
 import lizardMove from '~/monsters/lizard/lizardMove.png'
 import demonBoss from '~/monsters/demonBoss/demonBoss.png'
+import bigExplosion from '~/towers/explosion/explosionBig.png'
 
 
 export class ImagePath {
@@ -35,4 +36,5 @@ export class ImagePath {
 	static dragonMove = dragonMove;
 	static jinnMove = jinnMove;
 	static lizardMove = lizardMove;
+	static bigExplosion = bigExplosion;
 }

@@ -1,4 +1,4 @@
-import '../styles/game.css';
+import '@/styles/game.css';
 import '@/styles/game.scss';
 import { CanvasBuilder } from './canvasBuilder';
 import GameConfigurator from './gameConfigurator';

@@ -6,6 +6,7 @@ import { Tower, ITower, TowerType, ITowerInitializer } from '@/types/towersTypes
 import Towers from './towers';
 import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
+import { ImagePath } from '@/types/imagePath';
 
 
 export default class GameConfigurator extends Configurator {
@@ -33,6 +34,13 @@ export default class GameConfigurator extends Configurator {
 		this.registerOnCanvasClick();
 		this.registerEscape();
 		this.setTowerMenuElement();
+		document.addEventListener('wheel', (evt) => {
+			this.towerSellUpgradeElement.style.display = 'none';
+		});
+		window.onscroll = (e) => {
+			this.towerSellUpgradeElement.style.display = 'none';
+		}
+
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -2000 - 256 * index, 128), this.canvasAccessor));
 		}
@@ -40,6 +48,8 @@ export default class GameConfigurator extends Configurator {
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -1000 - 256 * index, 128), this.canvasAccessor));
 		}
+		this.explosionSprite = new Image();
+		this.explosionSprite.src = ImagePath.bigExplosion;
 		setInterval(() => {
 
 			console.log(this.count)
@@ -55,7 +65,7 @@ export default class GameConfigurator extends Configurator {
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
 
 	}
-
+	explosionSprite;
 	setTowerMenuElement() {
 		const towerSellUpgradeElement = document.getElementById('game__update-tower-menu');
 		if (towerSellUpgradeElement === null)
@@ -69,6 +79,14 @@ export default class GameConfigurator extends Configurator {
 
 	private configureEnemiesByLevel() {
 		// mostersLevelOne
+	}
+
+	private createMenu() {
+		const mainMenuIcon = document.createElement('i');
+		mainMenuIcon.classList.add(...['fa-solid', 'fa-bars']);
+		mainMenuIcon.onclick = () => {
+
+		}
 	}
 
 	private createEnemy(enemyInitializer: IEnemyInitializer, positionX: number, positionY: number) {
@@ -90,6 +108,7 @@ export default class GameConfigurator extends Configurator {
 		}
 		return enemy;
 	}
+
 	private registerUserStatsProxy(currentMap: MapConfigurator) {
 		const userStats: IUserStats = {} as IUserStats;
 		var handler = function (this: GameConfigurator) {
@@ -143,6 +162,10 @@ export default class GameConfigurator extends Configurator {
 
 		this.count++;
 
+
+		// this.context.drawImage(this.explosionSprite,
+		// 	90 * this.count2 / 2, 0, 111, 109, 500, 500, 90, 109);
+
 		this.drawEnemies();
 		this.currentMap.tryDrawPickedMenuItem();
 	}
@@ -191,8 +214,7 @@ export default class GameConfigurator extends Configurator {
 		if (this.isPlatformWithTower(coordinates.clickIndexX, coordinates.clickIndexY, coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate)) {
 			const towerToSellUpgrade = this.getTowerBuildOnTile(coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate);
 			if (towerToSellUpgrade !== undefined) {
-				setUpgradeSellMenuAroundTowerSelected(towerToSellUpgrade, this.towerSellUpgradeElement)
-
+				setUpgradeSellMenuAroundTowerSelected(this.canvasContainer.scrollLeft, this.canvasContainer.scrollTop, towerToSellUpgrade, this.towerSellUpgradeElement)
 				if (_.isNull(sellButton) || _.isNull(upgradeButton))
 					throw new Error("Buttons were not found");
 
@@ -219,10 +241,10 @@ export default class GameConfigurator extends Configurator {
 
 				this.sellTowerEvent = sellTower;
 				sellButton.addEventListener("click", sellTower, false);
+				function setUpgradeSellMenuAroundTowerSelected(scrollLeft: number, scrollTop: number, selectedTower: Tower, menu: HTMLDivElement) {
 
-				function setUpgradeSellMenuAroundTowerSelected(selectedTower: Tower, menu: HTMLDivElement) {
-					menu.style.left = selectedTower.positionX + 'px';
-					menu.style.top = selectedTower.positionY - 20 + 'px';
+					menu.style.left = (selectedTower.positionX - scrollLeft) + 'px';
+					menu.style.top = (selectedTower.positionY - scrollTop) - 20 + 'px';
 					menu.style.display = 'flex'
 				}
 			}

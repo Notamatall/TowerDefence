@@ -3,6 +3,7 @@ import Enemy, { IImageCenter } from "./enemyTypes";
 import Sprite from "./sprite";
 import Utilities from "@/utilities/utilities";
 import Towers from "@/scripts/towers";
+import { ImagePath } from "./imagePath";
 
 
 export class Tower {
@@ -34,15 +35,22 @@ export class Tower {
 		}
 		this.setAudio(towerInitializer.fireAudio);
 		this.upgradeType = towerInitializer.upgradeType;
+		this.explosionSprite = new Image();
+		this.explosionSprite.src = ImagePath.bigExplosion;
+
 	}
 
 	private setAudio(audioSrc: string | undefined) {
 		if (this.audio)
 			this.audio.remove();
 		this.audio = new Audio(audioSrc);
-		this.audio.volume = 0.3;
+		this.audio.volume = 0.1;
 	}
-
+	private explosionPromises: {
+		drawExplosion: () => void,
+		tryRemoveAnimation: () => void,
+	}[] = [];
+	private explosionSprite: HTMLImageElement;
 	private audio: HTMLAudioElement | undefined;
 
 	private towerCircleRadius?: Path2D;
@@ -81,6 +89,12 @@ export class Tower {
 	}
 
 	update() {
+
+		for (let index = 0; index < this.explosionPromises.length; index++) {
+			const shotAnimation = this.explosionPromises[index];
+			shotAnimation.drawExplosion();
+			shotAnimation.tryRemoveAnimation();
+		}
 
 		if (hasTarget.call(this))
 			this.attack();
@@ -157,7 +171,6 @@ export class Tower {
 
 	animate() {
 		this.tryChangeAnimationFrame();
-		return this.tryRestartAnimation();
 	}
 
 	private tryRestartAnimation() {
@@ -189,14 +202,43 @@ export class Tower {
 			return;
 
 		this.rotationAngle = this.getAngleToAttackTarget();
-		if (this.animate()) {
+		this.animate();
+		const isAnimationRestarted = this.tryRestartAnimation();
+		if (isAnimationRestarted) {
 			this.playShotAudio();
+			this.createShotAnimaton();
 			this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
 			if (this.attackTarget.currentHp <= 0) {
 				this.onEnemyKilled();
 			}
 		}
 	}
+
+
+	private createShotAnimaton() {
+		let count = 0;
+		let count2 = 0;
+		const xPos = this.attackTarget!.imageCenter.centerX - 55;
+		const yPos = this.attackTarget!.imageCenter.centerY - 55;
+		const index = this.explosionPromises.length - 1;
+		const shotAnimation = {
+			drawExplosion: () => {
+				if (count % 2 === 0)
+					count2++;
+
+
+				this.context.drawImage(this.explosionSprite, count2 * 111, 0, 111, 109, xPos, yPos, 111, 109);
+				count++;
+			},
+			tryRemoveAnimation: () => {
+				if (count === 18)
+					this.explosionPromises.splice(index, 1);
+			}
+		}
+
+		this.explosionPromises.push(shotAnimation);
+	}
+
 
 	private playShotAudio() {
 		if (this.audio) {

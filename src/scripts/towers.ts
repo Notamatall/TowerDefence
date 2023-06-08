@@ -27,7 +27,7 @@ class TowerTemplates {
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
 				framesAmount: 8,
-				frameRate: 4,
+				frameRate: 7,
 				attackDamage: 30,
 				attackRadius: 180,
 				itemImageSrc: ImagePath.singleBarrelCannon,
