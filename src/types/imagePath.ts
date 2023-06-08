@@ -15,7 +15,13 @@ import demonMove from '~/monsters/demon/demonMove.png'
 import jinnMove from '~/monsters/jinn/jinnMove.png'
 import lizardMove from '~/monsters/lizard/lizardMove.png'
 import demonBoss from '~/monsters/demonBoss/demonBoss.png'
-import bigExplosion from '~/towers/explosion/explosionBig.png'
+import smallExplosion from '~/towers/explosion/smallExplosion_9_111x109.png'
+import energy from '~/towers/explosion/energy_11_63x83.png'
+import plasma from '~/towers/explosion/plasma_4_526x526.png'
+import blueRing from '~/towers/explosion/blueRing_18_200x200.png'
+import bigFireExplosion from '~/towers/explosion/bigFireExplosion.png'
+import bigRingExplosion from '~/towers/explosion/bigRingExplosion20_128_128.png'
+import hugeExplosion from '~/towers/explosion/boom_20_128x128.png'
 
 
 export class ImagePath {
@@ -36,5 +42,11 @@ export class ImagePath {
 	static dragonMove = dragonMove;
 	static jinnMove = jinnMove;
 	static lizardMove = lizardMove;
-	static bigExplosion = bigExplosion;
+	static smallExplosion = smallExplosion;
+	static energy = energy;
+	static plasma = plasma;
+	static blueRing = blueRing;
+	static bigFireExplosion = bigFireExplosion;
+	static bigRingExplosion33 = bigRingExplosion;
+	static hugeExplosion = hugeExplosion;
 }

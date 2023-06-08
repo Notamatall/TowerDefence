@@ -21,8 +21,7 @@ class TowerTemplates {
 				type: 'platform',
 				price: 50,
 				name: 'Platform',
-				itemImageSrc: ImagePath.platform,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 0, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 })
+				sprite: new Sprite({ imageSrc: ImagePath.platform, xFramesStart: 0, yFramesStart: 0, framesAmount: 0, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 })
 			},
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
@@ -30,11 +29,11 @@ class TowerTemplates {
 				frameRate: 7,
 				attackDamage: 30,
 				attackRadius: 180,
-				itemImageSrc: ImagePath.singleBarrelCannon,
 				fireAudio: singleBarrelFire,
 				price: 200,
 				upgradeType: 'doubleBarrelCannon',
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				sprite: new Sprite({ imageSrc: ImagePath.singleBarrelCannon, xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				attackSprite: new Sprite({ imageSrc: ImagePath.smallExplosion, xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Single barrel cannon'
 			},
 			doubleBarrelCannon: {
@@ -43,11 +42,10 @@ class TowerTemplates {
 				frameRate: 6,
 				attackDamage: 50,
 				attackRadius: 190,
-				itemImageSrc: ImagePath.doubleBarrelCannon,
 				fireAudio: doubleBarrelFire,
 				upgradeType: 'doubleBarrelCannonPlus',
 				price: 350,
-				sprite: new Sprite({ xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				sprite: new Sprite({ imageSrc: ImagePath.doubleBarrelCannon, xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				name: 'Double barrel cannon'
 			},
 			doubleBarrelCannonPlus: {
@@ -131,7 +129,6 @@ class TowerTemplates {
 		const towersKeyImage: KeyImageType<TowerType> = getKeyImageFromDefault(defaultTowers);
 		const towerLoadedImages = await Promise.all(Utilities.loadImages<TowerType>(towersKeyImage));
 		assignLoadedImages(towerLoadedImages, defaultTowers);
-		//	const result = await Promise.all(checkAudioLoaded(defaultTowers));
 		this.list = defaultTowers;
 
 		function getKeyImageFromDefault(defaultTowers: DefaultTowerType) {

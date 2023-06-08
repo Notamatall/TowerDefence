@@ -36,7 +36,7 @@ export class Tower {
 		this.setAudio(towerInitializer.fireAudio);
 		this.upgradeType = towerInitializer.upgradeType;
 		this.explosionSprite = new Image();
-		this.explosionSprite.src = ImagePath.bigExplosion;
+		this.explosionSprite.src = ImagePath.bigRingExplosion33;
 
 	}
 
@@ -89,13 +89,7 @@ export class Tower {
 	}
 
 	update() {
-
-		for (let index = 0; index < this.explosionPromises.length; index++) {
-			const shotAnimation = this.explosionPromises[index];
-			shotAnimation.drawExplosion();
-			shotAnimation.tryRemoveAnimation();
-		}
-
+		this.drawExplosions();
 		if (hasTarget.call(this))
 			this.attack();
 		else
@@ -109,6 +103,13 @@ export class Tower {
 
 	}
 
+	public drawExplosions() {
+		for (let index = 0; index < this.explosionPromises.length; index++) {
+			const shotAnimation = this.explosionPromises[index];
+			shotAnimation.drawExplosion();
+			shotAnimation.tryRemoveAnimation();
+		}
+	}
 	public upgrade() {
 		if (this.upgradeType) {
 			const upgradeTemplate = Towers.getTowerByType(this.upgradeType);
@@ -218,20 +219,19 @@ export class Tower {
 	private createShotAnimaton() {
 		let count = 0;
 		let count2 = 0;
-		const xPos = this.attackTarget!.imageCenter.centerX - 55;
-		const yPos = this.attackTarget!.imageCenter.centerY - 55;
+		const xPos = this.attackTarget!.imageCenter.centerX - 46 + this.attackTarget!.moveDirX * 23;
+		const yPos = this.attackTarget!.imageCenter.centerY - 46 + this.attackTarget!.moveDirY * 23
+
 		const index = this.explosionPromises.length - 1;
 		const shotAnimation = {
 			drawExplosion: () => {
-				if (count % 2 === 0)
-					count2++;
-
-
-				this.context.drawImage(this.explosionSprite, count2 * 111, 0, 111, 109, xPos, yPos, 111, 109);
+				// if (count % 2 === 0)
+				count2++;
+				this.context.drawImage(this.explosionSprite, count2 * 128, 0, 128, 128, xPos, yPos, 92, 92);
 				count++;
 			},
 			tryRemoveAnimation: () => {
-				if (count === 18)
+				if (count === 15)
 					this.explosionPromises.splice(index, 1);
 			}
 		}
@@ -283,9 +283,9 @@ export interface ITowerInitializer {
 	frameRate?: number;
 	attackDamage?: number;
 	attackRadius?: number;
-	itemImageSrc: string;
 	price: number;
 	name: string;
 	sprite: Sprite;
+	attackSprite?: Sprite;
 	upgradeType?: TowerType;
 }

@@ -34,12 +34,8 @@ export default class GameConfigurator extends Configurator {
 		this.registerOnCanvasClick();
 		this.registerEscape();
 		this.setTowerMenuElement();
-		document.addEventListener('wheel', (evt) => {
-			this.towerSellUpgradeElement.style.display = 'none';
-		});
-		window.onscroll = (e) => {
-			this.towerSellUpgradeElement.style.display = 'none';
-		}
+		this.registerSellUpgradeMenuHandlers();
+
 
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -2000 - 256 * index, 128), this.canvasAccessor));
@@ -48,8 +44,11 @@ export default class GameConfigurator extends Configurator {
 		for (let index = 0; index < 15; index++) {
 			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -1000 - 256 * index, 128), this.canvasAccessor));
 		}
+
 		this.explosionSprite = new Image();
-		this.explosionSprite.src = ImagePath.bigExplosion;
+		this.explosionSprite.src = ImagePath.blueRing;
+
+
 		setInterval(() => {
 
 			console.log(this.count)
@@ -65,7 +64,17 @@ export default class GameConfigurator extends Configurator {
 		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
 
 	}
-	explosionSprite;
+
+	registerSellUpgradeMenuHandlers() {
+		document.addEventListener('wheel', () => {
+			this.towerSellUpgradeElement.style.display = 'none';
+		});
+
+		window.onscroll = () => {
+			this.towerSellUpgradeElement.style.display = 'none';
+		}
+	}
+
 	setTowerMenuElement() {
 		const towerSellUpgradeElement = document.getElementById('game__update-tower-menu');
 		if (towerSellUpgradeElement === null)
@@ -152,23 +161,38 @@ export default class GameConfigurator extends Configurator {
 			}
 		})
 	}
-
+	explosionSprite;
 	private count = 0;
+	private count2 = 0;
+	private count3 = 0;
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
-
 		this.count++;
-
-
-		// this.context.drawImage(this.explosionSprite,
-		// 	90 * this.count2 / 2, 0, 111, 109, 500, 500, 90, 109);
-
 		this.drawEnemies();
+
 		this.currentMap.tryDrawPickedMenuItem();
 	}
+
+	private testDrawImage() {
+		if (this.count2 % 2 == 0) {
+			if (this.count2 === 36) {
+				this.count2 = 0;
+				this.count3 = 0;
+			}
+			else
+				this.count3++;
+		}
+
+
+		this.context.drawImage(this.explosionSprite,
+			200 * this.count3, 0, 200, 200, 500, 500, 64, 64);
+		this.count2++;
+
+	}
+
 
 	private drawPlatforms() {
 		for (const platform of this.platformList)
@@ -184,6 +208,11 @@ export default class GameConfigurator extends Configurator {
 	private drawTowers() {
 		for (const tower of this.towersList)
 			tower.update();
+	}
+
+	private drawTowerAttacks() {
+		for (const tower of this.towersList)
+			tower.drawExplosions();
 	}
 
 	private drawEnemies() {
@@ -295,36 +324,6 @@ export default class GameConfigurator extends Configurator {
 			}
 		}
 		this.addMouseClickEventHandler(clickEvenHandler)
-	}
-	listAllEventListeners() {
-		const upgradeButton = this.towerSellUpgradeElement.firstElementChild as HTMLButtonElement;
-		const allElements = Array.prototype.slice.call(upgradeButton)
-
-
-		const types: any[] = [];
-
-		for (let ev in window) {
-
-			if (/^on/.test(ev)) types[types.length] = ev;
-		}
-
-		let elements: any[] = [];
-		for (let i = 0; i < allElements.length; i++) {
-			const currentElement = allElements[i];
-			for (let j = 0; j < types.length; j++) {
-				if (typeof currentElement[types[j]] === 'function') {
-					elements.push({
-						"node": currentElement,
-						"type": types[j],
-						"func": currentElement[types[j]].toString(),
-					});
-				}
-			}
-		}
-
-		return elements.sort(function (a, b) {
-			return a.type.localeCompare(b.type);
-		});
 	}
 
 	private clearSellUpgradeEvents() {

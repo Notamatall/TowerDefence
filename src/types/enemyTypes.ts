@@ -43,8 +43,8 @@ export default class Enemy {
 
 	private turnPositions: TurnPosition[];
 
-	private moveDirX: number;
-	private moveDirY: number;
+	public moveDirX: number;
+	public moveDirY: number;
 	private moveSpeed: number;
 	private frameChangeRate: number;
 
@@ -67,6 +67,7 @@ export default class Enemy {
 	get center() {
 		return this.imageCenter;
 	}
+
 	update() {
 
 		this.move()
