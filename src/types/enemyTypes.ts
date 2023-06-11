@@ -1,14 +1,16 @@
 import Sprite from "@/types/sprite";
 import { TurnPosition } from ".";
-import Configurator from "@/scripts/configurator";
 import { CanvasBuilder } from "@/scripts/canvasBuilder";
 import Utilities from "@/utilities/utilities";
+import { ImagePath } from "./imagePath";
 
 export default class Enemy {
 	constructor(enemyInitializer: IEnemy, canvasAccessor: CanvasBuilder) {
 		this.context = canvasAccessor.context;
-		this.sprite = enemyInitializer.sprite;
-		this.frameChangeRate = enemyInitializer.frameChangeRate;
+		this.moveSprite = enemyInitializer.moveSprite;
+		this.deathSprite = enemyInitializer.deathSprite;
+		this.currentSprite = enemyInitializer.moveSprite;
+
 		this.enemyId = enemyInitializer.enemyId;
 		this.moveDirX = enemyInitializer.moveDirX;
 		this.moveDirY = enemyInitializer.moveDirY;
@@ -20,24 +22,30 @@ export default class Enemy {
 		this.damageOnPass = enemyInitializer.damageOnPass;
 		this.positionX = enemyInitializer.positionX;
 		this.positionY = enemyInitializer.positionY;
-
+		this.enemyLookingDir = this.moveDirX;
 		this.name = enemyInitializer.name;
 		this.innerType = enemyInitializer.type;
 		this.imageCenter = {
-			centerX: enemyInitializer.positionX + (enemyInitializer.sprite.pxWidth / 2),
-			centerY: enemyInitializer.positionY + (enemyInitializer.sprite.pxHeight / 2),
+			centerX: enemyInitializer.positionX + (enemyInitializer.moveSprite.pxWidth / 2),
+			centerY: enemyInitializer.positionY + (enemyInitializer.moveSprite.pxHeight / 2),
 		}
 		this.dealDamage = enemyInitializer.dealDamage;
 		this.releseEnemyAfterPass = enemyInitializer.releseEnemyAfterPass;
+		this.deleteEnemy = enemyInitializer.deleteEnemy;
+		this.deathAnimation = Utilities.createImage(ImagePath.lizardDeath);
 	}
+	private currentSprite: Sprite
+	private deathSprite?: Sprite
+	deathAnimation: HTMLImageElement;
 	public enemyId: number;
 	private innerType: EnemyType;
 	private name: string;
 	private dealDamage: (damage: number) => void;
+	private deleteEnemy: (enemyId: number) => void;
 	private releseEnemyAfterPass: (enemyId: number) => void;
 	private positionX: number;
 	private positionY: number;
-	private sprite: Sprite;
+	private moveSprite: Sprite;
 	private context: CanvasRenderingContext2D;
 	private totalHP: number;
 
@@ -46,17 +54,17 @@ export default class Enemy {
 	public moveDirX: number;
 	public moveDirY: number;
 	private moveSpeed: number;
-	private frameChangeRate: number;
+
 
 	private currentSpriteFrame: number = 0;
 	private currentFrameChangeValue: number = 0;
 
 	public readonly deathReward: number;
 	private damageOnPass: number;
-
+	private isAlive: boolean = true;
 	private healthBarHeight = 6;
 	private healthBarWidth = 64;
-
+	private enemyLookingDir: number;
 	public imageCenter: IImageCenter;
 	public currentHp: number;
 
@@ -68,17 +76,30 @@ export default class Enemy {
 		return this.imageCenter;
 	}
 
-	update() {
+	get isTargetable(): boolean {
+		return this.isAlive === true;
+	}
 
-		this.move()
-		this.animate();
-		this.drawHp();
-		this.drawCurrentSpriteFrame();
+	get isMovingBackward(): boolean {
+		return this.enemyLookingDir === -1;
+	}
+
+	update() {
+		if (this.isAlive) {
+			this.move()
+			this.animate();
+			this.drawHp();
+			this.drawCurrentSpriteFrame();
+		}
+		else {
+			this.animateDeath();
+		}
 	}
 
 	drawCurrentSpriteFrame() {
-		const sprite = this.sprite;
-		if (this.sprite.rotated) {
+		const sprite = this.currentSprite;
+		//this.context.fillRect(this.positionX, this.positionY, 256, 256);
+		if ((!sprite.rotated && this.isMovingBackward) || (sprite.rotated && !this.isMovingBackward)) {
 			Utilities.drawFlippedImage(
 				this.context,
 				sprite.image,
@@ -88,10 +109,10 @@ export default class Enemy {
 				sprite.yFramesStart,
 				sprite.pxWidth,
 				sprite.pxHeight,
-				sprite.pxWidth,
+				sprite.pxWidth - sprite.rotatedXcorrelation,
 				0,
-				sprite.pxWidth,
-				sprite.pxHeight
+				sprite.displayX,
+				sprite.displayY
 			)
 		} else
 			this.context.drawImage(sprite.image,
@@ -101,8 +122,8 @@ export default class Enemy {
 				sprite.pxHeight,
 				this.positionX,
 				this.positionY,
-				this.sprite.displayX,
-				this.sprite.displayY);
+				sprite.displayX,
+				sprite.displayY);
 	}
 
 	animate() {
@@ -112,13 +133,33 @@ export default class Enemy {
 
 	move() {
 		this.tryTurn();
-		this.positionX = this.getNewPositionAfterMove(this.positionX, this.moveSpeed, this.moveDirX);
-		this.positionY = this.getNewPositionAfterMove(this.positionY, this.moveSpeed, this.moveDirY);
+		this.moveToNextTurn();
 		this.imageCenter = this.getImageCenter();
-		if (this.positionX > screen.width) {
+		if (this.positionX > screen.width && this.turnPositions.length === 0) {
 			this.dealDamage(this.damageOnPass);
 			this.releseEnemyAfterPass(this.enemyId);
 		}
+	}
+
+	private animateDeath() {
+
+		this.drawCurrentSpriteFrame();
+		this.tryChangeAnimationFrame();
+		if (this.currentSpriteFrame > this.currentSprite.framesAmount)
+			this.deleteEnemy(this.enemyId);
+	}
+
+	private dropAnimationCounters() {
+		this.currentFrameChangeValue = 0;
+		this.currentSpriteFrame = 0;
+	}
+
+
+	setUnitDead() {
+		this.isAlive = false;
+		if (this.deathSprite)
+			this.currentSprite = this.deathSprite
+		this.dropAnimationCounters();
 	}
 
 	private getNewPositionAfterMove(position: number, moveSpeed: number, direction: number) {
@@ -127,41 +168,25 @@ export default class Enemy {
 
 	private getImageCenter(): IImageCenter {
 		return {
-			centerX: this.positionX + (this.sprite.pxWidth / 2) + this.sprite.uniqueXCorrelation,
-			centerY: this.positionY + (this.sprite.pxHeight / 2) + this.sprite.uniqueYCorrelation
+			centerX: this.positionX + (this.currentSprite.displayX / 2) + this.currentSprite.uniqueXCorrelation,
+			centerY: this.positionY + (this.currentSprite.displayY / 2) + this.currentSprite.uniqueYCorrelation
 		};
 	}
 
 	tryTurn() {
 		if (this.turnPositions.length == 0)
 			return;
-		if (isAtTurnPosition(getVectorToTurnPosition.call(this), this.moveSpeed)) {
 
+		if (isAtTurnPosition(getVectorToTurnPosition.call(this), this.moveSpeed)) {
 			const turnPosition = this.turnPositions.shift();
 			if (_.isUndefined(turnPosition))
 				throw new Error('Turn position does not exist');
 			this.moveDirX = turnPosition.dirX;
 			this.moveDirY = turnPosition.dirY;
+			if (turnPosition.dirX !== 0)
+				this.enemyLookingDir = turnPosition.dirX;
 		}
-		else {
-			const rangeToTurnX = this.imageCenter.centerX - this.turnPositions[0].xTurnStart;
-			const rangeToTurnY = this.imageCenter.centerY - this.turnPositions[0].yTurnStart;
-
-			if ((rangeToTurnY - (this.moveSpeed * this.moveDirY)) === rangeToTurnY && rangeToTurnY !== 0) {
-				if (Math.abs(rangeToTurnY) < Math.abs(this.moveSpeed))
-					this.positionY = this.positionY - rangeToTurnY;
-				else
-					this.positionY = this.positionY + (- this.moveSpeed * Math.sign(rangeToTurnY));
-			}
-
-			if ((rangeToTurnX - (this.moveSpeed * this.moveDirX)) === rangeToTurnX && rangeToTurnX !== 0) {
-				if (Math.abs(rangeToTurnX) < Math.abs(this.moveSpeed))
-					this.positionX = this.positionX - rangeToTurnX;
-				else
-					this.positionX = this.positionX + (- this.moveSpeed * Math.sign(rangeToTurnX));
-			}
-		}
-
+		this.fixMoveVector();
 		function isAtTurnPosition(vectorToTurn: number, moveSpeed: number) {
 			return vectorToTurn <= moveSpeed;
 		}
@@ -169,9 +194,54 @@ export default class Enemy {
 		function getVectorToTurnPosition(this: Enemy) {
 			const rangeToTurnX = this.imageCenter.centerX - this.turnPositions[0].xTurnStart;
 			const rangeToTurnY = this.imageCenter.centerY - this.turnPositions[0].yTurnStart;
-			//console.log(rangeToTurnX, rangeToTurnY)
 			return Math.sqrt(rangeToTurnX * rangeToTurnX + rangeToTurnY * rangeToTurnY);
 		}
+	}
+
+	private moveToNextTurn() {
+		if (this.turnPositions.length == 0) {
+			this.positionX = this.getNewPositionAfterMove(this.positionX, this.moveSpeed, this.moveDirX);
+			this.positionY = this.getNewPositionAfterMove(this.positionY, this.moveSpeed, this.moveDirY);
+			return;
+		}
+
+		const rangeToTurnX = this.imageCenter.centerX - this.turnPositions[0].xTurnStart;
+		const rangeToTurnY = this.imageCenter.centerY - this.turnPositions[0].yTurnStart;
+
+		if (rangeToTurnX > 0 && rangeToTurnX + (this.moveSpeed * this.moveDirX) > rangeToTurnX) {
+			if (Math.abs(rangeToTurnX) < Math.abs(this.moveSpeed))
+				this.positionX = this.positionX - rangeToTurnX;
+			else
+				this.positionX = this.positionX - this.moveSpeed;
+		}
+		else {
+			this.positionX = this.getNewPositionAfterMove(this.positionX, this.moveSpeed, this.moveDirX);
+			this.positionY = this.getNewPositionAfterMove(this.positionY, this.moveSpeed, this.moveDirY);
+		}
+	}
+
+	private fixMoveVector() {
+		if (this.turnPositions.length == 0)
+			return;
+
+		const rangeToTurnX = this.imageCenter.centerX - this.turnPositions[0].xTurnStart;
+		const rangeToTurnY = this.imageCenter.centerY - this.turnPositions[0].yTurnStart;
+
+		if ((rangeToTurnY - (this.moveSpeed * this.moveDirY)) === rangeToTurnY && rangeToTurnY !== 0) {
+			if (Math.abs(rangeToTurnY) < Math.abs(this.moveSpeed))
+				this.positionY = this.positionY - rangeToTurnY;
+			else
+				this.positionY = this.positionY + (- this.moveSpeed * Math.sign(rangeToTurnY));
+		}
+
+		if ((rangeToTurnX - (this.moveSpeed * this.moveDirX)) === rangeToTurnX && rangeToTurnX !== 0) {
+			if (Math.abs(rangeToTurnX) < Math.abs(this.moveSpeed))
+				this.positionX = this.positionX - rangeToTurnX;
+			else
+				this.positionX = this.positionX + (- this.moveSpeed * Math.sign(rangeToTurnX));
+		}
+
+
 	}
 
 	tryChangeAnimationFrame() {
@@ -181,7 +251,7 @@ export default class Enemy {
 			this.currentFrameChangeValue = 0;
 		}
 		function isTimeToChangeFrame(this: Enemy) {
-			return this.frameChangeRate === this.currentFrameChangeValue
+			return this.currentSprite.frameChangeRate === this.currentFrameChangeValue
 		}
 	}
 
@@ -190,7 +260,7 @@ export default class Enemy {
 			this.currentSpriteFrame = 0;
 
 		function isCurrentFrameLast(this: Enemy) {
-			return this.currentSpriteFrame > this.sprite.framesAmount
+			return this.currentSpriteFrame > this.currentSprite.framesAmount
 		}
 	}
 
@@ -200,8 +270,8 @@ export default class Enemy {
 			return;
 
 		this.context.fillStyle = '#c31010df';
-		this.context.fillRect(this.positionX + this.sprite.pxWidth / 2 - this.sprite.hpBarXCorrelation,
-			this.positionY + this.sprite.pxHeight / 2 - this.sprite.hpBarYCorrelation,
+		this.context.fillRect(this.positionX + this.currentSprite.pxWidth / 2 - this.currentSprite.hpBarXCorrelation,
+			this.positionY + this.currentSprite.pxHeight / 2 - this.currentSprite.hpBarYCorrelation,
 			this.healthBarWidth * percentage,
 			this.healthBarHeight);
 	}
@@ -211,6 +281,7 @@ export default class Enemy {
 export interface IEnemy extends IEnemyInitializer {
 	dealDamage: (damage: number) => void;
 	releseEnemyAfterPass: (enemyId: number) => void;
+	deleteEnemy: (enemyId: number) => void;
 	turnPositions: TurnPosition[];
 	positionX: number;
 	positionY: number;
@@ -223,13 +294,12 @@ export interface IEnemy extends IEnemyInitializer {
 export interface IEnemyInitializer {
 	name: string;
 	moveSpeed: number;
-	sprite: Sprite;
+	moveSprite: Sprite;
+	deathSprite?: Sprite;
 	totalHP: number;
 	damageOnPass: number;
 	deathReward: number;
-	frameChangeRate: number;
 	type: EnemyType;
-	enemyImgSrc: string;
 }
 
 
@@ -242,7 +312,7 @@ export interface IImageCenter {
 	centerY: number;
 }
 
-export type EnemyType = 'demon' |
+export type EnemyType = 'demon' | 'robot' |
 	'demonBoss' |
 	'dragon' |
 	'jinn' |

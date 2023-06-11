@@ -1,22 +1,19 @@
 import { CanvasBuilder } from "@/scripts/canvasBuilder";
 import Enemy, { IImageCenter } from "./enemyTypes";
-import Sprite, { SpriteKeys } from "./sprite";
+import Sprite from "./sprite";
 import Utilities from "@/utilities/utilities";
 import Towers from "@/scripts/towers";
-import { ImagePath } from "./imagePath";
-
 
 export class Tower {
 	constructor(towerInitializer: ITower, canvasAccessor: CanvasBuilder) {
 		this.type = towerInitializer.type;
 		this.context = canvasAccessor.context;
-		this.framesAmount = towerInitializer.framesAmount ? towerInitializer.framesAmount : 0;
-		this.frameChangeRate = towerInitializer.frameRate ? towerInitializer.frameRate : 0;
 		this.attackDamage = towerInitializer.attackDamage ? towerInitializer.attackDamage : 0;
 		this.attackRadius = towerInitializer.attackRadius ? towerInitializer.attackRadius : 0;
 		this.towerId = towerInitializer.towerId;
 		this.getAttackTargetInRadius = towerInitializer.getAttackTargetInRadius;
 		this.removeTargetForTowers = towerInitializer.removeTargetForTowers;
+		this.rewardForKill = towerInitializer.rewardForKill;
 		this.type = towerInitializer.type;
 		this.price = towerInitializer.price;
 		this.name = towerInitializer.name;
@@ -33,36 +30,33 @@ export class Tower {
 			this.towerCircleRadius = new Path2D();
 			this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 		}
-		this.setAudio(towerInitializer.fireAudio);
+		this.setFireAudio(towerInitializer.fireAudio);
+		this.setInstalationAudio(towerInitializer.installationAudio);
+		this.installationAudio.play();
+		this.setUpgradeAudio(towerInitializer.upgradeAudio);
+
 		this.upgradeType = towerInitializer.upgradeType;
 		this.attackSprite = towerInitializer.attackSprite;
-		console.log(this.attackSprite)
 	}
 
-	private setAudio(audioSrc: string | undefined) {
-		if (this.audio)
-			this.audio.remove();
-		this.audio = new Audio(audioSrc);
-		this.audio.volume = 0.1;
-	}
-	private explosionPromises: {
+	private fireAnimations: {
 		drawExplosion: () => void,
 		tryRemoveAnimation: () => void,
 	}[] = [];
-
 	private attackSprite?: Sprite;
-	private audio: HTMLAudioElement | undefined;
-
+	private installationAudio!: HTMLAudioElement;
+	private fireAudio: HTMLAudioElement | undefined;
+	private upgradeAudio!: HTMLAudioElement;
 	private towerCircleRadius?: Path2D;
 	private getAttackTargetInRadius: (searchRadius: Path2D) => Enemy | undefined;
 	private removeTargetForTowers: (target: Enemy) => void;
+	private rewardForKill: (amount: number) => void;
 	private context: CanvasRenderingContext2D;
 	private imageCenter: IImageCenter;
 	private rotationAngle: number = 0;
 
 	private type: TowerType;
-	private framesAmount: number;
-	private frameChangeRate: number;
+
 	private attackDamage: number;
 	private attackRadius: number;
 	private price: number;
@@ -104,12 +98,40 @@ export class Tower {
 	}
 
 	public drawExplosions() {
-		for (let index = 0; index < this.explosionPromises.length; index++) {
-			const shotAnimation = this.explosionPromises[index];
+		for (let index = 0; index < this.fireAnimations.length; index++) {
+			const shotAnimation = this.fireAnimations[index];
 			shotAnimation.drawExplosion();
 			shotAnimation.tryRemoveAnimation();
 		}
 	}
+
+	private setFireAudio(audioSrc: string | undefined) {
+		if (this.fireAudio)
+			this.fireAudio.remove;
+		this.fireAudio = new Audio(audioSrc);
+		this.fireAudio.volume = 0.1;
+	}
+
+	private setInstalationAudio(audioSrc: string | undefined) {
+		this.installationAudio = new Audio(audioSrc);
+		this.installationAudio.volume = 0.1;
+	}
+
+	private setUpgradeAudio(audioSrc: string | undefined) {
+		this.upgradeAudio = new Audio(audioSrc);
+		this.upgradeAudio.volume = 0.2;
+	}
+
+	attackVolumeLower() {
+		if (this.fireAudio && this.fireAudio.volume - 0.1 >= 0)
+			this.fireAudio.volume = this.fireAudio.volume - 0.1;
+	}
+
+	attackVolumeHigher() {
+		if (this.fireAudio && this.fireAudio.volume + 0.1 < 1)
+			this.fireAudio.volume = this.fireAudio.volume + 0.1;
+	}
+
 	public upgrade() {
 		if (this.upgradeType) {
 			const upgradeTemplate = Towers.getTowerByType(this.upgradeType);
@@ -119,9 +141,11 @@ export class Tower {
 						this[key] = upgradeTemplate[key];
 					}
 				}
-				this.setAudio(upgradeTemplate.fireAudio)
+				this.setFireAudio(upgradeTemplate.fireAudio)
 				this.upgradeType = upgradeTemplate.upgradeType;
 				this.attackSprite = upgradeTemplate.attackSprite;
+				this.setUpgradeAudio(upgradeTemplate.upgradeAudio);
+				this.upgradeAudio.play();
 			}
 		}
 	}
@@ -176,7 +200,7 @@ export class Tower {
 	}
 
 	private tryRestartAnimation() {
-		if (this.currentSpriteFrame == this.framesAmount) {
+		if (this.currentSpriteFrame == this.sprite.framesAmount) {
 			this.currentSpriteFrame = 0;
 			return true;
 		}
@@ -190,7 +214,7 @@ export class Tower {
 			this.currentFrameChangeValue = 0;
 		}
 		function isTimeToChangeFrame(this: Tower) {
-			return this.frameChangeRate === this.currentFrameChangeValue
+			return this.sprite.frameChangeRate === this.currentFrameChangeValue
 		}
 	}
 
@@ -218,39 +242,44 @@ export class Tower {
 
 
 	private createShotAnimaton() {
-		let count = 0;
-		let count2 = 0;
+		let currentFrameChangeValue = 0;
+		let currentSpriteFrame = 0;
 		const xPos = this.attackTarget!.imageCenter.centerX - 46 + this.attackTarget!.moveDirX * 23;
 		const yPos = this.attackTarget!.imageCenter.centerY - 46 + this.attackTarget!.moveDirY * 23
-		const index = this.explosionPromises.length - 1;
-		const sprite = this.attackSprite!;
+		const index = this.fireAnimations.length - 1;
+		const attackSprite = this.attackSprite!;
 		const shotAnimation = {
 			drawExplosion: () => {
-				if (count % 2 == 0)
-					count2++;
-				this.context.drawImage(sprite.image, count2 * sprite.pxWidth, 0, sprite.pxWidth, sprite.pxHeight, xPos, yPos, sprite.displayX, sprite.displayY);
-				count++;
+				if (currentFrameChangeValue % attackSprite.frameChangeRate == 0)
+					currentSpriteFrame++;
+				this.context.drawImage(attackSprite.image, currentSpriteFrame * attackSprite.pxWidth, 0,
+					attackSprite.pxWidth,
+					attackSprite.pxHeight, xPos, yPos, attackSprite.displayX, attackSprite.displayY);
+				currentFrameChangeValue++;
 			},
 			tryRemoveAnimation: () => {
-				if (count === 30)
-					this.explosionPromises.splice(index, 1);
+				if (currentFrameChangeValue === attackSprite.framesAmount * attackSprite.frameChangeRate)
+					this.fireAnimations.splice(index, 1);
 			}
 		}
 
-		this.explosionPromises.push(shotAnimation);
+		this.fireAnimations.push(shotAnimation);
 	}
 
 
 	private playShotAudio() {
-		if (this.audio) {
-			this.audio.play().catch(e => console.error(e));
+		if (this.fireAudio) {
+			this.fireAudio.play().catch(e => console.error(e));
 		}
 	}
 
 	private onEnemyKilled() {
 		if (this.attackTarget === null)
 			throw new Error('Attack target is null - cannot be possible');
-		this.removeTargetForTowers(this.attackTarget);
+		const target = this.attackTarget;
+		this.attackTarget.setUnitDead();
+		this.removeTargetForTowers(target);
+		this.rewardForKill(target.deathReward);
 	}
 
 }
@@ -275,13 +304,14 @@ export interface ITower extends ITowerInitializer {
 	towerId: number;
 	getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined;
 	removeTargetForTowers(target: Enemy): void;
+	rewardForKill(amount: number): void;
 }
 
 export interface ITowerInitializer {
 	type: TowerType;
 	fireAudio?: string;
-	framesAmount?: number;
-	frameRate?: number;
+	installationAudio: string;
+	upgradeAudio?: string;
 	attackDamage?: number;
 	attackRadius?: number;
 	price: number;

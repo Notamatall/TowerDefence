@@ -16,8 +16,11 @@ export default class Sprite {
 		this.rotated = spriteInfo.rotated ? spriteInfo.rotated : false;
 		this.rotated = spriteInfo.rotated ? spriteInfo.rotated : false;
 		this.imageSrc = spriteInfo.imageSrc;
+		this.frameChangeRate = spriteInfo.frameChangeRate;
+		this.rotatedXcorrelation = spriteInfo.rotatedXcorrelation ? spriteInfo.rotatedXcorrelation : 0;
 	}
 
+	readonly rotatedXcorrelation: number;
 	readonly displayX: number;
 	readonly displayY: number;
 	readonly framesAmount: number;
@@ -30,6 +33,7 @@ export default class Sprite {
 	readonly hpBarYCorrelation: number;
 	readonly hpBarXCorrelation: number;
 	readonly rotated: boolean;
+	readonly frameChangeRate: number;
 	imageSrc: string;
 	image: HTMLImageElement;
 }
@@ -50,6 +54,6 @@ export interface ISpriteInitializer {
 	image?: HTMLImageElement;
 	imageSrc: string;
 	rotated?: boolean;
+	frameChangeRate: number;
+	rotatedXcorrelation?: number;
 }
-
-export type SpriteKeys = keyof ISpriteInitializer;

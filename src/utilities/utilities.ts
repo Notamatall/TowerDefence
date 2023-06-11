@@ -35,10 +35,10 @@ export default class Utilities {
 
 	static drawFlippedImage(context: CanvasRenderingContext2D,
 		image: HTMLImageElement,
-		xDraw: number,
-		yDraw: number,
-		pX: number,
-		pY: number,
+		xDrawPosition: number,
+		yDrawPosition: number,
+		sourceX: number,
+		sourceY: number,
 		getByX: number,
 		getByY: number,
 		offsetX: number,
@@ -46,9 +46,9 @@ export default class Utilities {
 		totalX: number,
 		totalY: number) {
 		context.save();
-		context.translate(xDraw, yDraw);
+		context.translate(xDrawPosition, yDrawPosition);
 		context.scale(-1, 1);
-		context.drawImage(image, pX, pY, getByX, getByY, -offsetX, offsetY, totalX, totalY);
+		context.drawImage(image, sourceX, sourceY, getByX, getByY, -offsetX, offsetY, totalX, totalY);
 		context.restore();
 	}
 

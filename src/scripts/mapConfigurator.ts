@@ -4,7 +4,7 @@ import Configurator from './configurator';
 import { IUserStats, MapConfigurationOptions, TurnPosition } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 import Towers from "./towers";
-import { TowerType, ITower, ITowerInitializer } from "@/types/towersTypes";
+import { TowerType, ITowerInitializer } from "@/types/towersTypes";
 export default class MapConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder, options: MapConfigurationOptions) {
 		super(canvasContext);
@@ -20,6 +20,12 @@ export default class MapConfigurator extends Configurator {
 		this.menuOptions = options.menuOptions;
 		this.mapDefaultUserStats = options.defaultUserStats;
 		this.defineTurnPlaces();
+		const firstTurn = this.turnPlaces[0];
+
+		this.enemyStartingPoint = {
+			xPos: firstTurn.xTurnStart,
+			yPos: firstTurn.yTurnStart,
+		}
 	}
 
 	//properties
@@ -43,7 +49,7 @@ export default class MapConfigurator extends Configurator {
 	private mapDefaultUserStats: IUserStats;
 
 	public pickedMenuItem: ITowerInitializer | null = null;
-
+	public enemyStartingPoint: { xPos: number, yPos: number };
 	get turnPlaces() {
 		return this.mapTurnPlaces;
 	}

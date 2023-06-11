@@ -2,11 +2,12 @@ import { GameConfigurationOptions, ILevelMap, IUserStats, UserStatsKey } from '@
 import MapConfigurator from './mapConfigurator';
 import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
-import { Tower, ITower, TowerType, ITowerInitializer } from '@/types/towersTypes';
+import { Tower, ITower, ITowerInitializer } from '@/types/towersTypes';
 import Towers from './towers';
 import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
-import { ImagePath } from '@/types/imagePath';
+import Utilities from '@/utilities/utilities';
+import audioController from './audioController';
 
 
 export default class GameConfigurator extends Configurator {
@@ -24,10 +25,9 @@ export default class GameConfigurator extends Configurator {
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 
-
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
 		this.setMaps(options.maps);
-		await Towers.init(this.currentMap.tileWidth, this.currentMap.tileHeight);
+		await Towers.init();
 		await Enemies.init()
 		await this.currentMap.configureMap();
 		this.registerUserStatsProxy(this.currentMap);
@@ -35,34 +35,42 @@ export default class GameConfigurator extends Configurator {
 		this.registerEscape();
 		this.setTowerMenuElement();
 		this.registerSellUpgradeMenuHandlers();
+		this.configureMainMenuHandlers();
+		const start = this.currentMap.enemyStartingPoint;
 
 
 		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -2000 - 256 * index, 128), this.canvasAccessor));
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, start.xPos - 2500 - 100 * index, start.yPos), this.canvasAccessor));
 		}
-
 		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -1000 - 256 * index, 128), this.canvasAccessor));
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.jinn, start.xPos - 250 * index, start.yPos), this.canvasAccessor));
 		}
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, start.xPos - 1500 - 500 * index, start.yPos), this.canvasAccessor));
+		}
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, start.xPos - 5000 - 100 * index, start.yPos), this.canvasAccessor));
+		}
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -1000 - 256 * index, 128), this.canvasAccessor));
+		// }
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, start.xPos, start.yPos - 250 * index), this.canvasAccessor));
+		// }
 
-		this.explosionSprite = new Image();
-		this.explosionSprite.src = ImagePath.blueRing;
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, start.xPos, start.yPos - 500 * index), this.canvasAccessor));
+		// }
 
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.robot, start.xPos, start.yPos - 1000 * index), this.canvasAccessor));
+		// }
 
 		setInterval(() => {
 
 			console.log(this.count)
 			this.count = 0;
 		}, 1000)
-		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, -128, 128), this.canvasAccessor));
-		//this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, -128, 128), this.canvasAccessor));
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, -128, 128), this.canvasAccessor));
-
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -256, 128), this.canvasAccessor));
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, -512, 128), this.canvasAccessor));
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, -256, 128), this.canvasAccessor));
-		// this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, 0, 128), this.canvasAccessor));
-
 	}
 
 	registerSellUpgradeMenuHandlers() {
@@ -90,12 +98,76 @@ export default class GameConfigurator extends Configurator {
 		// mostersLevelOne
 	}
 
-	private createMenu() {
-		const mainMenuIcon = document.createElement('i');
-		mainMenuIcon.classList.add(...['fa-solid', 'fa-bars']);
-		mainMenuIcon.onclick = () => {
+	private configureMainMenuHandlers() {
 
-		}
+		Utilities.tryCatchWrapper(() => {
+			const mainMenuIcon = document.getElementById('game__main-menu-icon');
+			const mainMenu = document.getElementById('game__main-menu');
+			const mainMenuCloseButton = document.getElementById('game__main-menu-close-button');
+			const mainMenuPlayButton = document.getElementById('game__main-menu-play-button');
+			const mainMenuBackgroundLow = document.getElementById('game__main-menu-background-sound-low');
+			const mainMenuBackgroundHigh = document.getElementById('game__main-menu-background-sound-high');
+			const mainMenuTowerHigh = document.getElementById('game__main-menu-tower-sound-high');
+			const mainMenuTowerLow = document.getElementById('game__main-menu-tower-sound-low');
+			const towersVolume = 0.3;
+
+			if (mainMenuIcon === null)
+				throw new Error('main menu icon does not exist');
+
+			if (mainMenu === null)
+				throw new Error('main menu does not exist');
+
+			if (mainMenuCloseButton === null)
+				throw new Error('mainMenuCloseButton does not exist');
+
+			if (mainMenuBackgroundLow === null)
+				throw new Error('mainMenuPlayButton does not exist');
+
+			if (mainMenuBackgroundHigh === null)
+				throw new Error('mainMenuPlayButton does not exist');
+
+			if (mainMenuPlayButton === null)
+				throw new Error('mainMenuPlayButton does not exist');
+
+			if (mainMenuTowerLow === null)
+				throw new Error('mainMenuTowerLow does not exist');
+
+			if (mainMenuTowerHigh === null)
+				throw new Error('mainMenuTowerHigh does not exist');
+
+			mainMenuIcon.onclick = () => {
+				mainMenu.style.display = 'flex';
+			}
+
+			mainMenuCloseButton.onclick = () => {
+				mainMenu.style.display = 'none';
+			}
+
+			mainMenuPlayButton.onclick = () => {
+
+				if (audioController.currentPlayed)
+					audioController.currentPlayed.paused ? audioController.currentPlayed.play() : audioController.currentPlayed.pause();
+				else
+					audioController.loopBackground();
+			}
+
+			mainMenuBackgroundLow.onclick = () => {
+				audioController.volumeLower()
+			}
+
+			mainMenuBackgroundHigh.onclick = () => {
+				audioController.volumeHigher()
+			}
+
+			mainMenuTowerLow.onclick = () => {
+				this.towersList.forEach(tower => tower.attackVolumeLower())
+			}
+
+			mainMenuTowerHigh.onclick = () => {
+				this.towersList.forEach(tower => tower.attackVolumeHigher());
+			}
+		})
+
 	}
 
 	private createEnemy(enemyInitializer: IEnemyInitializer, positionX: number, positionY: number) {
@@ -109,6 +181,7 @@ export default class GameConfigurator extends Configurator {
 			enemyId: nextId,
 			dealDamage: (damage) => this.dealDamage(damage),
 			releseEnemyAfterPass: (enemyId) => this.releseEnemyAfterPass(enemyId),
+			deleteEnemy: (enemyId) => this.releseEnemyAfterPass(enemyId),
 			turnPositions: Array.from(this.currentMap.turnPlaces),
 			positionX: positionX,
 			positionY: positionY,
@@ -161,10 +234,8 @@ export default class GameConfigurator extends Configurator {
 			}
 		})
 	}
-	explosionSprite;
 	private count = 0;
-	private count2 = 0;
-	private count3 = 0;
+
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
 		this.currentMap.drawMap()
@@ -172,27 +243,10 @@ export default class GameConfigurator extends Configurator {
 		this.drawTowers();
 		this.count++;
 		this.drawEnemies();
-
 		this.currentMap.tryDrawPickedMenuItem();
+		const start = this.currentMap.enemyStartingPoint;
+		this.context.fillRect(start.xPos, start.yPos, 128, 128)
 	}
-
-	private testDrawImage() {
-		if (this.count2 % 2 == 0) {
-			if (this.count2 === 36) {
-				this.count2 = 0;
-				this.count3 = 0;
-			}
-			else
-				this.count3++;
-		}
-
-
-		this.context.drawImage(this.explosionSprite,
-			200 * this.count3, 0, 200, 200, 500, 500, 64, 64);
-		this.count2++;
-
-	}
-
 
 	private drawPlatforms() {
 		for (const platform of this.platformList)
@@ -358,12 +412,17 @@ export default class GameConfigurator extends Configurator {
 			...towerTemplate,
 			getAttackTargetInRadius: (searchRadius) => this.getAttackTargetInRadius(searchRadius),
 			removeTargetForTowers: (target) => this.removeTargetForTowers(target),
+			rewardForKill: (amount) => this.increaseUserCoins(amount),
 			positionX: positionX,
 			positionY: positionY,
 			towerId: lastTowerId + nextId
 		}
 
 		return new Tower(towerInitializer, this.canvasAccessor);
+	}
+
+	deleteEnemy(enemyId: number) {
+		this.enemiesList.splice(this.enemiesList.findIndex(enemy => enemy.enemyId === enemyId), 1);
 	}
 
 	removeTower(towerId: number) {
@@ -377,11 +436,7 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private removeTargetForTowers(target: Enemy) {
-		if (_.isNull(this.userStatsProxy))
-			throw new Error('User stats cannot be null');
 
-		this.userStatsProxy.userCoins = this.userStatsProxy.userCoins + target.deathReward;
-		this.enemiesList.splice(this.enemiesList.findIndex(enemy => enemy.enemyId == target.enemyId), 1);
 		for (const tower of this.towersList) {
 			if (tower.attackTarget == target) {
 				tower.currentFrameChangeValue = 0;
@@ -392,12 +447,19 @@ export default class GameConfigurator extends Configurator {
 		}
 	}
 
+	private increaseUserCoins(amount: number) {
+		if (_.isNull(this.userStatsProxy))
+			throw new Error('User stats cannot be null');
+
+		this.userStatsProxy.userCoins = this.userStatsProxy.userCoins + amount;
+	}
+
 	private getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined {
 		for (const enemy of this.enemiesList) {
 			if (this.context.isPointInPath(
 				searchRadius,
 				enemy.imageCenter.centerX,
-				enemy.imageCenter.centerY)) {
+				enemy.imageCenter.centerY) && enemy.isTargetable) {
 				return enemy;
 			}
 		}

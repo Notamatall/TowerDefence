@@ -3,6 +3,13 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/solid';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 
+#game__main-menu-icon {
+	position: fixed;
+	top: 35px;
+	right: 15px;
+	font-size: 25px;
+	color: #010043;
+}
 
 #game__main-menu {
 	display: none;
@@ -71,6 +78,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 	&text {
 		font-size: 22px;
 		margin-left: 35px;
+		flex: 1 1 auto;
 		color: blanchedalmond;
 	}
 
