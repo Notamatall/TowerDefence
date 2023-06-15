@@ -54,9 +54,7 @@ export class Tower {
 	private context: CanvasRenderingContext2D;
 	private imageCenter: IImageCenter;
 	private rotationAngle: number = 0;
-
 	private type: TowerType;
-
 	private attackDamage: number;
 	private attackRadius: number;
 	private price: number;
@@ -80,6 +78,10 @@ export class Tower {
 
 	get towerUpgradeType() {
 		return this.upgradeType;
+	}
+
+	get towerAttackRadius() {
+		return this.attackRadius;
 	}
 
 	update() {
