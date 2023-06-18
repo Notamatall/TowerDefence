@@ -10,29 +10,30 @@ import supremeLaserCannonPlus from '~/towers/supremeLaserCannonPlus.png';
 import platform from '~/platforms/platforms-no-background.png';
 import smallDragonMove from '~/monsters/smallDragon/smallDragonMove.png';
 import smallDragonDeath from '~/monsters/smallDragon/smallDragonDeath.png';
-import medusaMove from '~/monsters/medusa/medusaMove.png'
-import medusaDeath from '~/monsters/medusa/medusaDeath.png'
-import dragonMove from '~/monsters/dragon/dragonMove.png'
-import dragonDeath from '~/monsters/dragon/dragonDeath.png'
-import demonMove from '~/monsters/demon/demonMove.png'
-import demonDeath from '~/monsters/demon/demonDeath.png'
-import jinnMove from '~/monsters/jinn/jinnMove.png'
-import jinnDeath from '~/monsters/jinn/jinnDeath.png'
-import lizardMove from '~/monsters/lizard/lizardMove.png'
-import lizardDeath from '~/monsters/lizard/lizardDeath.png'
-import demonBoss from '~/monsters/demonBoss/demonBoss.png'
-import smallExplosion from '~/towers/explosion/smallExplosion_9_111x109.png'
-import energy from '~/towers/explosion/energy_11_63x83.png'
-import plasma from '~/towers/explosion/plasma_4_526x526.png'
-import blueRing from '~/towers/explosion/blueRing_18_200x200.png'
-import bigFireExplosion from '~/towers/explosion/bigFireExplosion.png'
-import bigRingExplosion from '~/towers/explosion/bigRingExplosion20_128_128.png'
-import hugeExplosion from '~/towers/explosion/boom_20_128x128.png'
-import platformInstalled from '@/audio/platformInstalled.wav'
-import towerInstalled from '@/audio/towerInstalled.wav'
-import upgradeTower from '@/audio/upgradeTower.wav'
-import robotWalk from '~/monsters/robot/robotWalk.png'
-import robotDeath from '~/monsters/robot/RobotDeath.png'
+import medusaMove from '~/monsters/medusa/medusaMove.png';
+import medusaDeath from '~/monsters/medusa/medusaDeath.png';
+import dragonMove from '~/monsters/dragon/dragonMove.png';
+import dragonDeath from '~/monsters/dragon/dragonDeath.png';
+import demonMove from '~/monsters/demon/demonMove.png';
+import demonDeath from '~/monsters/demon/demonDeath.png';
+import jinnMove from '~/monsters/jinn/jinnMove.png';
+import jinnDeath from '~/monsters/jinn/jinnDeath.png';
+import lizardMove from '~/monsters/lizard/lizardMove.png';
+import lizardDeath from '~/monsters/lizard/lizardDeath.png';
+import demonBoss from '~/monsters/demonBoss/demonBoss.png';
+import smallExplosion from '~/towers/explosion/smallExplosion_9_111x109.png';
+import energy from '~/towers/explosion/energy_11_63x83.png';
+import plasma from '~/towers/explosion/plasma_4_526x526.png';
+import blueRing from '~/towers/explosion/blueRing_18_200x200.png';
+import bigFireExplosion from '~/towers/explosion/bigFireExplosion.png';
+import bigRingExplosion from '~/towers/explosion/bigRingExplosion20_128_128.png';
+import hugeExplosion from '~/towers/explosion/boom_20_128x128.png';
+import platformInstalled from '@/audio/platformInstalled.wav';
+import towerInstalled from '@/audio/towerInstalled.wav';
+import upgradeTower from '@/audio/upgradeTower.wav';
+import robotWalk from '~/monsters/robot/robotWalk.png';
+import robotDeath from '~/monsters/robot/RobotDeath.png';
+import gates from '~/map/gates.png';
 
 
 
@@ -72,4 +73,5 @@ export class ImagePath {
 	static upgradeAudio = upgradeTower;
 	static robotWalk = robotWalk;
 	static robotDeath = robotDeath;
+	static gates = gates;
 }

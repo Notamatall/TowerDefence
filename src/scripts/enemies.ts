@@ -72,7 +72,7 @@ class EnemiesTemplates {
 			medusa: {
 				name: 'Medusa',
 				type: 'medusa',
-				moveSpeed: 1,
+				moveSpeed: 5,
 				totalHP: 1000,
 				deathReward: 300,
 				damageOnPass: 20,
@@ -85,7 +85,7 @@ class EnemiesTemplates {
 					imageSrc: ImagePath.medusaMove, xFramesStart: 0, frameChangeRate: 10,
 					yFramesStart: 0, framesAmount: 4, pxHeight: 128,
 					pxWidth: 128, dispayX: 128, dispayY: 128,
-					hpBarXCorrelation: 35, hpBarYCorrelation: 50
+					hpBarXCorrelation: 35, hpBarYCorrelation: 50, rotatedXcorrelation: 15
 				})
 			},
 			smallDragon: {

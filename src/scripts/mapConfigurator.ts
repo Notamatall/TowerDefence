@@ -1,7 +1,7 @@
 import Utilities from "@/utilities/utilities";
 import { CanvasBuilder } from "./canvasBuilder";
 import Configurator from './configurator';
-import { IUserStats, MapConfigurationOptions, TurnPosition } from "@/types";
+import { Coordinate, IUserStats, MapConfigurationOptions, TurnPosition } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 import Towers from "./towers";
 import { TowerType, ITowerInitializer } from "@/types/towersTypes";
@@ -19,13 +19,8 @@ export default class MapConfigurator extends Configurator {
 		this.environmentX = options.environmentX;
 		this.menuOptions = options.menuOptions;
 		this.mapDefaultUserStats = options.defaultUserStats;
+		this.spawnPoint = options.spawnPoint;
 		this.defineTurnPlaces();
-		const firstTurn = this.turnPlaces[0];
-
-		this.enemyStartingPoint = {
-			xPos: firstTurn.xTurnStart,
-			yPos: firstTurn.yTurnStart,
-		}
 	}
 
 	//properties
@@ -47,9 +42,13 @@ export default class MapConfigurator extends Configurator {
 	private currentHpElement: HTMLSpanElement | null = null;
 	private currentCoinsElement: HTMLSpanElement | null = null;
 	private mapDefaultUserStats: IUserStats;
+	private spawnPoint: Coordinate;
 
 	public pickedMenuItem: ITowerInitializer | null = null;
-	public enemyStartingPoint: { xPos: number, yPos: number };
+
+	get enemiesSpawnPoint() {
+		return this.spawnPoint;
+	}
 	get turnPlaces() {
 		return this.mapTurnPlaces;
 	}
@@ -57,6 +56,7 @@ export default class MapConfigurator extends Configurator {
 	get isMenuItemPicked(): boolean {
 		return this.pickedMenuItem !== null;
 	}
+
 	get defaultUserStats() {
 		return this.mapDefaultUserStats;
 	}

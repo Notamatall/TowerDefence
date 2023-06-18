@@ -21,8 +21,13 @@ export interface MapConfigurationOptions {
 	environmentY: number;
 	menuOptions: TowerType[];
 	defaultUserStats: IUserStats;
+	spawnPoint: Coordinate;
 }
 
+export interface Coordinate {
+	x: number;
+	y: number;
+}
 export interface ICanvasContextOptions {
 	width: number;
 	height: number;

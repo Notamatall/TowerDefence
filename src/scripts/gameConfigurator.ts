@@ -8,12 +8,13 @@ import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
 import Utilities from '@/utilities/utilities';
 import audioController from './audioController';
+import { ImagePath } from '@/types/imagePath';
 
 
 export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
-
+		this.someImga = Utilities.createImage(ImagePath.gates);
 	}
 	private maps: ILevelMap[] = [];
 	private currentMap!: MapConfigurator;
@@ -22,6 +23,7 @@ export default class GameConfigurator extends Configurator {
 	private towersList: Tower[] = [];
 	private enemiesList: Enemy[] = [];
 	private towerSellUpgradeElement!: HTMLDivElement;
+	private someImga: HTMLImageElement;
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 
@@ -36,35 +38,35 @@ export default class GameConfigurator extends Configurator {
 		this.setTowerMenuElement();
 		this.registerSellUpgradeMenuHandlers();
 		this.configureMainMenuHandlers();
-		const start = this.currentMap.enemyStartingPoint;
+		const start = this.currentMap.enemiesSpawnPoint;
 
 
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, start.xPos - 2500 - 100 * index, start.yPos), this.canvasAccessor));
-		}
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.jinn, start.xPos - 250 * index, start.yPos), this.canvasAccessor));
-		}
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, start.xPos - 1500 - 500 * index, start.yPos), this.canvasAccessor));
-		}
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, start.xPos - 5000 - 100 * index, start.yPos), this.canvasAccessor));
-		}
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, start.xPos - 2500 - 100 * index, start.yPos), this.canvasAccessor));
+		// }
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.jinn, start.xPos - 250 * index, start.yPos), this.canvasAccessor));
+		// }
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, start.xPos - 1500 - 500 * index, start.yPos), this.canvasAccessor));
+		// }
+		// for (let index = 0; index < 15; index++) {
+		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, start.xPos - 5000 - 100 * index, start.yPos), this.canvasAccessor));
+		// }
 		// for (let index = 0; index < 15; index++) {
 		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -1000 - 256 * index, 128), this.canvasAccessor));
 		// }
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, start.xPos, start.yPos - 250 * index), this.canvasAccessor));
-		// }
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, start.x, start.y - 250 * index), this.canvasAccessor));
+		}
 
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, start.xPos, start.yPos - 500 * index), this.canvasAccessor));
-		// }
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, start.x, start.y - 500 * index), this.canvasAccessor));
+		}
 
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.robot, start.xPos, start.yPos - 1000 * index), this.canvasAccessor));
-		// }
+		for (let index = 0; index < 15; index++) {
+			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.robot, start.x, start.y - 1000 * index), this.canvasAccessor));
+		}
 
 		setInterval(() => {
 
@@ -235,17 +237,41 @@ export default class GameConfigurator extends Configurator {
 		})
 	}
 	private count = 0;
+	private count2 = 0;
+	private count3 = 0;
 
 	private animate() {
 		requestAnimationFrame(this.animate.bind(this));
+
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
 		this.count++;
+		if (this.count2 % 5 === 0) {
+
+			if (this.count2 >= 60) {
+
+				// this.count2 = 0;
+				this.count3 = 11;
+			} else
+				this.count3++;
+		}
+		this.count2++;
+		this.context.drawImage(this.someImga, 160 * this.count3, 0, 160, 160, 1650, 1500, 200, 200);
+
 		this.drawEnemies();
 		this.currentMap.tryDrawPickedMenuItem();
-		const start = this.currentMap.enemyStartingPoint;
-		this.context.fillRect(start.xPos, start.yPos, 128, 128)
+
+
+		// Utilities.drawRotatedImage(this.context, this.someImga,
+		// 	500,
+		// 	500,
+		// 	160 * this.count3, 0,
+		// 	160, 160,
+		// 	-(80),
+		// 	-(80),
+		// 	160, 160,
+		// 	90);
 	}
 
 	private drawPlatforms() {

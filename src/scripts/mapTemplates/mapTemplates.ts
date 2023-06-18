@@ -1,4 +1,4 @@
-import { IUserStats } from "@/types";
+import { Coordinate, IUserStats, MapConfigurationOptions } from "@/types";
 import { EnemyType } from "@/types/enemyTypes";
 import { ImagePath } from "@/types/imagePath";
 import { TowerType } from "@/types/towersTypes";
@@ -16,7 +16,7 @@ export interface IMapTemplateCell {
 const menuItems: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon']
 const firstLevelUserStats: IUserStats = {
 	userHP: 15,
-	userCoins: 20000
+	userCoins: 1500
 }
 
 export const mostersLevelOne: EnemyType[] = ['jinn', 'lizard', 'smallDragon', 'medusa']
@@ -35,7 +35,7 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 ];
 
 
-export const firstLevelOptions = {
+export const firstLevelOptions: MapConfigurationOptions = {
 	mapName: 'Level one',
 	defaultTileHeight: 128,
 	defaultTileWidth: 128,
@@ -46,29 +46,18 @@ export const firstLevelOptions = {
 	environmentX: 128,
 	environmentY: 384,
 	menuOptions: menuItems,
-	defaultUserStats: firstLevelUserStats
+	defaultUserStats: firstLevelUserStats,
+	spawnPoint: getSpawnPoint(firstLevelTemplate, -1000, 0)
 }
 
 const secondLevelTemplate: IMapTemplateCell[][] = [
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-
-	[c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(3, 0, 0, 1, 0), c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(4, 0, 0, 1, 4), c(3, 90), c(3, 90), c(4, 90, -1, 0, 3), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
-	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
+	[c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(3, 0, 0, 1, 0), c(2)],
+	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
+	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
+	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
+	[c(2), c(1), c(0), c(4, 0, 0, 1, 4), c(3, 90), c(3, 90), c(4, 90, -1, 0, 3), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
+	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
+	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(3, 0), c(0), c(0), c(0), c(0), c(0), c(3, 0), c(0)],
 	[c(2), c(1), c(0), c(3, 0), c(0), c(0), c(4, 270, 0, -1, 2), c(3, 90), c(3, 90), c(3, 90), c(3, 90), c(3, 90), c(4, 180, -1, 0, 1), c(0)],
 	[c(2), c(1), c(4, 0, 0, 1, 6), c(4, 180, -1, 0, 5), c(0), c(0), c(0), c(4, 0, 1, 0, 9), c(3, 90), c(3, 90), c(3, 90), c(4, 90, 0, 1, 10), c(0), c(0)],
 	[c(2), c(0), c(3), c(0), c(0), c(0), c(0), c(3), c(0), c(0), c(0), c(3), c(0), c(0)],
@@ -79,7 +68,12 @@ const secondLevelTemplate: IMapTemplateCell[][] = [
 	[c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2), c(2)],
 ];
 
-export const secondLevelOptions = {
+const SecondLevelUserStats: IUserStats = {
+	userHP: 100,
+	userCoins: 1000
+}
+
+export const secondLevelOptions: MapConfigurationOptions = {
 	mapName: 'Level two',
 	defaultTileHeight: 128,
 	defaultTileWidth: 128,
@@ -90,5 +84,14 @@ export const secondLevelOptions = {
 	environmentX: 128,
 	environmentY: 512,
 	menuOptions: menuItems,
-	defaultUserStats: firstLevelUserStats
+	defaultUserStats: SecondLevelUserStats,
+	spawnPoint: getSpawnPoint(secondLevelTemplate, 0, -1000)
+}
+
+function getSpawnPoint(mapTemplate: IMapTemplateCell[][], addByX: number, addByY: number): Coordinate {
+	const rowLength = mapTemplate[0].length;
+	const flatColumnIndex = mapTemplate.flat(1).findIndex(cell => cell.order === 0);
+	const mapRow = Math.floor(flatColumnIndex / rowLength);
+	const mapColumn = flatColumnIndex % rowLength;
+	return { y: mapRow * 128 + addByY, x: mapColumn * 128 + addByX }
 }
