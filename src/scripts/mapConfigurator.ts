@@ -49,6 +49,7 @@ export default class MapConfigurator extends Configurator {
 	get enemiesSpawnPoint() {
 		return this.spawnPoint;
 	}
+
 	get turnPlaces() {
 		return this.mapTurnPlaces;
 	}
@@ -89,6 +90,10 @@ export default class MapConfigurator extends Configurator {
 		await this.createMenu();
 		this.registerOnMouseMoveEventHandlerForMap();
 		this.configureHpMoneyContainer();
+		this.canvasAccessor.setCanvasHeight({
+			width: this.mapTemplate[0].length * 128,
+			height: this.mapTemplate.length * 128
+		})
 	}
 
 	public canBuildOnTile(indexX: number, indexY: number): boolean {

@@ -1,13 +1,10 @@
 import { ICanvasContextOptions } from "@/types";
 import Utilities from "@/utilities/utilities";
 class CanvasBuilder {
-	constructor(options: ICanvasContextOptions) {
+	constructor() {
 		this.loadHtmlCanvas();
 		this.canvasContainer = this.createCanvasContainer();
 		this.appendCanvasToContainer(this.canvasContainer.id);
-		this.setCorrectContainerHeight(this.canvasContainer.id, options.height);
-		this.canvas.width = options.width;
-		this.canvas.height = options.height;
 	}
 
 	public context!: CanvasRenderingContext2D;
@@ -33,6 +30,11 @@ class CanvasBuilder {
 		return canvasContainer;
 	}
 
+	public setCanvasHeight(options: ICanvasContextOptions) {
+		this.setCorrectContainerHeight(this.canvasContainer.id, options.height);
+		this.canvas.width = options.width;
+		this.canvas.height = options.height;
+	}
 	private setCorrectContainerHeight(containerId: string, height: number) {
 		Utilities.tryCatchWrapper(() => {
 			const container = document.getElementById(containerId);

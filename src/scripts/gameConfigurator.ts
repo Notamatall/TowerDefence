@@ -14,7 +14,6 @@ import { ImagePath } from '@/types/imagePath';
 export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
-		this.someImga = Utilities.createImage(ImagePath.gates);
 	}
 	private maps: ILevelMap[] = [];
 	private currentMap!: MapConfigurator;
@@ -23,11 +22,11 @@ export default class GameConfigurator extends Configurator {
 	private towersList: Tower[] = [];
 	private enemiesList: Enemy[] = [];
 	private towerSellUpgradeElement!: HTMLDivElement;
-	private someImga: HTMLImageElement;
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
+
 		this.setMaps(options.maps);
 		await Towers.init();
 		await Enemies.init()
@@ -39,7 +38,6 @@ export default class GameConfigurator extends Configurator {
 		this.registerSellUpgradeMenuHandlers();
 		this.configureMainMenuHandlers();
 		const start = this.currentMap.enemiesSpawnPoint;
-
 
 		// for (let index = 0; index < 15; index++) {
 		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, start.xPos - 2500 - 100 * index, start.yPos), this.canvasAccessor));
@@ -246,32 +244,9 @@ export default class GameConfigurator extends Configurator {
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
-		this.count++;
-		if (this.count2 % 5 === 0) {
-
-			if (this.count2 >= 60) {
-
-				// this.count2 = 0;
-				this.count3 = 11;
-			} else
-				this.count3++;
-		}
-		this.count2++;
-		this.context.drawImage(this.someImga, 160 * this.count3, 0, 160, 160, 1650, 1500, 200, 200);
-
 		this.drawEnemies();
+		this.count++;
 		this.currentMap.tryDrawPickedMenuItem();
-
-
-		// Utilities.drawRotatedImage(this.context, this.someImga,
-		// 	500,
-		// 	500,
-		// 	160 * this.count3, 0,
-		// 	160, 160,
-		// 	-(80),
-		// 	-(80),
-		// 	160, 160,
-		// 	90);
 	}
 
 	private drawPlatforms() {
