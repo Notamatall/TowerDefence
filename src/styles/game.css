@@ -4,6 +4,38 @@ html {
 	margin: 0;
 }
 
+#game__timer {
+	left: 50%;
+	display: flex;
+	align-items: center;
+	top: 20%;
+	padding: 10px;
+	transform: translate(-50%);
+	font-size: 30px;
+	position: absolute;
+	font-family: gameMenuTitle;
+	height: 200px;
+	width: 500px;
+	gap: 25px
+}
+
+#game__timer-value {
+	animation: 1s linear 0s infinite alternate animating-multiple-properties;
+}
+
+/* it is possible to animate multiple properties in a single animation */
+@keyframes animating-multiple-properties {
+	from {
+		font-size: 30px;
+	}
+
+	to {
+		font-size: 45px;
+		/* unset properties i.e. 'filter' will revert to default values */
+	}
+}
+
+
 .game__container {
 	overflow-y: hidden;
 }

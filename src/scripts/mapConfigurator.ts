@@ -106,22 +106,23 @@ export default class MapConfigurator extends Configurator {
 	}
 
 	public drawMap() {
-		for (let i = 0; i < this.mapTemplate.length; i++)
-			for (let j = 0; j < this.mapTemplate[i].length; j++) {
-				let cell = this.mapTemplate[i][j];
-				Utilities.drawRotatedImage(this.context, this.mapImage,
-					this.defaultTileWidth * j + this.defaultTileWidth / 2,
-					i * this.defaultTileHeight + this.defaultTileHeight / 2,
-					cell.index * this.environmentX,
-					this.environmentY,
-					this.defaultTileWidth,
-					this.defaultTileHeight,
-					-(this.defaultTileWidth / 2),
-					-(this.defaultTileHeight / 2),
-					this.defaultTileWidth,
-					this.defaultTileHeight,
-					cell.angle);
-			}
+		if (this.innerMapImage)
+			for (let i = 0; i < this.mapTemplate.length; i++)
+				for (let j = 0; j < this.mapTemplate[i].length; j++) {
+					let cell = this.mapTemplate[i][j];
+					Utilities.drawRotatedImage(this.context, this.mapImage,
+						this.defaultTileWidth * j + this.defaultTileWidth / 2,
+						i * this.defaultTileHeight + this.defaultTileHeight / 2,
+						cell.index * this.environmentX,
+						this.environmentY,
+						this.defaultTileWidth,
+						this.defaultTileHeight,
+						-(this.defaultTileWidth / 2),
+						-(this.defaultTileHeight / 2),
+						this.defaultTileWidth,
+						this.defaultTileHeight,
+						cell.angle);
+				}
 	}
 
 	public tryDrawPickedMenuItem() {

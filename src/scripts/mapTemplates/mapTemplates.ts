@@ -1,5 +1,4 @@
 import { Coordinate, IUserStats, MapConfigurationOptions, Wave, WaveEnemy } from "@/types";
-import { EnemyType } from "@/types/enemyTypes";
 import { ImagePath } from "@/types/imagePath";
 import { TowerType } from "@/types/towersTypes";
 function c(index, angle?: number, dirX?: number, dirY?: number, order?: number): IMapTemplateCell {
@@ -37,7 +36,7 @@ const firstLevelWaves: Wave[] = [
 		WaveEnemy.createWaveEnemy('robot', 1, 0, 0, 0, 0),
 		// WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
 		// WaveEnemy.createWaveEnemy('jinn', 8, -(5 * 200), 0, -600, 0),
-	], 0),
+	], 1),
 	// Wave.createWave([
 	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, -350, 0),
 	// 	WaveEnemy.createWaveEnemy('medusa', 8, -(11 * 200), 0, -800, 0),
@@ -94,11 +93,11 @@ const secondLevelWaves: Wave[] = [
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, 0, -400),
 		WaveEnemy.createWaveEnemy('jinn', 8, 0, -(5 * 220), 0, -600),
-	], 0),
+	], 10),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -350),
 		WaveEnemy.createWaveEnemy('medusa', 8, 0, -(11 * 200), 0, -800),
-		WaveEnemy.createWaveEnemy('demon', 8, 0, -(20 * 200), 0, -1000),
+		WaveEnemy.createWaveEnemy('dragon', 8, 0, -(20 * 200), 0, -1000),
 	]),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, -220, 0),

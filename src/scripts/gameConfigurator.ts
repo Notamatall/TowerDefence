@@ -15,7 +15,9 @@ export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
 	}
-
+	private timer!: HTMLDivElement;
+	private timerValue!: HTMLDivElement;
+	private wavesDelayInterval: NodeJS.Timer | null = null;
 	private maps: ILevelMap[] = [];
 	private mapsTemplates: IGameLevel[] = [];
 	private currentMap!: MapConfigurator;
@@ -33,6 +35,7 @@ export default class GameConfigurator extends Configurator {
 
 	public async configureGame(options: GameConfiguratorOptions): Promise<void> {
 		this.setMaps(options);
+		this.initializeTimer();
 		await this.loadGatesAnimation();
 		await Towers.init();
 		await Enemies.init()
@@ -96,7 +99,10 @@ export default class GameConfigurator extends Configurator {
 		this.towerSellUpgradeElement = towerSellUpgradeElement as HTMLDivElement;
 	}
 
-
+	private initializeTimer() {
+		this.timer = document.getElementById('game__timer') as HTMLDivElement;
+		this.timerValue = document.getElementById('game__timer-value') as HTMLDivElement;
+	}
 
 	private hideOverlay() {
 		const hpContainer = (document.getElementsByClassName('game__hp-money-container')[0] as HTMLDivElement);
@@ -136,18 +142,32 @@ export default class GameConfigurator extends Configurator {
 				this.delayBetweenWaves = wave.afterWaveDelay;
 				const delayInterval = function waveDelay(this: GameConfigurator) {
 					if (this.delayBetweenWaves === 0) {
-						if (delayIntervalId) {
-							clearTimeout(delayIntervalId);
-							delayIntervalId = null;
+						if (this.wavesDelayInterval) {
+							clearTimeout(this.wavesDelayInterval);
+							this.wavesDelayInterval = null;
+							this.hideTimer();
 						}
 					}
-					else
-						this.delayBetweenWaves--;
+					else {
+						if (this.isChangingMap === false) {
+							this.timerValue.innerText = this.delayBetweenWaves.toString();
+							this.delayBetweenWaves--;
+						}
+					}
 				}
-				let delayIntervalId: NodeJS.Timer | null = setInterval(delayInterval.bind(this), 1000)
+				this.wavesDelayInterval = setInterval(delayInterval.bind(this), 1000);
+				this.showTimer();
 				this.initializeWave(wave);
 			}
 		}
+	}
+
+	private showTimer() {
+		this.timer.style.display = 'flex';
+	}
+
+	private hideTimer() {
+		this.timer.style.display = 'none';
 	}
 
 	private async tryInitializeNextMap() {
@@ -163,11 +183,9 @@ export default class GameConfigurator extends Configurator {
 		const mapToInit = this.maps.find(map => map.level === this.currentLevel);
 		if (_.isEmpty(mapToInit))
 			throw new Error('Current map does not exist');
-		debugger
-		if (isRestart) {
-			this.currentMap = new MapConfigurator(this.canvasAccessor, this.mapsTemplates[this.currentLevel - 1].mapOptions)
-		} else
-			this.currentMap = mapToInit.map;
+		this.scrollTop();
+		this.clearTimerInterval();
+		this.setCurrentMap(mapToInit.map, isRestart);
 		await this.currentMap.configureMap();
 		this.initializeUserStatsProxy(this.currentMap);
 		this.isChangingMap = true;
@@ -180,6 +198,24 @@ export default class GameConfigurator extends Configurator {
 		}, 3000);
 	}
 
+	private scrollTop() {
+		window.scrollTo({
+			top: 0,
+			behavior: "smooth"
+		});
+	}
+	private clearTimerInterval() {
+		if (this.wavesDelayInterval)
+			clearTimeout(this.wavesDelayInterval);
+	}
+
+	private setCurrentMap(mapTemplateToSet: MapConfigurator, isRestart) {
+		if (isRestart) {
+			this.currentMap = new MapConfigurator(this.canvasAccessor, _.cloneDeep(this.mapsTemplates[this.currentLevel - 1].mapOptions))
+		} else
+			this.currentMap = mapTemplateToSet;
+
+	}
 	private clearTowersList() {
 		this.towersList = [];
 		this.platformList = [];
