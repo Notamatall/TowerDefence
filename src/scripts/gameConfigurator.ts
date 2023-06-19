@@ -1,4 +1,4 @@
-import { GameConfigurationOptions, ILevelMap, IUserStats, UserStatsKey } from '@/types';
+import { GameConfigurationOptions, ILevelMap, IUserStats, UserStatsKey, Wave } from '@/types';
 import MapConfigurator from './mapConfigurator';
 import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
@@ -8,6 +8,7 @@ import Enemies from './enemies';
 import Enemy, { IEnemy, IEnemyInitializer } from '@/types/enemyTypes';
 import Utilities from '@/utilities/utilities';
 import audioController from './audioController';
+import { isEmpty } from 'lodash';
 import { ImagePath } from '@/types/imagePath';
 
 
@@ -17,60 +18,58 @@ export default class GameConfigurator extends Configurator {
 	}
 	private maps: ILevelMap[] = [];
 	private currentMap!: MapConfigurator;
+	private currentLevel: number = 1;
+	private delayBetweenWaves: number = 0;
 	private userStatsProxy: IUserStats | null = null;
 	private platformList: Tower[] = [];
 	private towersList: Tower[] = [];
+	private isChangingMap: boolean = false;
 	private enemiesList: Enemy[] = [];
 	private towerSellUpgradeElement!: HTMLDivElement;
+	private gateLoadAnimation!: HTMLImageElement;
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 
 	public async configureGame(options: GameConfigurationOptions): Promise<void> {
-
 		this.setMaps(options.maps);
+		await this.loadGatesAnimation();
 		await Towers.init();
 		await Enemies.init()
-		await this.currentMap.configureMap();
-		this.registerUserStatsProxy(this.currentMap);
+		this.registerOnMouseMoveEventHandlerForMap()
 		this.registerOnCanvasClick();
 		this.registerEscape();
 		this.setTowerMenuElement();
 		this.registerSellUpgradeMenuHandlers();
 		this.configureMainMenuHandlers();
-		const start = this.currentMap.enemiesSpawnPoint;
+	}
+	public async startGame() {
+		await this.animate();
+	}
 
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.lizard, start.xPos - 2500 - 100 * index, start.yPos), this.canvasAccessor));
-		// }
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.jinn, start.xPos - 250 * index, start.yPos), this.canvasAccessor));
-		// }
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demonBoss, start.xPos - 1500 - 500 * index, start.yPos), this.canvasAccessor));
-		// }
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.dragon, start.xPos - 5000 - 100 * index, start.yPos), this.canvasAccessor));
-		// }
-		// for (let index = 0; index < 15; index++) {
-		// 	this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.smallDragon, -1000 - 256 * index, 128), this.canvasAccessor));
-		// }
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.medusa, start.x, start.y - 250 * index), this.canvasAccessor));
+	private async animate() {
+		await this.tryChangeMapWave();
+		requestAnimationFrame(this.animate.bind(this));
+		if (this.isChangingMap) {
+			console.log('here')
+			this.drawMapChangeAnimation();
+			return;
 		}
-
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.demon, start.x, start.y - 500 * index), this.canvasAccessor));
+		this.currentMap.drawMap()
+		if (this.isNoDelay()) {
+			this.drawPlatforms();
+			this.drawTowers();
+			this.drawEnemies();
+			this.currentMap.tryDrawPickedMenuItem();
+		} else {
+			console.log(this.delayBetweenWaves)
 		}
+	}
 
-		for (let index = 0; index < 15; index++) {
-			this.enemiesList.push(new Enemy(this.createEnemy(Enemies.list.robot, start.x, start.y - 1000 * index), this.canvasAccessor));
+	private registerOnMouseMoveEventHandlerForMap() {
+		const onMouseMove = (e: MouseEvent) => {
+			this.setCursorCoordinates(e);
 		}
-
-		setInterval(() => {
-
-			console.log(this.count)
-			this.count = 0;
-		}, 1000)
+		this.addMouseMoveEventHandler(onMouseMove);
 	}
 
 	registerSellUpgradeMenuHandlers() {
@@ -83,6 +82,13 @@ export default class GameConfigurator extends Configurator {
 		}
 	}
 
+	private async loadGatesAnimation() {
+		const gatesImage = Utilities.createImage(ImagePath.gates, 160, 160);
+		const gatesAnimationPromise = Utilities.loadImages({ gatesImage });
+		const imageAsset = await Promise.all(gatesAnimationPromise);
+		this.gateLoadAnimation = imageAsset[0].img;
+	}
+
 	setTowerMenuElement() {
 		const towerSellUpgradeElement = document.getElementById('game__update-tower-menu');
 		if (towerSellUpgradeElement === null)
@@ -90,16 +96,93 @@ export default class GameConfigurator extends Configurator {
 		this.towerSellUpgradeElement = towerSellUpgradeElement as HTMLDivElement;
 	}
 
-	public startGame() {
-		this.animate();
+
+
+	private hideOverlay() {
+		const hpContainer = (document.getElementsByClassName('game__hp-money-container')[0] as HTMLDivElement);
+		hpContainer.style.display = 'none';
+
+		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
+		gameMenuPlaceHolder.style.display = 'none';
+
+		const gameMenuIcon = document.getElementById('game__main-menu-icon')!;
+		gameMenuIcon.style.display = 'none';
 	}
 
-	private configureEnemiesByLevel() {
-		// mostersLevelOne
+	private showOverlay() {
+		const hpContainer = (document.getElementsByClassName('game__hp-money-container')[0] as HTMLDivElement);
+		hpContainer.style.display = 'flex';
+
+		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
+		gameMenuPlaceHolder.style.display = 'flex';
+
+		const gameMenuIcon = document.getElementById('game__main-menu-icon')!;
+		gameMenuIcon.style.display = 'flex';
 	}
 
+	public async tryChangeMapWave() {
+		if (this.enemiesList.length === 0) {
+			if (isEmpty(this.currentMap?.mapWaves))
+				await this.tryInitializeNextMap();
+			else {
+				const wave = this.currentMap.mapWaves.shift()!;
+				this.delayBetweenWaves = wave.afterWaveDelay;
+				const delayInterval = function waveDelay(this: GameConfigurator) {
+					if (this.delayBetweenWaves === 0) {
+						if (delayIntervalId) {
+							clearTimeout(delayIntervalId);
+							delayIntervalId = null;
+						}
+					}
+					else
+						this.delayBetweenWaves--;
+				}
+				let delayIntervalId: NodeJS.Timer | null = setInterval(delayInterval.bind(this), 1000)
+				this.initializeWave(wave);
+			}
+		}
+	}
+
+	private async tryInitializeNextMap() {
+		const newMap = this.maps.find(map => map.level === this.currentLevel);
+		if (_.isEmpty(newMap))
+			console.log('you won');
+		else {
+			this.currentMap = newMap.map;
+			await this.currentMap.configureMap();
+			this.initializeUserStatsProxy(this.currentMap);
+			this.isChangingMap = true;
+			this.hideOverlay();
+			setTimeout(() => {
+				this.isChangingMap = false;
+				this.showOverlay();
+			}, 3000);
+		}
+		this.currentLevel++;
+	}
+
+	private clearTowersList() {
+		this.towersList = [];
+	}
+
+	private initializeWave(wave: Wave) {
+		if (_.isEmpty(wave))
+			return;
+		const spawnPoin = this.currentMap.enemiesSpawnPoint;
+
+		for (const waveEnemy of wave.waveEnemies)
+
+			for (let index = 0; index < waveEnemy.amount; index++) {
+				const enemy = this.createEnemy(
+					Enemies.list[waveEnemy.enemyType],
+					spawnPoin.x + waveEnemy.spawnBetweenUnitX * index + waveEnemy.spawnDistanceX,
+					spawnPoin.y + waveEnemy.spawnBetweenUnitY * index + waveEnemy.spawnDistanceY,
+				)
+				this.enemiesList.push(enemy);
+			}
+
+	}
 	private configureMainMenuHandlers() {
-
 		Utilities.tryCatchWrapper(() => {
 			const mainMenuIcon = document.getElementById('game__main-menu-icon');
 			const mainMenu = document.getElementById('game__main-menu');
@@ -109,7 +192,6 @@ export default class GameConfigurator extends Configurator {
 			const mainMenuBackgroundHigh = document.getElementById('game__main-menu-background-sound-high');
 			const mainMenuTowerHigh = document.getElementById('game__main-menu-tower-sound-high');
 			const mainMenuTowerLow = document.getElementById('game__main-menu-tower-sound-low');
-			const towersVolume = 0.3;
 
 			if (mainMenuIcon === null)
 				throw new Error('main menu icon does not exist');
@@ -188,10 +270,10 @@ export default class GameConfigurator extends Configurator {
 			moveDirX: 1,
 			moveDirY: 0
 		}
-		return enemy;
+		return new Enemy(enemy, this.canvasAccessor);
 	}
 
-	private registerUserStatsProxy(currentMap: MapConfigurator) {
+	private initializeUserStatsProxy(currentMap: MapConfigurator) {
 		const userStats: IUserStats = {} as IUserStats;
 		var handler = function (this: GameConfigurator) {
 			const hpElement = currentMap.hpElement;
@@ -234,19 +316,10 @@ export default class GameConfigurator extends Configurator {
 			}
 		})
 	}
-	private count = 0;
-	private count2 = 0;
-	private count3 = 0;
 
-	private animate() {
-		requestAnimationFrame(this.animate.bind(this));
 
-		this.currentMap.drawMap()
-		this.drawPlatforms();
-		this.drawTowers();
-		this.drawEnemies();
-		this.count++;
-		this.currentMap.tryDrawPickedMenuItem();
+	isNoDelay() {
+		return this.delayBetweenWaves === 0;
 	}
 
 	private drawPlatforms() {
@@ -259,15 +332,25 @@ export default class GameConfigurator extends Configurator {
 				this.currentMap.tileWidth,
 				this.currentMap.tileHeight);
 	}
+	private changeAnimationTimer = 0;
+	private drawMapChangeAnimation() {
+		this.changeAnimationTimer++;
+		this.context.drawImage(this.gateLoadAnimation,
+			160 * Math.floor(this.changeAnimationTimer / 10),
+			0,
+			160,
+			160,
+			window.innerWidth / 2 - 80,
+			window.innerHeight / 2 - 80,
+			160,
+			160);
+		if (this.changeAnimationTimer == 120)
+			this.changeAnimationTimer = 0;
+	}
 
 	private drawTowers() {
 		for (const tower of this.towersList)
 			tower.update();
-	}
-
-	private drawTowerAttacks() {
-		for (const tower of this.towersList)
-			tower.drawExplosions();
 	}
 
 	private drawEnemies() {
@@ -277,13 +360,6 @@ export default class GameConfigurator extends Configurator {
 
 	private setMaps(maps: ILevelMap[]) {
 		this.maps = maps;
-		setDefaultMap.call(this);
-		function setDefaultMap(this) {
-			const firstLevelMap = this.maps.find(levelMap => levelMap.level == 1);
-			if (_.isNil(firstLevelMap))
-				throw new Error('Default map is not defined');
-			this.currentMap = firstLevelMap.map;
-		}
 	}
 
 	private handleTowerSellUpdate(coordinates: {
@@ -334,7 +410,6 @@ export default class GameConfigurator extends Configurator {
 			}
 		}
 	}
-
 
 	private registerOnCanvasClick() {
 		const clickEvenHandler = (e: MouseEvent) => {

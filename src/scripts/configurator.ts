@@ -9,6 +9,13 @@ export default class Configurator {
 	private mouseMoveEventHandlers: ((ev: MouseEvent) => any | null)[] = [];
 	private mouseClickHandlers: ((ev: MouseEvent) => any | null)[] = [];
 
+
+	protected setCursorCoordinates(event: MouseEvent) {
+		const rect = this.canvas.getBoundingClientRect();
+		this.cursorX = event.clientX - rect.left;
+		this.cursorY = event.clientY - rect.top;
+	}
+
 	protected addMouseMoveEventHandler(mouseMoveEventHandler: (ev: MouseEvent) => any | null) {
 		this.mouseMoveEventHandlers.push(mouseMoveEventHandler);
 		this.canvasBuilder.canvas.addEventListener('mousemove', mouseMoveEventHandler);
@@ -33,12 +40,6 @@ export default class Configurator {
 			this.mouseClickHandlers.slice(indexToRemove, 1);
 		}
 		this.canvasBuilder.canvas.removeEventListener('mousemove', clickEventHandlerToRemove);
-	}
-
-	protected setCursorCoordinates(event: MouseEvent) {
-		const rect = this.canvas.getBoundingClientRect();
-		this.cursorX = event.clientX - rect.left;
-		this.cursorY = event.clientY - rect.top;
 	}
 
 	protected get canvasAccessor(): CanvasBuilder {

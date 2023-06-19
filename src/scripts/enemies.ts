@@ -72,7 +72,7 @@ class EnemiesTemplates {
 			medusa: {
 				name: 'Medusa',
 				type: 'medusa',
-				moveSpeed: 5,
+				moveSpeed: 2,
 				totalHP: 1000,
 				deathReward: 300,
 				damageOnPass: 20,
@@ -104,7 +104,7 @@ class EnemiesTemplates {
 					imageSrc: ImagePath.smallDragonMove, frameChangeRate: 10,
 					xFramesStart: 0, yFramesStart: 0, framesAmount: 4,
 					pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128,
-					hpBarXCorrelation: 35, hpBarYCorrelation: 35
+					hpBarXCorrelation: 35, hpBarYCorrelation: 35, rotatedXcorrelation: 15
 				})
 			},
 			dragon: {
@@ -161,7 +161,7 @@ class EnemiesTemplates {
 					imageSrc: ImagePath.lizardMove, frameChangeRate: 4,
 					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256, pxWidth: 256,
 					dispayX: 256, dispayY: 256, uniqueXCorrelation: -20,
-					hpBarXCorrelation: 40, hpBarYCorrelation: 40
+					hpBarXCorrelation: 40, hpBarYCorrelation: 40, rotatedXcorrelation: 30
 				})
 			},
 		} as DefaultEnemyType;

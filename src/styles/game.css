@@ -150,7 +150,7 @@ html {
 }
 
 .game__menu-placeholder {
-	display: flex !important;
+	display: flex;
 	position: fixed;
 	top: 25px;
 	left: 25px;

@@ -1,4 +1,4 @@
-import { Coordinate, IUserStats, MapConfigurationOptions } from "@/types";
+import { Coordinate, IUserStats, MapConfigurationOptions, Wave, WaveEnemy } from "@/types";
 import { EnemyType } from "@/types/enemyTypes";
 import { ImagePath } from "@/types/imagePath";
 import { TowerType } from "@/types/towersTypes";
@@ -16,7 +16,7 @@ export interface IMapTemplateCell {
 const menuItems: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon']
 const firstLevelUserStats: IUserStats = {
 	userHP: 15,
-	userCoins: 1500
+	userCoins: 20000
 }
 
 export const mostersLevelOne: EnemyType[] = ['jinn', 'lizard', 'smallDragon', 'medusa']
@@ -34,6 +34,24 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 	[c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(2), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0), c(0)],
 ];
 
+const firstLevelWaves: Wave[] = [
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('robot', 1, 0, 0, -400, 0),
+		// WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
+		// WaveEnemy.createWaveEnemy('jinn', 8, -(5 * 200), 0, -600, 0),
+	], 0),
+	// Wave.createWave([
+	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, -350, 0),
+	// 	WaveEnemy.createWaveEnemy('medusa', 8, -(11 * 200), 0, -800, 0),
+	// 	WaveEnemy.createWaveEnemy('demon', 8, -(20 * 200), 0, -1000, 0),
+	// ]),
+	// Wave.createWave([
+	// 	WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, -200, 0),
+	// 	WaveEnemy.createWaveEnemy('demon', 8, -(5 * 200), 0, -1000, 0),
+	// 	WaveEnemy.createWaveEnemy('smallDragon', 8, -(11 * 200), 0, -450, 0),
+	// ]),
+]
+
 
 export const firstLevelOptions: MapConfigurationOptions = {
 	mapName: 'Level one',
@@ -47,7 +65,8 @@ export const firstLevelOptions: MapConfigurationOptions = {
 	environmentY: 384,
 	menuOptions: menuItems,
 	defaultUserStats: firstLevelUserStats,
-	spawnPoint: getSpawnPoint(firstLevelTemplate, -1000, 0)
+	spawnPoint: getSpawnPoint(firstLevelTemplate, -200, 0),
+	waves: firstLevelWaves
 }
 
 const secondLevelTemplate: IMapTemplateCell[][] = [
@@ -73,6 +92,23 @@ const SecondLevelUserStats: IUserStats = {
 	userCoins: 1000
 }
 
+const secondLevelWaves: Wave[] = [
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, 0, -400),
+		WaveEnemy.createWaveEnemy('jinn', 8, 0, -(5 * 220), 0, -600),
+	], 0),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -350),
+		WaveEnemy.createWaveEnemy('medusa', 8, 0, -(11 * 200), 0, -800),
+		WaveEnemy.createWaveEnemy('demon', 8, 0, -(20 * 200), 0, -1000),
+	]),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, -220, 0),
+		WaveEnemy.createWaveEnemy('demon', 8, 0, -(5 * 200), 0, -1000),
+		WaveEnemy.createWaveEnemy('smallDragon', 8, 0, -(11 * 200), 0, -450),
+	]),
+]
+
 export const secondLevelOptions: MapConfigurationOptions = {
 	mapName: 'Level two',
 	defaultTileHeight: 128,
@@ -85,7 +121,8 @@ export const secondLevelOptions: MapConfigurationOptions = {
 	environmentY: 512,
 	menuOptions: menuItems,
 	defaultUserStats: SecondLevelUserStats,
-	spawnPoint: getSpawnPoint(secondLevelTemplate, 0, -1000)
+	spawnPoint: getSpawnPoint(secondLevelTemplate, 0, -200),
+	waves: secondLevelWaves
 }
 
 function getSpawnPoint(mapTemplate: IMapTemplateCell[][], addByX: number, addByY: number): Coordinate {

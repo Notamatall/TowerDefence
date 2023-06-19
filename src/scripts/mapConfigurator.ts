@@ -1,7 +1,7 @@
 import Utilities from "@/utilities/utilities";
 import { CanvasBuilder } from "./canvasBuilder";
 import Configurator from './configurator';
-import { Coordinate, IUserStats, MapConfigurationOptions, TurnPosition } from "@/types";
+import { Coordinate, IUserStats, MapConfigurationOptions, TurnPosition, Wave } from "@/types";
 import { IMapTemplateCell } from "./mapTemplates/mapTemplates";
 import Towers from "./towers";
 import { TowerType, ITowerInitializer } from "@/types/towersTypes";
@@ -20,11 +20,12 @@ export default class MapConfigurator extends Configurator {
 		this.menuOptions = options.menuOptions;
 		this.mapDefaultUserStats = options.defaultUserStats;
 		this.spawnPoint = options.spawnPoint;
+		this.waves = options.waves;
 		this.defineTurnPlaces();
 	}
 
-	//properties
 	private menuOptions: TowerType[];
+	private waves: Wave[];
 	private mapAvailableTowers: ITowerInitializer[] = [];
 	private mapName: string;
 	private defaultTileWidth: number;
@@ -46,11 +47,16 @@ export default class MapConfigurator extends Configurator {
 
 	public pickedMenuItem: ITowerInitializer | null = null;
 
-	get enemiesSpawnPoint() {
+
+	get mapWaves(): Wave[] {
+		return this.waves;
+	}
+
+	get enemiesSpawnPoint(): Coordinate {
 		return this.spawnPoint;
 	}
 
-	get turnPlaces() {
+	get turnPlaces(): TurnPosition[] {
 		return this.mapTurnPlaces;
 	}
 
@@ -88,7 +94,6 @@ export default class MapConfigurator extends Configurator {
 		this.setMapTowers();
 		await this.loadMapImage();
 		await this.createMenu();
-		this.registerOnMouseMoveEventHandlerForMap();
 		this.configureHpMoneyContainer();
 		this.canvasAccessor.setCanvasHeight({
 			width: this.mapTemplate[0].length * 128,
@@ -140,7 +145,6 @@ export default class MapConfigurator extends Configurator {
 		}
 	}
 
-
 	public getClickedMapIndexY(mousePosY: number): number {
 		const canvasRect = this.canvas.getBoundingClientRect();
 		const clickIndexY = Math.round((mousePosY - canvasRect.top - this.tileHeight / 2) / this.tileHeight);
@@ -167,9 +171,11 @@ export default class MapConfigurator extends Configurator {
 	private async createMenu() {
 		Utilities.tryCatchWrapper(() => {
 
-			const menuPlaceholder = getMenuPlaceholder.call(this);
+			removePlaceHolder();
+			const menuPlaceholder = createMenuPlaceholder.call(this);
 			if (menuPlaceholder === null)
 				throw new Error('Menu placeholder was not found');
+
 
 			const shopIcon = getShopIcon();
 			const gameMenu = getGameMenu.call(this);
@@ -187,7 +193,15 @@ export default class MapConfigurator extends Configurator {
 					gameMenu.appendChild(wrapper);
 				}
 			}
-			function getMenuPlaceholder(this: MapConfigurator) {
+
+			function removePlaceHolder() {
+				const menuPlaceholders = document.getElementsByClassName('game__menu-placeholder');
+				for (const menuPlaceholder of menuPlaceholders) {
+					menuPlaceholder.remove();
+				}
+			}
+
+			function createMenuPlaceholder(this: MapConfigurator) {
 				const menuPlaceholder = document.createElement('div');
 				menuPlaceholder.classList.add('game__menu-placeholder');
 				menuPlaceholder.onmousemove = (e) => {
@@ -264,9 +278,17 @@ export default class MapConfigurator extends Configurator {
 	}
 
 	private configureHpMoneyContainer() {
+		removeHpMoneyContainer();
 		const hpMoneyContainer = creatHpMoneyBarContainer();
 		const moneyContainer = createMoneyContainer.call(this);
 		const hpContainer = createHpContainer.call(this);
+
+		function removeHpMoneyContainer() {
+			const hpMoneyContainers = document.getElementsByClassName('game__hp-money-container');
+			for (const hpMoneyContainer of hpMoneyContainers) {
+				hpMoneyContainer.remove();
+			}
+		}
 
 		function creatHpMoneyBarContainer(): HTMLDivElement {
 			const hpMoneyContainer = document.createElement('div');
@@ -313,13 +335,6 @@ export default class MapConfigurator extends Configurator {
 		this.pickedMenuItem = menuItem;
 	}
 
-	private registerOnMouseMoveEventHandlerForMap() {
-		const onMouseMove = (e: MouseEvent) => {
-			this.setCursorCoordinates(e);
-		}
-
-		this.addMouseMoveEventHandler(onMouseMove);
-	}
 
 	private drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
 
