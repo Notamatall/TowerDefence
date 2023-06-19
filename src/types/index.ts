@@ -9,6 +9,12 @@ export interface IImageAsset<T> {
 	key: T
 }
 
+export interface IGameLevel {
+	level: number; mapOptions: MapConfigurationOptions
+}
+export interface GameConfiguratorOptions {
+	levels: IGameLevel[]
+}
 
 export interface MapConfigurationOptions {
 	mapName: string;

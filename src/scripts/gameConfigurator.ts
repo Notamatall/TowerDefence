@@ -1,4 +1,4 @@
-import { GameConfigurationOptions, ILevelMap, IUserStats, UserStatsKey, Wave } from '@/types';
+import { GameConfiguratorOptions, IGameLevel, ILevelMap, IUserStats, MapConfigurationOptions, UserStatsKey, Wave } from '@/types';
 import MapConfigurator from './mapConfigurator';
 import { CanvasBuilder } from './canvasBuilder';
 import Configurator from './configurator';
@@ -11,12 +11,13 @@ import audioController from './audioController';
 import { isEmpty } from 'lodash';
 import { ImagePath } from '@/types/imagePath';
 
-
 export default class GameConfigurator extends Configurator {
 	constructor(canvasContext: CanvasBuilder) {
 		super(canvasContext);
 	}
+
 	private maps: ILevelMap[] = [];
+	private mapsTemplates: IGameLevel[] = [];
 	private currentMap!: MapConfigurator;
 	private currentLevel: number = 0;
 	private delayBetweenWaves: number = 0;
@@ -30,8 +31,8 @@ export default class GameConfigurator extends Configurator {
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 
-	public async configureGame(options: GameConfigurationOptions): Promise<void> {
-		this.setMaps(options.maps);
+	public async configureGame(options: GameConfiguratorOptions): Promise<void> {
+		this.setMaps(options);
 		await this.loadGatesAnimation();
 		await Towers.init();
 		await Enemies.init()
@@ -158,11 +159,15 @@ export default class GameConfigurator extends Configurator {
 			await this.initCurrentMap();
 	}
 
-	private async initCurrentMap() {
+	private async initCurrentMap(isRestart: boolean = false) {
 		const mapToInit = this.maps.find(map => map.level === this.currentLevel);
 		if (_.isEmpty(mapToInit))
 			throw new Error('Current map does not exist');
-		this.currentMap = mapToInit.map;
+		debugger
+		if (isRestart) {
+			this.currentMap = new MapConfigurator(this.canvasAccessor, this.mapsTemplates[this.currentLevel - 1].mapOptions)
+		} else
+			this.currentMap = mapToInit.map;
 		await this.currentMap.configureMap();
 		this.initializeUserStatsProxy(this.currentMap);
 		this.isChangingMap = true;
@@ -203,59 +208,29 @@ export default class GameConfigurator extends Configurator {
 
 	private configureMainMenuHandlers() {
 		Utilities.tryCatchWrapper(() => {
-			const mainMenuIcon = document.getElementById('game__main-menu-icon');
-			const mainMenu = document.getElementById('game__main-menu');
-			const mainMenuCloseButton = document.getElementById('game__main-menu-close-button');
-			const mainMenuPlayButton = document.getElementById('game__main-menu-play-button');
-			const mainMenuBackgroundLow = document.getElementById('game__main-menu-background-sound-low');
-			const mainMenuBackgroundHigh = document.getElementById('game__main-menu-background-sound-high');
-			const mainMenuTowerHigh = document.getElementById('game__main-menu-tower-sound-high');
-			const mainMenuTowerLow = document.getElementById('game__main-menu-tower-sound-low');
-			const backToMainMenu = document.getElementById('game__main-menu-back');
-
-			if (backToMainMenu === null)
-				throw new Error('backToMainMenu menu button does not exist');
-
-			if (mainMenuIcon === null)
-				throw new Error('main menu icon does not exist');
-
-			if (mainMenu === null)
-				throw new Error('main menu does not exist');
-
-			if (mainMenuCloseButton === null)
-				throw new Error('mainMenuCloseButton does not exist');
-
-			if (mainMenuBackgroundLow === null)
-				throw new Error('mainMenuPlayButton does not exist');
-
-			if (mainMenuBackgroundHigh === null)
-				throw new Error('mainMenuPlayButton does not exist');
-
-			if (mainMenuPlayButton === null)
-				throw new Error('mainMenuPlayButton does not exist');
-
-			if (mainMenuTowerLow === null)
-				throw new Error('mainMenuTowerLow does not exist');
-
-			if (mainMenuTowerHigh === null)
-				throw new Error('mainMenuTowerHigh does not exist');
+			const mainMenuIcon = document.getElementById('game__main-menu-icon')!;
+			const mainMenu = document.getElementById('game__main-menu')!;
+			const mainMenuCloseButton = document.getElementById('game__main-menu-close-button')!;
+			const mainMenuPlayButton = document.getElementById('game__main-menu-play-button')!;
+			const mainMenuBackgroundLow = document.getElementById('game__main-menu-background-sound-low')!;
+			const mainMenuBackgroundHigh = document.getElementById('game__main-menu-background-sound-high')!;
+			const mainMenuTowerHigh = document.getElementById('game__main-menu-tower-sound-high')!;
+			const mainMenuTowerLow = document.getElementById('game__main-menu-tower-sound-low')!;
+			const backToMainMenu = document.getElementById('game__main-menu-back')!;
+			const restartButton = document.getElementById('game__main-menu-restart')!;
 
 			mainMenuIcon.onclick = () => {
 				mainMenu.style.display = 'flex';
 			}
-
 			mainMenuCloseButton.onclick = () => {
 				mainMenu.style.display = 'none';
 			}
-
 			mainMenuPlayButton.onclick = () => {
-
 				if (audioController.currentPlayed)
 					audioController.currentPlayed.paused ? audioController.currentPlayed.play() : audioController.currentPlayed.pause();
 				else
 					audioController.loopBackground();
 			}
-
 			mainMenuBackgroundLow.onclick = () => {
 				audioController.volumeLower()
 			}
@@ -273,6 +248,9 @@ export default class GameConfigurator extends Configurator {
 			}
 			backToMainMenu.onclick = () => {
 				window.location.href = 'index.html';
+			}
+			restartButton.onclick = async () => {
+				await this.initCurrentMap(true);
 			}
 
 		})
@@ -384,8 +362,14 @@ export default class GameConfigurator extends Configurator {
 			enemy.update();
 	}
 
-	private setMaps(maps: ILevelMap[]) {
-		this.maps = maps;
+	private setMaps(gameOptions: GameConfiguratorOptions) {
+		this.mapsTemplates = _.cloneDeep(gameOptions.levels);
+		gameOptions.levels.forEach(levelOptions => {
+			this.maps.push({
+				level: levelOptions.level,
+				map: new MapConfigurator(this.canvasAccessor, levelOptions.mapOptions)
+			})
+		})
 	}
 
 	private handleTowerSellUpdate(coordinates: {
