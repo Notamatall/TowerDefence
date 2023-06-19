@@ -13,10 +13,6 @@ class AudioController {
 		new Audio(sciFiSrc2),
 		new Audio(sciFiSrc3),
 		new Audio(sciFiSrc4),
-		// new Audio(sciFiSrc5),
-		// new Audio(sciFiSrc6),
-		// new Audio(sciFiSrc7),
-		// new Audio(sciFiSrc8)
 	]
 	currentPlayed?: HTMLAudioElement;
 

@@ -37,14 +37,14 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 const firstLevelWaves: Wave[] = [
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('robot', 1, 0, 0, -400, 0),
-		// WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
+		//WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
 		// WaveEnemy.createWaveEnemy('jinn', 8, -(5 * 200), 0, -600, 0),
 	], 0),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, -350, 0),
-	// 	WaveEnemy.createWaveEnemy('medusa', 8, -(11 * 200), 0, -800, 0),
-	// 	WaveEnemy.createWaveEnemy('demon', 8, -(20 * 200), 0, -1000, 0),
-	// ]),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, -350, 0),
+		WaveEnemy.createWaveEnemy('medusa', 8, -(11 * 200), 0, -800, 0),
+		WaveEnemy.createWaveEnemy('demon', 8, -(20 * 200), 0, -1000, 0),
+	]),
 	// Wave.createWave([
 	// 	WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, -200, 0),
 	// 	WaveEnemy.createWaveEnemy('demon', 8, -(5 * 200), 0, -1000, 0),

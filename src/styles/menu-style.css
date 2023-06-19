@@ -1,61 +1,57 @@
-body{
-background: black;
+body {
+	background: black;
+	margin: 0px;
 }
 
-#main-menu-container{
-max-width: 900px;
-width: 90%;
-margin: 0 auto;
-display: table;
-height: 100vh;
-background:hwb(0 2% 85%);
+#main-menu-container {
+	background-image: url(../assets/patterns/StoneFloorTexture.png);
+	width: 100%;
 }
 
-#menu-container{
-display: table-cell;
-vertical-align: middle;
+#menu-container {
+	justify-content: center;
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
 }
 
-#menu-header{
-width: fit-content;
-margin: 5% auto;
-font-family: 'menuTitleFont';
-font-size: 6vh;
-color: darkred;
+#menu-header {
+	font-family: 'menuTitleFont';
+	font-size: 7vh;
+	color: darkred;
 }
 
-.menu-item{
-display: block;
-width: fit-content;
-margin: 2% auto;
-padding: 1.5%;
-padding-top: 3%;
-font-family: 'menuItemFont';
-font-size: 3vh;
-border: 5px solid ;
-background-color:rgba(94, 90, 118, 0.8);
-border-radius:35%;
+.menu-item {
+	display: flex;
+	justify-content: center;
+	font-family: 'menuItemFont';
+	font-size: 4vh;
+	border: 5px solid;
+	margin: 5px;
+	background-color: rgba(94, 90, 118, 0.8);
+	padding: 10px;
+	border-radius: 35%;
 }
 
-.menu-item:hover{
-  background-color:rgba(94, 90, 118, 0.65);
+.menu-item:hover {
+	background-color: rgba(94, 90, 118, 0.65);
 }
 
-.menu-item:visited{
-  background-color:rgba(71, 61, 130, 0.800);
+.menu-item:visited {
+	background-color: rgba(71, 61, 130, 0.800);
 }
 
 .menu-item:active {
-  background-color: rgb(56, 56, 6);
+	background-color: rgb(56, 56, 6);
 }
 
 @font-face {
-  font-family: menuItemFont;
-  src: url(./fonts/DarkBookDemoRegular.ttf);
+	font-family: menuItemFont;
+	src: url(./fonts/DarkBookDemoRegular.ttf);
 }
 
 @font-face {
-  font-family: menuTitleFont;
-  src: url(./fonts/Rudelsberg.ttf);
+	font-family: menuTitleFont;
+	src: url(./fonts/Rudelsberg.ttf);
 }
-

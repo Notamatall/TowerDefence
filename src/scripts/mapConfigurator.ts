@@ -93,7 +93,7 @@ export default class MapConfigurator extends Configurator {
 	public async configureMap(): Promise<void> {
 		this.setMapTowers();
 		await this.loadMapImage();
-		await this.createMenu();
+		this.createMenu();
 		this.configureHpMoneyContainer();
 		this.canvasAccessor.setCanvasHeight({
 			width: this.mapTemplate[0].length * 128,
@@ -168,14 +168,12 @@ export default class MapConfigurator extends Configurator {
 		this.menuOptions.forEach(option => this.mapAvailableTowers.push(Towers.list[option]));
 	}
 
-	private async createMenu() {
+	private createMenu() {
 		Utilities.tryCatchWrapper(() => {
-
 			removePlaceHolder();
 			const menuPlaceholder = createMenuPlaceholder.call(this);
 			if (menuPlaceholder === null)
 				throw new Error('Menu placeholder was not found');
-
 
 			const shopIcon = getShopIcon();
 			const gameMenu = getGameMenu.call(this);
