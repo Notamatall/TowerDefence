@@ -24,13 +24,13 @@ body {
 
 .menu-item {
 	display: flex;
+	padding-top: 20px;
 	justify-content: center;
 	font-family: 'menuItemFont';
-	font-size: 4vh;
+	font-size: 3vh;
 	border: 5px solid;
 	margin: 5px;
 	background-color: rgba(94, 90, 118, 0.8);
-	padding: 10px;
 	border-radius: 35%;
 }
 

@@ -141,7 +141,7 @@ export default class GameConfigurator extends Configurator {
 				const wave = this.currentMap.mapWaves.shift()!;
 				this.delayBetweenWaves = wave.afterWaveDelay;
 				const delayInterval = function waveDelay(this: GameConfigurator) {
-					if (this.delayBetweenWaves === 0) {
+					if (this.delayBetweenWaves === -1) {
 						if (this.wavesDelayInterval) {
 							clearTimeout(this.wavesDelayInterval);
 							this.wavesDelayInterval = null;
@@ -155,6 +155,7 @@ export default class GameConfigurator extends Configurator {
 						}
 					}
 				}
+
 				this.wavesDelayInterval = setInterval(delayInterval.bind(this), 1000);
 				this.showTimer();
 				this.initializeWave(wave);
@@ -359,7 +360,7 @@ export default class GameConfigurator extends Configurator {
 
 
 	isNoDelay() {
-		return this.delayBetweenWaves === 0;
+		return this.delayBetweenWaves <= 0;
 	}
 
 	private drawPlatforms() {
@@ -380,8 +381,8 @@ export default class GameConfigurator extends Configurator {
 			0,
 			160,
 			160,
-			window.innerWidth / 2 - 80,
-			window.innerHeight / 2 - 80,
+			document.body.clientWidth / 2 - 80,
+			document.body.clientHeight / 2 - 80,
 			160,
 			160);
 		if (this.changeAnimationTimer == 120)

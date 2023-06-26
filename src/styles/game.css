@@ -12,7 +12,8 @@ html {
 	padding: 10px;
 	transform: translate(-50%);
 	font-size: 30px;
-	position: absolute;
+	position: fixed;
+	justify-content: center;
 	font-family: gameMenuTitle;
 	height: 200px;
 	width: 500px;
@@ -20,6 +21,7 @@ html {
 }
 
 #game__timer-value {
+	width: 100px;
 	animation: 1s linear 0s infinite alternate animating-multiple-properties;
 }
 

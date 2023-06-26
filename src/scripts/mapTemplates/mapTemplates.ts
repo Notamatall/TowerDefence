@@ -100,7 +100,7 @@ const secondLevelWaves: Wave[] = [
 		WaveEnemy.createWaveEnemy('dragon', 8, 0, -(20 * 200), 0, -1000),
 	]),
 	Wave.createWave([
-		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, -220, 0),
+		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, -220),
 		WaveEnemy.createWaveEnemy('demon', 8, 0, -(5 * 200), 0, -1000),
 		WaveEnemy.createWaveEnemy('smallDragon', 8, 0, -(11 * 200), 0, -450),
 	]),
