@@ -24,7 +24,7 @@ body {
 
 .menu-item {
 	display: flex;
-	padding-top: 20px;
+	padding: 10px;
 	justify-content: center;
 	font-family: 'menuItemFont';
 	font-size: 3vh;

@@ -53,10 +53,7 @@ export default class GameConfigurator extends Configurator {
 	private async animate() {
 		await this.tryChangeMapWave();
 		requestAnimationFrame(this.animate.bind(this));
-		if (this.isChangingMap) {
-			this.drawMapChangeAnimation();
-			return;
-		}
+		this.tryDrawMapChangeAnimation();
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
@@ -65,6 +62,14 @@ export default class GameConfigurator extends Configurator {
 			this.drawEnemies();
 		} else {
 			console.log(this.delayBetweenWaves)
+		}
+	}
+
+
+	private tryDrawMapChangeAnimation() {
+		if (this.isChangingMap) {
+			this.drawMapChangeAnimation();
+			return;
 		}
 	}
 
@@ -382,7 +387,7 @@ export default class GameConfigurator extends Configurator {
 			160,
 			160,
 			document.body.clientWidth / 2 - 80,
-			document.body.clientHeight / 2 - 80,
+			document.body.clientHeight - document.body.clientHeight * 0.7 - 80,
 			160,
 			160);
 		if (this.changeAnimationTimer == 120)
