@@ -111,6 +111,9 @@ export class Tower {
 		if (this.fireAudio)
 			this.fireAudio.remove;
 		this.fireAudio = new Audio(audioSrc);
+		const avrFPS = 60;
+		const shootAnimationPlaybackSpeed = (this.sprite.framesAmount * this.sprite.frameChangeRate) / avrFPS - 1;
+		this.fireAudio.playbackRate = 1.3 - shootAnimationPlaybackSpeed;
 		this.fireAudio.volume = 0.1;
 	}
 
@@ -121,7 +124,7 @@ export class Tower {
 
 	private setUpgradeAudio(audioSrc: string | undefined) {
 		this.upgradeAudio = new Audio(audioSrc);
-		this.upgradeAudio.volume = 0.2;
+		this.upgradeAudio.volume = 0.1;
 	}
 
 	attackVolumeLower() {
@@ -219,7 +222,7 @@ export class Tower {
 			return this.sprite.frameChangeRate === this.currentFrameChangeValue
 		}
 	}
-
+	private count = 0;
 	private getAngleToAttackTarget() {
 		let angle = Math.atan2(this.attackTarget!.center.centerY - this.imageCenter.centerY, this.attackTarget!.center.centerX - this.imageCenter.centerX);
 		return angle * (180 / Math.PI);
@@ -232,7 +235,9 @@ export class Tower {
 		this.rotationAngle = this.getAngleToAttackTarget();
 		this.animate();
 		const isAnimationRestarted = this.tryRestartAnimation();
+		this.count++;
 		if (isAnimationRestarted) {
+			this.count = 0;
 			this.playShotAudio();
 			this.createShotAnimaton();
 			this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
@@ -270,6 +275,7 @@ export class Tower {
 
 
 	private playShotAudio() {
+
 		if (this.fireAudio) {
 			this.fireAudio.play().catch(e => console.error(e));
 		}

@@ -53,7 +53,10 @@ export default class GameConfigurator extends Configurator {
 	private async animate() {
 		await this.tryChangeMapWave();
 		requestAnimationFrame(this.animate.bind(this));
-		this.tryDrawMapChangeAnimation();
+		if (this.isChangingMap) {
+			this.drawMapChangeAnimation();
+			return;
+		}
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
@@ -66,12 +69,6 @@ export default class GameConfigurator extends Configurator {
 	}
 
 
-	private tryDrawMapChangeAnimation() {
-		if (this.isChangingMap) {
-			this.drawMapChangeAnimation();
-			return;
-		}
-	}
 
 	private registerOnMouseMoveEventHandlerForMap() {
 		const onMouseMove = (e: MouseEvent) => {
@@ -155,6 +152,7 @@ export default class GameConfigurator extends Configurator {
 					}
 					else {
 						if (this.isChangingMap === false) {
+							this.showTimer();
 							this.timerValue.innerText = this.delayBetweenWaves.toString();
 							this.delayBetweenWaves--;
 						}
@@ -162,7 +160,6 @@ export default class GameConfigurator extends Configurator {
 				}
 
 				this.wavesDelayInterval = setInterval(delayInterval.bind(this), 1000);
-				this.showTimer();
 				this.initializeWave(wave);
 			}
 		}
@@ -365,7 +362,7 @@ export default class GameConfigurator extends Configurator {
 
 
 	isNoDelay() {
-		return this.delayBetweenWaves <= 0;
+		return this.delayBetweenWaves < 0;
 	}
 
 	private drawPlatforms() {

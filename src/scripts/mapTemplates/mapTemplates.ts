@@ -34,8 +34,8 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 const firstLevelWaves: Wave[] = [
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('robot', 1, 0, 0, 0, 0),
-		// WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
-		// WaveEnemy.createWaveEnemy('jinn', 8, -(5 * 200), 0, -600, 0),
+		WaveEnemy.createWaveEnemy('lizard', 15, 0, 0, -400, 0),
+		WaveEnemy.createWaveEnemy('jinn', 8, -(5 * 200), 0, -600, 0),
 	], 1),
 	// Wave.createWave([
 	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, -350, 0),
@@ -86,7 +86,7 @@ const secondLevelTemplate: IMapTemplateCell[][] = [
 
 const SecondLevelUserStats: IUserStats = {
 	userHP: 100,
-	userCoins: 1000
+	userCoins: 2000
 }
 
 const secondLevelWaves: Wave[] = [

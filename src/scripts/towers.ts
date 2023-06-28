@@ -35,12 +35,12 @@ class TowerTemplates {
 				upgradeType: 'doubleBarrelCannon',
 				installationAudio: ImagePath.towerInstalled,
 				sprite: new Sprite({
-					frameChangeRate: 7, imageSrc: ImagePath.singleBarrelCannon, xFramesStart: 0,
+					frameChangeRate: 6, imageSrc: ImagePath.singleBarrelCannon, xFramesStart: 0,
 					yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128
 				}),
 				attackSprite: new Sprite({
 					imageSrc: ImagePath.smallExplosion, xFramesStart: 0, yFramesStart: 0,
-					framesAmount: 9, frameChangeRate: 2,
+					framesAmount: 9, frameChangeRate: 4,
 					pxHeight: 109, pxWidth: 111, dispayX: 92, dispayY: 92
 				}),
 				name: 'Single barrel cannon'
@@ -58,7 +58,10 @@ class TowerTemplates {
 					framesAmount: 9, frameChangeRate: 2,
 					pxHeight: 109, pxWidth: 111, dispayX: 92, dispayY: 92
 				}),
-				sprite: new Sprite({ frameChangeRate: 6, imageSrc: ImagePath.doubleBarrelCannon, xFramesStart: 0, yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				sprite: new Sprite({
+					frameChangeRate: 6, imageSrc: ImagePath.doubleBarrelCannon, xFramesStart: 0,
+					yFramesStart: 0, framesAmount: 8, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128
+				}),
 				name: 'Double barrel cannon'
 			},
 			doubleBarrelCannonPlus: {

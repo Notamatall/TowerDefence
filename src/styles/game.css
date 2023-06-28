@@ -6,7 +6,7 @@ html {
 
 #game__timer {
 	left: 50%;
-	display: flex;
+	display: none;
 	align-items: center;
 	top: 20%;
 	padding: 10px;
