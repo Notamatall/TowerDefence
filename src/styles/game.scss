@@ -13,7 +13,6 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 
 #game__main-menu {
 	display: none;
-
 	border: solid wheat 2px;
 	position: fixed;
 	left: 50%;
@@ -43,11 +42,6 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 		top: 15px;
 	}
 
-}
-
-@font-face {
-	font-family: gameMenuTitle;
-	src: url(./fonts/AquireBold-8Ma60.otf);
 }
 
 .game__main-menu- {
@@ -93,38 +87,44 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 
 
 
-/* CSS */
-.button-74 {
-	background-color: #fbeee0;
-	border: 2px solid #422800;
+.game__victory-window {
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	min-height: 100px;
+	color: #f5deb3;
+	position: fixed;
+	top: 50%;
 	border-radius: 30px;
-	box-shadow: #422800 4px 4px 0 0;
-	color: #422800;
-	cursor: pointer;
-	display: inline-block;
-	font-weight: 600;
-	font-size: 18px;
-	padding: 0 18px;
-	line-height: 50px;
-	text-align: center;
-	text-decoration: none;
-	user-select: none;
-	-webkit-user-select: none;
-	touch-action: manipulation;
-}
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: #1f0014;
+	background-image: url('../assets/patterns/wood-pattern.png');
+	font-family: gameMenuTitle;
 
-.button-74:hover {
-	background-color: #fff;
-}
-
-.button-74:active {
-	box-shadow: #422800 2px 2px 0 0;
-	transform: translate(2px, 2px);
-}
-
-@media (min-width: 768px) {
-	.button-74 {
-		min-width: 120px;
-		padding: 0 25px;
+	&-icon {
+		color: wheat;
+		font-size: 50px;
 	}
+
+	&-title {
+		display: flex;
+		justify-content: center;
+	}
+
+	&-text {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		font-family: gameMenuTitle;
+	}
+}
+
+#time-3-icon {
+	fill: green;
+}
+
+@font-face {
+	font-family: gameMenuTitle;
+	src: url(./fonts/AquireBold-8Ma60.otf);
 }

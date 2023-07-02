@@ -1,10 +1,10 @@
-import '../styles/menu-style.css';
-const menuRulesButton = document.getElementById('menu-rules');
-if (menuRulesButton != null)
-	menuRulesButton.onclick = () => onRulesButtonClick();
+import '../styles/index.css';
+const menuControlButton = document.getElementById('menu-control');
+if (menuControlButton != null)
+	menuControlButton.onclick = () => onControlButtonClick();
 
-const onRulesButtonClick = function () {
-	window.location.href = 'rules.html';
+const onControlButtonClick = function () {
+	window.location.href = 'control.html';
 }
 
 const menuGameButton = document.getElementById('menu-game');

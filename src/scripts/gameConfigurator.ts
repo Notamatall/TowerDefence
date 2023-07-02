@@ -32,6 +32,7 @@ export default class GameConfigurator extends Configurator {
 	private gateLoadAnimation!: HTMLImageElement;
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
+	private towerToSellUpgrade: Tower | null = null;
 
 	public async configureGame(options: GameConfiguratorOptions): Promise<void> {
 		this.setMaps(options);
@@ -61,14 +62,20 @@ export default class GameConfigurator extends Configurator {
 		this.drawPlatforms();
 		this.drawTowers();
 		this.currentMap.tryDrawPickedMenuItem();
-		if (this.isNoDelay()) {
+		this.tryDisplaySelectedTowerRadius();
+		if (this.isNoDelay())
 			this.drawEnemies();
-		} else {
-			console.log(this.delayBetweenWaves)
-		}
+
 	}
 
-
+	private tryDisplaySelectedTowerRadius() {
+		const tower = this.towerToSellUpgrade;
+		if (tower)
+			this.drawRadius('rgba(252, 22, 555, 0.1)',
+				tower.positionX + (tower.sprite.pxWidth / 2),
+				tower.positionY + (tower.sprite.pxHeight / 2),
+				tower.towerAttackRadius);
+	}
 
 	private registerOnMouseMoveEventHandlerForMap() {
 		const onMouseMove = (e: MouseEvent) => {
@@ -78,15 +85,15 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	registerSellUpgradeMenuHandlers() {
-		document.addEventListener('wheel', () => {
-			this.towerSellUpgradeElement.style.display = 'none';
-		});
-
-		window.onscroll = () => {
-			this.towerSellUpgradeElement.style.display = 'none';
-		}
+		document.addEventListener('wheel', () => this.hideSellUpgradeMenu());
+		window.onscroll = () => this.hideSellUpgradeMenu()
 	}
 
+
+	private hideSellUpgradeMenu() {
+		this.towerSellUpgradeElement.style.display = 'none';
+		this.towerToSellUpgrade = null;
+	}
 	private async loadGatesAnimation() {
 		const gatesImage = Utilities.createImage(ImagePath.gates, 160, 160);
 		const gatesAnimationPromise = Utilities.loadImages({ gatesImage });
@@ -104,6 +111,9 @@ export default class GameConfigurator extends Configurator {
 	private initializeTimer() {
 		this.timer = document.getElementById('game__timer') as HTMLDivElement;
 		this.timerValue = document.getElementById('game__timer-value') as HTMLDivElement;
+		this.timer.onmousemove = (e) => {
+			this.setCursorCoordinates(e);
+		};
 	}
 
 	private hideOverlay() {
@@ -121,7 +131,6 @@ export default class GameConfigurator extends Configurator {
 
 		const updateTowerMenu = document.getElementById('game__update-tower-menu')!;
 		updateTowerMenu.style.display = 'none';
-
 	}
 
 	private showOverlay() {
@@ -177,9 +186,13 @@ export default class GameConfigurator extends Configurator {
 		this.currentLevel++;
 		const newMap = this.maps.find(map => map.level === this.currentLevel);
 		if (_.isEmpty(newMap))
-			console.log('you won');
+			this.openVictoryPage();
 		else
 			await this.initCurrentMap();
+	}
+
+	private openVictoryPage() {
+
 	}
 
 	private async initCurrentMap(isRestart: boolean = false) {
@@ -195,10 +208,11 @@ export default class GameConfigurator extends Configurator {
 		this.hideOverlay();
 		this.clearTowersList();
 		this.clearEnemiesList();
+		this.towerToSellUpgrade = null;
 		setTimeout(() => {
 			this.isChangingMap = false;
 			this.showOverlay();
-		}, 3000);
+		}, 2000);
 	}
 
 	private scrollTop() {
@@ -246,7 +260,9 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private configureMainMenuHandlers() {
+
 		Utilities.tryCatchWrapper(() => {
+
 			const mainMenuIcon = document.getElementById('game__main-menu-icon')!;
 			const mainMenu = document.getElementById('game__main-menu')!;
 			const mainMenuCloseButton = document.getElementById('game__main-menu-close-button')!;
@@ -258,8 +274,24 @@ export default class GameConfigurator extends Configurator {
 			const backToMainMenu = document.getElementById('game__main-menu-back')!;
 			const restartButton = document.getElementById('game__main-menu-restart')!;
 
-			mainMenuIcon.onclick = () => {
-				mainMenu.style.display = 'flex';
+			document.onclick = () => {
+				if (mainMenu.style.display == 'flex')
+					mainMenu.style.display = 'none';
+			}
+
+			mainMenu.onclick = (e) => {
+				e.stopPropagation();
+			}
+
+			mainMenuIcon.onclick = (e) => {
+				if (mainMenu.style.display == 'flex')
+					mainMenu.style.display = 'none';
+				else {
+					mainMenu.style.display = 'flex';
+					this.hideSellUpgradeMenu();
+					e.stopPropagation();
+				}
+
 			}
 			mainMenuCloseButton.onclick = () => {
 				mainMenu.style.display = 'none';
@@ -288,6 +320,7 @@ export default class GameConfigurator extends Configurator {
 			backToMainMenu.onclick = () => {
 				window.location.href = 'index.html';
 			}
+
 			restartButton.onclick = async () => {
 				await this.initCurrentMap(true);
 			}
@@ -384,7 +417,7 @@ export default class GameConfigurator extends Configurator {
 			160,
 			160,
 			document.body.clientWidth / 2 - 80,
-			document.body.clientHeight - document.body.clientHeight * 0.7 - 80,
+			window.innerHeight / 2 - 80,
 			160,
 			160);
 		if (this.changeAnimationTimer == 120)
@@ -424,6 +457,8 @@ export default class GameConfigurator extends Configurator {
 			const towerToSellUpgrade = this.getTowerBuildOnTile(coordinates.tileStartXCoordinate, coordinates.tileStartYCoordinate);
 			if (towerToSellUpgrade !== undefined) {
 				setUpgradeSellMenuAroundTowerSelected(this.canvasContainer.scrollLeft, this.canvasContainer.scrollTop, towerToSellUpgrade, this.towerSellUpgradeElement)
+				this.towerToSellUpgrade = towerToSellUpgrade;
+
 				if (_.isNull(sellButton) || _.isNull(upgradeButton))
 					throw new Error("Buttons were not found");
 
@@ -442,19 +477,38 @@ export default class GameConfigurator extends Configurator {
 							towerToSellUpgrade.upgrade();
 							this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins - towerToSellUpgrade.towerPrice;
 						}
+						setCorrectUpgradeIcon(upgradeButton, towerToSellUpgrade);
 					}
 				}
 
-				this.upgradeTowerEvent = newUpgradeTowerEvent;
+				setCorrectUpgradeIcon(upgradeButton, towerToSellUpgrade);
 				upgradeButton.addEventListener("click", newUpgradeTowerEvent, false);
-
-				this.sellTowerEvent = sellTower;
 				sellButton.addEventListener("click", sellTower, false);
-				function setUpgradeSellMenuAroundTowerSelected(scrollLeft: number, scrollTop: number, selectedTower: Tower, menu: HTMLDivElement) {
+				this.upgradeTowerEvent = newUpgradeTowerEvent;
+				this.sellTowerEvent = sellTower;
 
-					menu.style.left = (selectedTower.positionX - scrollLeft) + 'px';
+				function setUpgradeSellMenuAroundTowerSelected(scrollLeft: number, scrollTop: number, selectedTower: Tower, menu: HTMLDivElement) {
+					menu.style.left = (selectedTower.positionX - scrollLeft) - 70 + 'px';
 					menu.style.top = (selectedTower.positionY - scrollTop) - 20 + 'px';
 					menu.style.display = 'flex'
+				}
+
+				function setCorrectUpgradeIcon(upgradeButton: HTMLButtonElement, towerToSellUpgrade: Tower) {
+					const upgradeIcon = (upgradeButton.children[0] as HTMLLIElement);
+					const upgradePriceContainer = upgradeButton.children.namedItem('upgradeBtn-price-container');
+					if (upgradePriceContainer == null)
+						throw new Error('upgradeSellMenu price container does not exist');
+					if (towerToSellUpgrade.towerUpgradeType === undefined) {
+						(upgradePriceContainer as HTMLDivElement).style.display = 'none';
+						upgradeIcon.classList.value = 'fa-sharp fa-solid fa-ban';
+					}
+					else {
+						(upgradePriceContainer as HTMLDivElement).style.display = 'block';
+						const priceHolder = upgradePriceContainer.children.namedItem('upgradeBtn-price');
+						if (priceHolder)
+							priceHolder.textContent = Towers.getTowerPriceByType(towerToSellUpgrade.towerUpgradeType).toString();
+						upgradeIcon.classList.value = 'fa-solid fa-arrow-up';
+					}
 				}
 			}
 		}
@@ -465,6 +519,7 @@ export default class GameConfigurator extends Configurator {
 			const coordinates = getMapCoordinatesByMouseClick(e, this.currentMap);
 			this.clearSellUpgradeEvents();
 			this.closeSellUpgradeMenu();
+
 			if (this.currentMap.pickedMenuItem === null) {
 				this.handleTowerSellUpdate(coordinates);
 				return;
@@ -517,6 +572,7 @@ export default class GameConfigurator extends Configurator {
 
 	private closeSellUpgradeMenu() {
 		this.towerSellUpgradeElement.style.display = 'none';
+		this.towerToSellUpgrade = null;
 	}
 
 

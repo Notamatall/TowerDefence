@@ -335,17 +335,6 @@ export default class MapConfigurator extends Configurator {
 	}
 
 
-	private drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
-
-		this.context.strokeStyle = 'green';
-		this.context.fillStyle = color;
-		this.context.beginPath();
-
-		this.context.roundRect(xDraw - radius, yDraw - radius, radius * 2, radius * 2, 360);
-		this.context.stroke();
-		this.context.fill();
-	}
-
 	private defineTurnPlaces() {
 		for (let mapRow = 0; mapRow < this.mapTemplate.length; mapRow++)
 			for (let mapCol = 0; mapCol < this.mapTemplate[mapRow].length; mapCol++)

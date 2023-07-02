@@ -42,23 +42,41 @@ html {
 	overflow-y: hidden;
 }
 
+.game__update-tower-menu-upgradeBtn {
+	font-family: gameMenuTitle;
+	display: flex;
+	gap: 5px;
+}
+
+.game__update-tower-menu-upgradeBtn .fa-solid.fa-coins,
+.game__update-tower-menu-upgradeBtn-price {
+	font-size: 15px !important;
+	color: gold !important;
+}
+
 #game__update-tower-menu {
 	display: none;
-	width: 128px;
 	position: absolute;
 	justify-content: space-between;
-	margin-bottom: 30px;
+	gap: 70px;
 }
 
 #game__update-tower-menu button {
-	border-radius: 50px;
 	background: rgb(192 50 50 / 48%);
 	height: 40px;
-	width: 40px;
+	width: 100px;
+}
+
+
+#game__update-tower-menu button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 #game__update-tower-menu button:nth-child(1) i {
 	color: #75e075;
+
 }
 
 #game__update-tower-menu button:nth-child(2) i {
@@ -67,7 +85,7 @@ html {
 
 
 #game__update-tower-menu i {
-	font-size: 30px;
+	font-size: 20px;
 }
 
 @keyframes slidein {

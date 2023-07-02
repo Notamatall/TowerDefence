@@ -1,8 +1,10 @@
 import '@/styles/game.css';
 import '@/styles/game.scss';
+import '@/styles/index'
 import { CanvasBuilder } from './canvasBuilder';
 import GameConfigurator from './gameConfigurator';
-import { firstLevelOptions, secondLevelOptions } from './mapTemplates/mapTemplates';
+
+import { firstLevelOptions, secondLevelOptions, thirdLevelOptions } from './mapTemplates/mapTemplates';
 
 const app = new CanvasBuilder();
 
@@ -13,7 +15,7 @@ game.configureGame({
 		[
 			{ level: 1, mapOptions: firstLevelOptions },
 			{ level: 2, mapOptions: secondLevelOptions },
-			{ level: 3, mapOptions: secondLevelOptions },
+			{ level: 3, mapOptions: thirdLevelOptions },
 		]
 }
 ).then(() =>

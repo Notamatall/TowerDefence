@@ -34,7 +34,7 @@ class EnemiesTemplates {
 				moveSpeed: 1.5,
 				totalHP: 900,
 				deathReward: 75,
-				damageOnPass: 5,
+				damageOnPass: 20,
 				deathSprite: new Sprite({
 					imageSrc: ImagePath.robotDeath, frameChangeRate: 10,
 					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 96,
@@ -73,8 +73,8 @@ class EnemiesTemplates {
 				name: 'Medusa',
 				type: 'medusa',
 				moveSpeed: 2,
-				totalHP: 1000,
-				deathReward: 300,
+				totalHP: 700,
+				deathReward: 150,
 				damageOnPass: 20,
 				deathSprite: new Sprite({
 					imageSrc: ImagePath.medusaDeath, xFramesStart: 0, frameChangeRate: 12,
@@ -91,9 +91,9 @@ class EnemiesTemplates {
 			smallDragon: {
 				name: 'Small dragon',
 				type: 'smallDragon',
-				moveSpeed: 1,
+				moveSpeed: 1.3,
 				totalHP: 700,
-				deathReward: 100,
+				deathReward: 70,
 				damageOnPass: 10,
 				deathSprite: new Sprite({
 					imageSrc: ImagePath.smallDragonDeath, frameChangeRate: 12,
@@ -131,8 +131,8 @@ class EnemiesTemplates {
 				type: 'jinn',
 				moveSpeed: 1.8,
 				totalHP: 200,
-				deathReward: 20,
-				damageOnPass: 3,
+				deathReward: 30,
+				damageOnPass: 9,
 				deathSprite: new Sprite({
 					imageSrc: ImagePath.jinnDeath, frameChangeRate: 15,
 					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 128, pxWidth: 128,
@@ -148,10 +148,10 @@ class EnemiesTemplates {
 			lizard: {
 				name: 'Lizard',
 				type: 'lizard',
-				moveSpeed: 2,
+				moveSpeed: 1.5,
 				totalHP: 400,
 				deathReward: 60,
-				damageOnPass: 5,
+				damageOnPass: 11,
 				deathSprite: new Sprite({
 					imageSrc: ImagePath.lizardDeath, frameChangeRate: 15,
 					xFramesStart: 0, yFramesStart: 0, framesAmount: 6, pxHeight: 256, pxWidth: 256,

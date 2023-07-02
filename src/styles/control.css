@@ -1,0 +1,56 @@
+body {
+	background: black;
+	margin: 0px;
+}
+
+#outer-control__container {
+	background-image: url(../assets/patterns/StoneFloorTexture.png);
+	width: 100%;
+}
+
+#inner-control__container {
+	display: flex;
+	height: 100vh;
+	justify-content: center;
+	align-items: center;
+}
+
+.control__menu {
+	width: 900px;
+	gap: 15px;
+	flex-wrap: wrap;
+	justify-content: center;
+	display: flex;
+}
+
+.menu-item {
+	flex: 40%;
+	height: 100px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(128, 128, 128, .623);
+	border: 5px solid black;
+	font-family: menuTitleFont;
+	font-size: 25px;
+	color: #f2ca27;
+}
+
+@font-face {
+	font-family: menuTitleFont;
+	src: url(./fonts/Rudelsberg.ttf);
+}
+
+#control-back__button:hover {
+	background-color: #ffffff49;
+}
+
+#control-back__button:active {
+	box-shadow: #ffffff00 3px 3px 0 0;
+	transform: translate(2px, 2px);
+}
+
+#control-back__button {
+
+	max-width: 250px;
+}

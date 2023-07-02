@@ -35,6 +35,7 @@ class CanvasBuilder {
 		this.canvas.width = options.width;
 		this.canvas.height = options.height;
 	}
+
 	private setCorrectContainerHeight(containerId: string, height: number) {
 		Utilities.tryCatchWrapper(() => {
 			const container = document.getElementById(containerId);

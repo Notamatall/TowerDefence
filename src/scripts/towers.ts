@@ -29,7 +29,7 @@ class TowerTemplates {
 			singleBarrelCannon: {
 				type: 'singleBarrelCannon',
 				attackDamage: 30,
-				attackRadius: 180,
+				attackRadius: 200,
 				fireAudio: singleBarrelFire,
 				price: 200,
 				upgradeType: 'doubleBarrelCannon',
@@ -48,7 +48,7 @@ class TowerTemplates {
 			doubleBarrelCannon: {
 				type: 'doubleBarrelCannon',
 				attackDamage: 50,
-				attackRadius: 190,
+				attackRadius: 210,
 				fireAudio: doubleBarrelFire,
 				upgradeType: 'doubleBarrelCannonPlus',
 				installationAudio: ImagePath.towerInstalled,
@@ -68,7 +68,7 @@ class TowerTemplates {
 				type: 'doubleBarrelCannonPlus',
 				installationAudio: ImagePath.towerInstalled,
 				attackDamage: 70,
-				attackRadius: 210,
+				attackRadius: 250,
 				fireAudio: multiBarrelFire,
 				upgradeType: 'tripleBarrelCannon',
 				attackSprite: new Sprite({
@@ -85,7 +85,7 @@ class TowerTemplates {
 			tripleBarrelCannon: {
 				type: 'tripleBarrelCannon',
 				attackDamage: 100,
-				attackRadius: 210,
+				attackRadius: 350,
 				fireAudio: multiBarrelFire,
 				installationAudio: ImagePath.towerInstalled,
 				attackSprite: new Sprite({
@@ -102,7 +102,7 @@ class TowerTemplates {
 			simpleLaserCannon: {
 				type: 'simpleLaserCannon',
 				attackDamage: 45,
-				attackRadius: 240,
+				attackRadius: 270,
 				fireAudio: smallLaser,
 				installationAudio: ImagePath.towerInstalled,
 				upgradeType: 'advancedLaserCannon',
@@ -114,7 +114,7 @@ class TowerTemplates {
 			advancedLaserCannon: {
 				type: 'advancedLaserCannon',
 				attackDamage: 65,
-				attackRadius: 250,
+				attackRadius: 290,
 				fireAudio: advancedLaser,
 				installationAudio: ImagePath.towerInstalled,
 				upgradeType: 'supremeLaserCannon',
@@ -131,9 +131,8 @@ class TowerTemplates {
 			},
 			supremeLaserCannon: {
 				type: 'supremeLaserCannon',
-
-				attackDamage: 100,
-				attackRadius: 270,
+				attackDamage: 170,
+				attackRadius: 335,
 				fireAudio: supremeLaser,
 				installationAudio: ImagePath.towerInstalled,
 				upgradeType: 'supremeLaserCannonPlus',
@@ -150,8 +149,8 @@ class TowerTemplates {
 			},
 			supremeLaserCannonPlus: {
 				type: 'supremeLaserCannonPlus',
-				attackDamage: 140,
-				attackRadius: 270,
+				attackDamage: 210,
+				attackRadius: 450,
 				fireAudio: supremeLaserPlus,
 				installationAudio: ImagePath.towerInstalled,
 				attackSprite: new Sprite({

@@ -149,6 +149,8 @@ export class Tower {
 				this.setFireAudio(upgradeTemplate.fireAudio)
 				this.upgradeType = upgradeTemplate.upgradeType;
 				this.attackSprite = upgradeTemplate.attackSprite;
+				this.towerCircleRadius = new Path2D();
+				this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 				this.setUpgradeAudio(upgradeTemplate.upgradeAudio);
 				this.upgradeAudio.play();
 			}

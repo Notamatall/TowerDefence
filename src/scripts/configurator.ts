@@ -9,6 +9,16 @@ export default class Configurator {
 	private mouseMoveEventHandlers: ((ev: MouseEvent) => any | null)[] = [];
 	private mouseClickHandlers: ((ev: MouseEvent) => any | null)[] = [];
 
+	protected drawRadius(color: string, xDraw: number, yDraw: number, radius: number) {
+
+		this.context.strokeStyle = 'green';
+		this.context.fillStyle = color;
+		this.context.beginPath();
+
+		this.context.arc(xDraw, yDraw, radius, 0, Math.PI * 2);
+		this.context.stroke();
+		this.context.fill();
+	}
 
 	protected setCursorCoordinates(event: MouseEvent) {
 		const rect = this.canvas.getBoundingClientRect();
