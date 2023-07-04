@@ -32,18 +32,18 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 ];
 
 const firstLevelWaves: Wave[] = [
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('jinn', 13, -200, 0, -250, 0),
-	// ], 10),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('lizard', 8, -200, 0, -250, 0),
-	// 	WaveEnemy.createWaveEnemy('jinn', 11, -(8 * 250), 0, -230, 0),
-	// ], 5),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('jinn', 11, -200, 0, -230, 0),
-	// 	WaveEnemy.createWaveEnemy('lizard', 8, -(11 * 250), 0, -250, 0),
-	// 	WaveEnemy.createWaveEnemy('robot', 3, -(3 * 250), 0, -1000, 0),
-	// ], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('jinn', 13, -200, 0, -180, 0),
+	], 10),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('lizard', 8, -200, 0, -350, 0),
+		WaveEnemy.createWaveEnemy('jinn', 11, -(8 * 250), 0, -230, 0),
+	], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('jinn', 11, -200, 0, -230, 0),
+		WaveEnemy.createWaveEnemy('lizard', 8, -(11 * 250), 0, -250, 0),
+		WaveEnemy.createWaveEnemy('robot', 3, -(3 * 250), 0, -1000, 0),
+	], 5),
 ]
 
 
@@ -87,18 +87,18 @@ const secondLevelUserStats: IUserStats = {
 }
 
 const secondLevelWaves: Wave[] = [
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -300),
-	// ], 10),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -350),
-	// 	WaveEnemy.createWaveEnemy('medusa', 12, 0, -(12 * 250), 0, -1000),
-	// ], 5),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -400),
-	// 	WaveEnemy.createWaveEnemy('medusa', 12, 0, -1000, 0, -1000),
-	// 	WaveEnemy.createWaveEnemy('dragon', 8, 0, -500, 0, -1400),
-	// ], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -300),
+	], 10),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -350),
+		WaveEnemy.createWaveEnemy('medusa', 12, 0, -(12 * 250), 0, -1000),
+	], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -400),
+		WaveEnemy.createWaveEnemy('medusa', 12, 0, -1000, 0, -1000),
+		WaveEnemy.createWaveEnemy('dragon', 8, 0, -500, 0, -1400),
+	], 5),
 ]
 
 export const secondLevelOptions: MapConfigurationOptions = {
@@ -140,28 +140,28 @@ const thirdLevelUserStats: IUserStats = {
 	userCoins: 2400
 }
 const thirdLevelWaves: Wave[] = [
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, 350),
-	// 	WaveEnemy.createWaveEnemy('demon', 7, 0, 450, 0, 800),
-	// ], 10),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, 500),
-	// 	WaveEnemy.createWaveEnemy('medusa', 15, 0, 1000, 0, 1500),
-	// 	WaveEnemy.createWaveEnemy('demon', 15, 0, 450, 0, 1000),
-	// ], 5),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, 400),
-	// 	WaveEnemy.createWaveEnemy('dragon', 6, 0, 2000, 0, 2000),
-	// 	WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
-	// 	WaveEnemy.createWaveEnemy('lizard', 15, 0, 1300, 0, 250),
-	// ], 5),
-	// Wave.createWave([
-	// 	WaveEnemy.createWaveEnemy('medusa', 15, 0, 0, 0, 600),
-	// 	WaveEnemy.createWaveEnemy('dragon', 8, 0, 2000, 0, 1000),
-	// 	WaveEnemy.createWaveEnemy('robot', 6, 0, 2500, 0, 900),
-	// 	WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
-	// 	WaveEnemy.createWaveEnemy('demonBoss', 15, 0, 1500, 0, 700),
-	// ], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, 350),
+		WaveEnemy.createWaveEnemy('demon', 7, 0, 450, 0, 800),
+	], 10),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, 500),
+		WaveEnemy.createWaveEnemy('medusa', 15, 0, 1000, 0, 1500),
+		WaveEnemy.createWaveEnemy('demon', 15, 0, 450, 0, 1000),
+	], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, 400),
+		WaveEnemy.createWaveEnemy('dragon', 6, 0, 2000, 0, 2000),
+		WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
+		WaveEnemy.createWaveEnemy('lizard', 15, 0, 1300, 0, 250),
+	], 5),
+	Wave.createWave([
+		WaveEnemy.createWaveEnemy('medusa', 15, 0, 0, 0, 600),
+		WaveEnemy.createWaveEnemy('dragon', 8, 0, 2000, 0, 1000),
+		WaveEnemy.createWaveEnemy('robot', 6, 0, 2500, 0, 900),
+		WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
+		WaveEnemy.createWaveEnemy('demonBoss', 15, 0, 1500, 0, 700),
+	], 5),
 ]
 
 export const thirdLevelOptions: MapConfigurationOptions = {
