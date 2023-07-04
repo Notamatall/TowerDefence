@@ -192,7 +192,7 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private openVictoryPage() {
-
+		document.getElementById('game__victory-windowID')!.style.display = 'flex';
 	}
 
 	private async initCurrentMap(isRestart: boolean = false) {
