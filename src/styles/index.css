@@ -24,11 +24,10 @@ body {
 
 .menu-item {
 	display: flex;
-	padding: 0 25px;
-	padding-top: 15px;
+	padding: 15px;
 	justify-content: center;
-	font-family: 'menuItemFont';
-	font-size: 3vh;
+	font-family: 'menuTitleFont';
+	font-size: 4vh;
 	border: 5px solid;
 	margin: 5px;
 	background-color: rgba(94, 90, 118, 0.8);
