@@ -33,6 +33,7 @@ export default class GameConfigurator extends Configurator {
 	private sellTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private upgradeTowerEvent: ((e: MouseEvent) => void) | null = null;
 	private towerToSellUpgrade: Tower | null = null;
+	private isUserLost: boolean = false;
 
 	public async configureGame(options: GameConfiguratorOptions): Promise<void> {
 		this.setMaps(options);
@@ -53,7 +54,10 @@ export default class GameConfigurator extends Configurator {
 
 	private async animate() {
 		await this.tryChangeMapWave();
+		this.checkIsUserLost()
 		requestAnimationFrame(this.animate.bind(this));
+		if (this.isUserLost)
+			return;
 		if (this.isChangingMap) {
 			this.drawMapChangeAnimation();
 			return;
@@ -89,6 +93,34 @@ export default class GameConfigurator extends Configurator {
 		window.onscroll = () => this.hideSellUpgradeMenu()
 	}
 
+	private checkIsUserLost() {
+		if (this.userStatsProxy!.userHP <= 0) {
+			if (this.isUserLost === false)
+				this.showUserLostPopup();
+			this.isUserLost = true;
+		}
+	}
+
+	private showUserLostPopup() {
+		this.isUserLost = true;
+		const lostWindow = document.getElementById('game__lost-windowID');
+		if (lostWindow) {
+			lostWindow.style.display = 'flex';
+
+			const gameLostButton = document.getElementById('game__lost-button');
+			if (gameLostButton)
+				gameLostButton.onclick = () => {
+					lostWindow.style.display = 'none';
+					this.restartGame();
+				}
+		}
+	}
+
+	async restartGame() {
+		this.currentLevel = 1;
+		this.isUserLost = false;
+		await this.initCurrentMap(true);
+	}
 
 	private hideSellUpgradeMenu() {
 		this.towerSellUpgradeElement.style.display = 'none';
@@ -145,7 +177,7 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	public async tryChangeMapWave() {
-		if (this.enemiesList.length === 0) {
+		if (this.enemiesList.length === 0 && this.isUserLost === false) {
 			if (isEmpty(this.currentMap?.mapWaves))
 				await this.tryInitializeNextMap();
 			else {
@@ -193,6 +225,9 @@ export default class GameConfigurator extends Configurator {
 
 	private openVictoryPage() {
 		document.getElementById('game__victory-windowID')!.style.display = 'flex';
+		const gameVictoryButton = document.getElementById('game__victory-button');
+		if (gameVictoryButton)
+			gameVictoryButton.onclick = () => window.open('https://github.com/Notamatall/TowerDefence', '_blank');
 	}
 
 	private async initCurrentMap(isRestart: boolean = false) {
@@ -311,12 +346,17 @@ export default class GameConfigurator extends Configurator {
 			}
 
 			mainMenuTowerLow.onclick = () => {
-				this.towersList.forEach(tower => tower.attackVolumeLower())
+				if (this.canvasAccessor.globalTowersVolume - 0.1 >= 0)
+					this.canvasAccessor.globalTowersVolume = this.canvasAccessor.globalTowersVolume - 0.1;
+				this.towersList.forEach(tower => tower.setAttackVolume())
 			}
 
 			mainMenuTowerHigh.onclick = () => {
-				this.towersList.forEach(tower => tower.attackVolumeHigher());
+				if (this.canvasAccessor.globalTowersVolume + 0.1 < 1)
+					this.canvasAccessor.globalTowersVolume = this.canvasAccessor.globalTowersVolume + 0.1;
+				this.towersList.forEach(tower => tower.setAttackVolume());
 			}
+
 			backToMainMenu.onclick = () => {
 				window.location.href = 'index.html';
 			}

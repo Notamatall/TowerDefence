@@ -11,7 +11,7 @@ class CanvasBuilder {
 	public canvas!: HTMLCanvasElement;
 	public cursorX!: number;
 	public cursorY!: number;
-
+	public globalTowersVolume = 0.1;
 	readonly canvasContainer!: HTMLElement;
 
 	private createCanvasContainer() {

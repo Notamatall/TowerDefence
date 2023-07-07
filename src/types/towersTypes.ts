@@ -8,6 +8,7 @@ export class Tower {
 	constructor(towerInitializer: ITower, canvasAccessor: CanvasBuilder) {
 		this.type = towerInitializer.type;
 		this.context = canvasAccessor.context;
+		this.canvasAccessor = canvasAccessor;
 		this.attackDamage = towerInitializer.attackDamage ? towerInitializer.attackDamage : 0;
 		this.attackRadius = towerInitializer.attackRadius ? towerInitializer.attackRadius : 0;
 		this.towerId = towerInitializer.towerId;
@@ -52,6 +53,7 @@ export class Tower {
 	private removeTargetForTowers: (target: Enemy) => void;
 	private rewardForKill: (amount: number) => void;
 	private context: CanvasRenderingContext2D;
+	private canvasAccessor: CanvasBuilder;
 	private imageCenter: IImageCenter;
 	private rotationAngle: number = 0;
 	private type: TowerType;
@@ -114,7 +116,7 @@ export class Tower {
 		const avrFPS = 60;
 		const shootAnimationPlaybackSpeed = (this.sprite.framesAmount * this.sprite.frameChangeRate) / avrFPS - 1;
 		this.fireAudio.playbackRate = 1.3 - shootAnimationPlaybackSpeed;
-		this.fireAudio.volume = 0.1;
+		this.fireAudio.volume = this.canvasAccessor.globalTowersVolume;
 	}
 
 	private setInstalationAudio(audioSrc: string | undefined) {
@@ -127,14 +129,9 @@ export class Tower {
 		this.upgradeAudio.volume = 0.1;
 	}
 
-	attackVolumeLower() {
-		if (this.fireAudio && this.fireAudio.volume - 0.1 >= 0)
-			this.fireAudio.volume = this.fireAudio.volume - 0.1;
-	}
-
-	attackVolumeHigher() {
-		if (this.fireAudio && this.fireAudio.volume + 0.1 < 1)
-			this.fireAudio.volume = this.fireAudio.volume + 0.1;
+	setAttackVolume() {
+		if (this.fireAudio)
+			this.fireAudio.volume = this.canvasAccessor.globalTowersVolume;
 	}
 
 	public upgrade() {

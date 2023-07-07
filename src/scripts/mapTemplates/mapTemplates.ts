@@ -34,7 +34,7 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 const firstLevelWaves: Wave[] = [
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('jinn', 13, -200, 0, -180, 0),
-	], 10),
+	], 15),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('lizard', 8, -200, 0, -350, 0),
 		WaveEnemy.createWaveEnemy('jinn', 11, -(8 * 250), 0, -230, 0),

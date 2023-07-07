@@ -86,8 +86,13 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 }
 
 
+#game__victory-button,
+#game__lost-button {
+	background: transparent;
+}
 
-.game__victory-window {
+.game__victory-window,
+.game__lost-window {
 	display: none;
 	flex-direction: column;
 	padding: 20px;
