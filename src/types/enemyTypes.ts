@@ -7,6 +7,7 @@ import { ImagePath } from "./imagePath";
 export default class Enemy {
 	constructor(enemyInitializer: IEnemy, canvasAccessor: CanvasBuilder) {
 		this.context = canvasAccessor.context;
+		this.canvasAccessor = canvasAccessor;
 		this.moveSprite = enemyInitializer.moveSprite;
 		this.deathSprite = enemyInitializer.deathSprite;
 		this.currentSprite = enemyInitializer.moveSprite;
@@ -35,6 +36,7 @@ export default class Enemy {
 		this.deathAnimation = Utilities.createImage(ImagePath.lizardDeath);
 	}
 	private currentSprite: Sprite
+	private canvasAccessor: CanvasBuilder;
 	private deathSprite?: Sprite
 	deathAnimation: HTMLImageElement;
 	public enemyId: number;
@@ -98,7 +100,6 @@ export default class Enemy {
 
 	drawCurrentSpriteFrame() {
 		const sprite = this.currentSprite;
-		//this.context.fillRect(this.positionX, this.positionY, 256, 256);
 		if ((!sprite.rotated && this.isMovingBackward) || (sprite.rotated && !this.isMovingBackward)) {
 			Utilities.drawFlippedImage(
 				this.context,
@@ -135,7 +136,7 @@ export default class Enemy {
 		this.tryTurn();
 		this.moveToNextTurn();
 		this.imageCenter = this.getImageCenter();
-		if (this.positionX > screen.width && this.turnPositions.length === 0) {
+		if (this.positionX > this.canvasAccessor.canvas.width && this.turnPositions.length === 0) {
 			this.dealDamage(this.damageOnPass);
 			this.releseEnemyAfterPass(this.enemyId);
 		}

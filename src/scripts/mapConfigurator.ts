@@ -283,15 +283,16 @@ export default class MapConfigurator extends Configurator {
 		const hpContainer = createHpContainer.call(this);
 
 		function removeHpMoneyContainer() {
-			const hpMoneyContainers = document.getElementsByClassName('game__hp-money-container');
-			for (const hpMoneyContainer of hpMoneyContainers) {
+			const hpMoneyContainer = document.getElementById('game__hp-money-container');
+			if (hpMoneyContainer)
 				hpMoneyContainer.remove();
-			}
 		}
 
 		function creatHpMoneyBarContainer(): HTMLDivElement {
 			const hpMoneyContainer = document.createElement('div');
-			hpMoneyContainer.classList.add('game__hp-money-container');
+			hpMoneyContainer.id = 'game__hp-money-container';
+			const offsetRight = 170;
+			hpMoneyContainer.style.left = window.innerWidth - offsetRight + 'px';
 			return hpMoneyContainer;
 		}
 
@@ -333,7 +334,6 @@ export default class MapConfigurator extends Configurator {
 		event.stopImmediatePropagation();
 		this.pickedMenuItem = menuItem;
 	}
-
 
 	private defineTurnPlaces() {
 		for (let mapRow = 0; mapRow < this.mapTemplate.length; mapRow++)

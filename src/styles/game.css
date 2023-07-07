@@ -102,12 +102,11 @@ html {
 	}
 }
 
-.game__hp-money-container {
+#game__hp-money-container {
 	position: fixed;
 	width: 120px;
 	display: flex;
 	flex-direction: column;
-	right: 50px;
 	top: 35px;
 	padding-left: 10px;
 	gap: 15px;

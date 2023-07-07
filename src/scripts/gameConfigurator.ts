@@ -43,7 +43,7 @@ export default class GameConfigurator extends Configurator {
 		await Enemies.init()
 		this.registerOnMouseMoveEventHandlerForMap()
 		this.registerOnCanvasClick();
-		this.registerEscape();
+		this.registerMouseRightClick();
 		this.setTowerMenuElement();
 		this.registerSellUpgradeMenuHandlers();
 		this.configureMainMenuHandlers();
@@ -126,6 +126,7 @@ export default class GameConfigurator extends Configurator {
 		this.towerSellUpgradeElement.style.display = 'none';
 		this.towerToSellUpgrade = null;
 	}
+
 	private async loadGatesAnimation() {
 		const gatesImage = Utilities.createImage(ImagePath.gates, 160, 160);
 		const gatesAnimationPromise = Utilities.loadImages({ gatesImage });
@@ -149,8 +150,8 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private hideOverlay() {
-		const hpContainer = (document.getElementsByClassName('game__hp-money-container')[0] as HTMLDivElement);
-		hpContainer.style.display = 'none';
+		const hpMoneyContainer = (document.getElementById('game__hp-money-container') as HTMLDivElement);
+		hpMoneyContainer.style.display = 'none';
 
 		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
 		gameMenuPlaceHolder.style.display = 'none';
@@ -166,8 +167,8 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private showOverlay() {
-		const hpContainer = (document.getElementsByClassName('game__hp-money-container')[0] as HTMLDivElement);
-		hpContainer.style.display = 'flex';
+		const hpMoneyContainer = (document.getElementById('game__hp-money-container') as HTMLDivElement);
+		hpMoneyContainer.style.display = 'flex';
 
 		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
 		gameMenuPlaceHolder.style.display = 'flex';
@@ -425,11 +426,10 @@ export default class GameConfigurator extends Configurator {
 		this.userStatsProxy.userHP = currentMap.defaultUserStats.userHP;
 	}
 
-	private registerEscape() {
-		window.addEventListener('keydown', (e) => {
-			if (e.code === 'Escape') {
-				this.currentMap.pickedMenuItem = null;
-			}
+	private registerMouseRightClick() {
+		window.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+			this.currentMap.pickedMenuItem = null;
 		})
 	}
 

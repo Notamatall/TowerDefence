@@ -5,6 +5,23 @@ class CanvasBuilder {
 		this.loadHtmlCanvas();
 		this.canvasContainer = this.createCanvasContainer();
 		this.appendCanvasToContainer(this.canvasContainer.id);
+		this.registerWindowResize();
+	}
+	registerWindowResize() {
+
+		window.addEventListener('resize', (e) => {
+			const mainMenuIcon = document.getElementById('game__main-menu-icon')
+			if (mainMenuIcon) {
+				const offsetRightMainMenu = 40;
+				mainMenuIcon.style.left = window.innerWidth - offsetRightMainMenu + 'px';
+			}
+
+			const hpMoneyContainer = document.getElementById('game__hp-money-container')
+			if (hpMoneyContainer) {
+				const offsetRightHPMoney = 170;
+				hpMoneyContainer.style.left = window.innerWidth - offsetRightHPMoney + 'px';
+			}
+		})
 	}
 
 	public context!: CanvasRenderingContext2D;
