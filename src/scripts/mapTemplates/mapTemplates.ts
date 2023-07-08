@@ -92,11 +92,11 @@ const secondLevelWaves: Wave[] = [
 	], 10),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -350),
-		WaveEnemy.createWaveEnemy('medusa', 12, 0, -(12 * 250), 0, -1000),
+		WaveEnemy.createWaveEnemy('medusa', 12, 0, -(6 * 250), 0, -1000),
 	], 5),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, -400),
-		WaveEnemy.createWaveEnemy('medusa', 12, 0, -1000, 0, -1000),
+		WaveEnemy.createWaveEnemy('medusa', 12, 0, -1000, 0, -600),
 		WaveEnemy.createWaveEnemy('dragon', 8, 0, -500, 0, -1400),
 	], 5),
 ]
@@ -146,21 +146,21 @@ const thirdLevelWaves: Wave[] = [
 	], 10),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('jinn', 15, 0, 0, 0, 500),
-		WaveEnemy.createWaveEnemy('medusa', 15, 0, 1000, 0, 1500),
-		WaveEnemy.createWaveEnemy('demon', 15, 0, 450, 0, 1000),
+		WaveEnemy.createWaveEnemy('medusa', 15, 0, 1000, 0, 800),
+		WaveEnemy.createWaveEnemy('demon', 15, 0, 450, 0, 600),
 	], 5),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('smallDragon', 15, 0, 0, 0, 400),
-		WaveEnemy.createWaveEnemy('dragon', 6, 0, 2000, 0, 2000),
+		WaveEnemy.createWaveEnemy('dragon', 6, 0, 2000, 0, 1400),
 		WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
 		WaveEnemy.createWaveEnemy('lizard', 15, 0, 1300, 0, 250),
 	], 5),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('medusa', 15, 0, 0, 0, 600),
-		WaveEnemy.createWaveEnemy('dragon', 8, 0, 2000, 0, 1000),
-		WaveEnemy.createWaveEnemy('robot', 6, 0, 2500, 0, 900),
+		WaveEnemy.createWaveEnemy('dragon', 8, 0, 1000, 0, 550),
+		WaveEnemy.createWaveEnemy('robot', 6, 0, 1400, 0, 900),
 		WaveEnemy.createWaveEnemy('demon', 15, 0, 250, 0, 650),
-		WaveEnemy.createWaveEnemy('demonBoss', 15, 0, 1500, 0, 700),
+		WaveEnemy.createWaveEnemy('demonBoss', 15, 0, 1700, 0, 700),
 	], 5),
 ]
 

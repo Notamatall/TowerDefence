@@ -51,8 +51,8 @@ class EnemiesTemplates {
 			demonBoss: {
 				name: 'Demon boss',
 				type: 'demonBoss',
-				moveSpeed: 1,
-				totalHP: 2500,
+				moveSpeed: 1.8,
+				totalHP: 3500,
 				deathReward: 400,
 				damageOnPass: 25,
 				deathSprite: new Sprite({
@@ -129,7 +129,7 @@ class EnemiesTemplates {
 			jinn: {
 				name: 'Jinn ',
 				type: 'jinn',
-				moveSpeed: 15,
+				moveSpeed: 1.8,
 				totalHP: 200,
 				deathReward: 30,
 				damageOnPass: 9,
