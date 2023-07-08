@@ -15,7 +15,7 @@ export default class Enemy {
 		this.enemyId = enemyInitializer.enemyId;
 		this.moveDirX = enemyInitializer.moveDirX;
 		this.moveDirY = enemyInitializer.moveDirY;
-		this.moveSpeed = enemyInitializer.moveSpeed;
+		this.defaultMoveSpeed = enemyInitializer.moveSpeed;
 		this.totalHP = enemyInitializer.totalHP;
 		this.currentHp = enemyInitializer.totalHP;
 		this.turnPositions = enemyInitializer.turnPositions;
@@ -35,6 +35,7 @@ export default class Enemy {
 		this.deleteEnemy = enemyInitializer.deleteEnemy;
 		this.deathAnimation = Utilities.createImage(ImagePath.lizardDeath);
 	}
+	public isSlowed: boolean = false;
 	private currentSprite: Sprite
 	private canvasAccessor: CanvasBuilder;
 	private deathSprite?: Sprite
@@ -55,7 +56,7 @@ export default class Enemy {
 
 	public moveDirX: number;
 	public moveDirY: number;
-	private moveSpeed: number;
+	private defaultMoveSpeed: number;
 
 
 	private currentSpriteFrame: number = 0;
@@ -69,6 +70,10 @@ export default class Enemy {
 	private enemyLookingDir: number;
 	public imageCenter: IImageCenter;
 	public currentHp: number;
+
+	get moveSpeed() {
+		return this.defaultMoveSpeed * (this.isSlowed ? 0.5 : 1);
+	}
 
 	get type() {
 		return this.innerType;

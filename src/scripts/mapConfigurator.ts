@@ -243,7 +243,7 @@ export default class MapConfigurator extends Configurator {
 			}
 
 			function getMenuItemImg(img: string): HTMLDivElement {
-				const gameMenuItemImg = document.createElement('div');
+				const gameMenuItemImg = document.createElement('img');
 				gameMenuItemImg.classList.add('game__menu-item-img');
 				gameMenuItemImg.style.background = `url(${img})`;
 				return gameMenuItemImg;

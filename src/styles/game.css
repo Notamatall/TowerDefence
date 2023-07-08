@@ -189,9 +189,6 @@ html {
 }
 
 .game__menu-item-img {
-	background: url('../assets/sprites/towers/supremeLaserCannon.png');
-	background-repeat: no-repeat;
-	background-position: 0 0;
 	height: 128px;
 	width: 128px;
 }

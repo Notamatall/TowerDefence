@@ -18,10 +18,11 @@ export class Tower {
 		this.type = towerInitializer.type;
 		this.price = towerInitializer.price;
 		this.name = towerInitializer.name;
+		this.specialEffect = towerInitializer.specialEffect;
 		this.positionX = towerInitializer.positionX;
 		this.positionY = towerInitializer.positionY;
 		this.sprite = towerInitializer.sprite;
-
+		this.totalPrice = towerInitializer.price;
 		this.imageCenter = {
 			centerX: this.positionX + this.sprite.pxWidth / 2,
 			centerY: this.positionY + this.sprite.pxHeight / 2
@@ -39,7 +40,7 @@ export class Tower {
 		this.upgradeType = towerInitializer.upgradeType;
 		this.attackSprite = towerInitializer.attackSprite;
 	}
-
+	private specialEffect?: (attackTarget: Enemy[]) => void;
 	private fireAnimations: {
 		drawExplosion: () => void,
 		tryRemoveAnimation: () => void,
@@ -49,7 +50,7 @@ export class Tower {
 	private fireAudio: HTMLAudioElement | undefined;
 	private upgradeAudio!: HTMLAudioElement;
 	private towerCircleRadius?: Path2D;
-	private getAttackTargetInRadius: (searchRadius: Path2D) => Enemy | undefined;
+	private getAttackTargetInRadius: (searchRadius: Path2D) => Enemy[] | undefined;
 	private removeTargetForTowers: (target: Enemy) => void;
 	private rewardForKill: (amount: number) => void;
 	private context: CanvasRenderingContext2D;
@@ -69,9 +70,14 @@ export class Tower {
 	public positionY: number;
 	public sprite: Sprite;
 	public readonly towerId: number;
+	private totalPrice: number;
 
 	get towerPrice() {
 		return this.price;
+	}
+
+	get towerTotalPrice() {
+		return this.totalPrice;
 	}
 
 	get towerType() {
@@ -150,6 +156,7 @@ export class Tower {
 				this.towerCircleRadius.arc(this.imageCenter.centerX, this.imageCenter.centerY, this.attackRadius, 0, 2 * Math.PI);
 				this.setUpgradeAudio(upgradeTemplate.upgradeAudio);
 				this.upgradeAudio.play();
+				this.totalPrice = this.totalPrice + this.price;
 			}
 		}
 	}
@@ -175,9 +182,9 @@ export class Tower {
 	}
 
 	private searchAttackTarget() {
-		const target = this.getAttackTargetInRadius(this.towerCircleRadius!)
-		if (target) {
-			this.attackTarget = target;
+		const targets = this.getAttackTargetInRadius(this.towerCircleRadius!)
+		if (targets) {
+			this.attackTarget = targets[0];
 			this.currentSpriteFrame = 0;
 			this.currentFrameChangeValue = 0;
 		}
@@ -239,19 +246,30 @@ export class Tower {
 			this.count = 0;
 			this.playShotAudio();
 			this.createShotAnimaton();
-			this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
+			if (this.specialEffect) {
+				const targetsInAttackRadius = this.getTargetsInAOE();
+				this.specialEffect(targetsInAttackRadius ? targetsInAttackRadius : []);
+			}
+			else
+				this.attackTarget.currentHp = this.attackTarget.currentHp - this.attackDamage;
 			if (this.attackTarget.currentHp <= 0) {
 				this.onEnemyKilled();
 			}
 		}
 	}
-
+	private getTargetsInAOE() {
+		const xPos = this.attackTarget!.imageCenter.centerX - (this.attackSprite!.pxWidth / 2) + this.attackTarget!.moveDirX * (this.attackSprite!.pxWidth / 4);
+		const yPos = this.attackTarget!.imageCenter.centerY - (this.attackSprite!.pxHeight / 2) + this.attackTarget!.moveDirY * (this.attackSprite!.pxHeight / 4);
+		const attackCircleRadius = new Path2D();
+		attackCircleRadius.arc(xPos, yPos, this.attackSprite!.displayX, 0, 2 * Math.PI);
+		return this.getAttackTargetInRadius(attackCircleRadius);
+	}
 
 	private createShotAnimaton() {
 		let currentFrameChangeValue = 0;
 		let currentSpriteFrame = 0;
-		const xPos = this.attackTarget!.imageCenter.centerX - 46 + this.attackTarget!.moveDirX * 23;
-		const yPos = this.attackTarget!.imageCenter.centerY - 46 + this.attackTarget!.moveDirY * 23
+		const xPos = this.attackTarget!.imageCenter.centerX - (this.attackSprite!.pxWidth / 2) + this.attackTarget!.moveDirX * (this.attackSprite!.pxWidth / 4);
+		const yPos = this.attackTarget!.imageCenter.centerY - (this.attackSprite!.pxHeight / 2) + this.attackTarget!.moveDirY * (this.attackSprite!.pxHeight / 4);
 		const index = this.fireAnimations.length - 1;
 		const attackSprite = this.attackSprite!;
 		const shotAnimation = {
@@ -274,7 +292,6 @@ export class Tower {
 
 
 	private playShotAudio() {
-
 		if (this.fireAudio) {
 			this.fireAudio.play().catch(e => console.error(e));
 		}
@@ -299,7 +316,7 @@ export type TowerType = 'platform' |
 	'simpleLaserCannon' |
 	'advancedLaserCannon' |
 	'supremeLaserCannon' |
-	'supremeLaserCannonPlus';
+	'supremeLaserCannonPlus' | 'slowTower';
 
 export type DefaultTowerType = {
 	[keyof in TowerType]: ITowerInitializer
@@ -309,13 +326,14 @@ export interface ITower extends ITowerInitializer {
 	positionY: number;
 	positionX: number;
 	towerId: number;
-	getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined;
+	getAttackTargetInRadius(searchRadius: Path2D): Enemy[] | undefined;
 	removeTargetForTowers(target: Enemy): void;
 	rewardForKill(amount: number): void;
 }
 
 export interface ITowerInitializer {
 	type: TowerType;
+	specialEffect?: (attackTarget: Enemy[]) => void;
 	fireAudio?: string;
 	installationAudio: string;
 	upgradeAudio?: string;

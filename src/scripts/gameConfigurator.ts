@@ -56,12 +56,16 @@ export default class GameConfigurator extends Configurator {
 		await this.tryChangeMapWave();
 		this.checkIsUserLost()
 		requestAnimationFrame(this.animate.bind(this));
-		if (this.isUserLost)
-			return;
+
 		if (this.isChangingMap) {
 			this.drawMapChangeAnimation();
 			return;
 		}
+
+		if (this.isUserLost) {
+			return
+		}
+
 		this.currentMap.drawMap()
 		this.drawPlatforms();
 		this.drawTowers();
@@ -99,6 +103,7 @@ export default class GameConfigurator extends Configurator {
 				this.showUserLostPopup();
 			this.isUserLost = true;
 		}
+
 	}
 
 	private showUserLostPopup() {
@@ -109,16 +114,15 @@ export default class GameConfigurator extends Configurator {
 
 			const gameLostButton = document.getElementById('game__lost-button');
 			if (gameLostButton)
-				gameLostButton.onclick = () => {
+				gameLostButton.onclick = async () => {
 					lostWindow.style.display = 'none';
-					this.restartGame();
+					await this.restartGame();
 				}
 		}
 	}
 
 	async restartGame() {
 		this.currentLevel = 1;
-		this.isUserLost = false;
 		await this.initCurrentMap(true);
 	}
 
@@ -248,6 +252,7 @@ export default class GameConfigurator extends Configurator {
 		setTimeout(() => {
 			this.isChangingMap = false;
 			this.showOverlay();
+			this.isUserLost = false;
 		}, 2000);
 	}
 
@@ -504,7 +509,7 @@ export default class GameConfigurator extends Configurator {
 
 				const sellTower = (e: MouseEvent) => {
 					const sellingPercent = 0.75;
-					this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins + towerToSellUpgrade.towerPrice * sellingPercent;
+					this.userStatsProxy!.userCoins = this.userStatsProxy!.userCoins + towerToSellUpgrade.towerTotalPrice * sellingPercent;
 					this.removeTower(towerToSellUpgrade.towerId);
 					sellButton.removeEventListener('click', sellTower, false)
 					this.towerSellUpgradeElement.style.display = 'none';
@@ -675,15 +680,18 @@ export default class GameConfigurator extends Configurator {
 		this.userStatsProxy.userCoins = this.userStatsProxy.userCoins + amount;
 	}
 
-	private getAttackTargetInRadius(searchRadius: Path2D): Enemy | undefined {
+	private getAttackTargetInRadius(searchRadius: Path2D): Enemy[] | undefined {
+		const enemiesInRadius: Enemy[] = []
 		for (const enemy of this.enemiesList) {
 			if (this.context.isPointInPath(
 				searchRadius,
 				enemy.imageCenter.centerX,
 				enemy.imageCenter.centerY) && enemy.isTargetable) {
-				return enemy;
+				enemiesInRadius.push(enemy);
 			}
 		}
+		if (enemiesInRadius.length > 0)
+			return enemiesInRadius;
 		return undefined;
 	}
 

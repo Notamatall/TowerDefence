@@ -12,7 +12,7 @@ export interface IMapTemplateCell {
 	dirY?: number;
 	order?: number;
 }
-const menuItems: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon']
+const menuItems: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'slowTower']
 const firstLevelUserStats: IUserStats = {
 	userHP: 100,
 	userCoins: 1200
@@ -34,7 +34,7 @@ const firstLevelTemplate: IMapTemplateCell[][] = [
 const firstLevelWaves: Wave[] = [
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('jinn', 13, -200, 0, -180, 0),
-	], 15),
+	], 1),
 	Wave.createWave([
 		WaveEnemy.createWaveEnemy('lizard', 8, -200, 0, -350, 0),
 		WaveEnemy.createWaveEnemy('jinn', 11, -(8 * 250), 0, -230, 0),

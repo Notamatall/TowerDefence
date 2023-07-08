@@ -34,6 +34,9 @@ import upgradeTower from '@/audio/upgradeTower.wav';
 import robotWalk from '~/monsters/robot/robotWalk.png';
 import robotDeath from '~/monsters/robot/RobotDeath.png';
 import gates from '~/map/gates.png';
+import slowTower from '~/towers/slow.png';
+import slowAttack from '~/towers/explosion/slowAttack.png';
+import slowTowerSound from '@/audio/slowTowerSound.wav';
 
 
 
@@ -74,4 +77,7 @@ export class ImagePath {
 	static robotWalk = robotWalk;
 	static robotDeath = robotDeath;
 	static gates = gates;
+	static slowTower = slowTower;
+	static slowTowerSound = slowTowerSound;
+	static slowAttack = slowAttack;
 }

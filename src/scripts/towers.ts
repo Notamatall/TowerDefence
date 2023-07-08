@@ -11,6 +11,8 @@ import advancedLaser from '@/audio/advancedLaser.wav'
 import supremeLaser from '@/audio/supremeLaser.wav'
 import supremeLaserPlus from '@/audio/supremeLaserPlus.wav'
 import multiBarrelFire from '@/audio/multiBarrelFire.wav'
+import slowTowerSound from '@/audio/slowTowerSound.wav'
+import Enemy from "@/types/enemyTypes";
 
 class TowerTemplates {
 
@@ -160,6 +162,29 @@ class TowerTemplates {
 				sprite: new Sprite({ imageSrc: ImagePath.supremeLaserCannonPlus, xFramesStart: 0, yFramesStart: 0, framesAmount: 11, frameChangeRate: 6, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 1000,
 				name: 'Supreme laser cannon +'
+			},
+			slowTower: {
+				type: 'slowTower',
+				attackDamage: 20,
+				specialEffect: (attackTarget: Enemy[]) => {
+					attackTarget.forEach(target => {
+						if (target.isSlowed === false) {
+							target.isSlowed = true;
+							setTimeout(() => target.isSlowed = false, 2000);
+						}
+					})
+
+				},
+				attackRadius: 300,
+				fireAudio: slowTowerSound,
+				installationAudio: ImagePath.towerInstalled,
+				attackSprite: new Sprite({
+					imageSrc: ImagePath.slowAttack, xFramesStart: 0, yFramesStart: 0, framesAmount: 16, frameChangeRate: 2,
+					pxHeight: 192, pxWidth: 192, dispayX: 192, dispayY: 192
+				}),
+				sprite: new Sprite({ imageSrc: ImagePath.slowTower, xFramesStart: 0, yFramesStart: 0, framesAmount: 11, frameChangeRate: 7, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				price: 600,
+				name: 'Slow tower'
 			}
 		}
 

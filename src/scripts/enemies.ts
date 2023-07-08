@@ -129,7 +129,7 @@ class EnemiesTemplates {
 			jinn: {
 				name: 'Jinn ',
 				type: 'jinn',
-				moveSpeed: 1.8,
+				moveSpeed: 15,
 				totalHP: 200,
 				deathReward: 30,
 				damageOnPass: 9,
