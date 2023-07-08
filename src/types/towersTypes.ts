@@ -258,15 +258,15 @@ export class Tower {
 		const xPos = this.attackTarget!.imageCenter.centerX;
 		const yPos = this.attackTarget!.imageCenter.centerY;
 		const attackCircleRadius = new Path2D();
-		attackCircleRadius.arc(xPos, yPos, this.attackSprite!.pxWidth, 0, 2 * Math.PI);
+		attackCircleRadius.arc(xPos, yPos, this.attackSprite!.pxWidth / 2, 0, 2 * Math.PI);
 		return this.getAttackTargetInRadius(attackCircleRadius);
 	}
 
 	private createShotAnimaton() {
 		let currentFrameChangeValue = 0;
 		let currentSpriteFrame = 0;
-		const xPos = this.attackTarget!.imageCenter.centerX - (this.attackSprite!.pxWidth / 2) + this.attackTarget!.moveDirX * (this.attackSprite!.pxWidth / 4);
-		const yPos = this.attackTarget!.imageCenter.centerY - (this.attackSprite!.pxHeight / 2) + this.attackTarget!.moveDirY * (this.attackSprite!.pxHeight / 4);
+		const xPos = this.attackTarget!.imageCenter.centerX - (this.attackSprite!.displayX / 2);
+		const yPos = this.attackTarget!.imageCenter.centerY - (this.attackSprite!.displayY / 2);
 		const index = this.fireAnimations.length - 1;
 		const attackSprite = this.attackSprite!;
 		const shotAnimation = {
