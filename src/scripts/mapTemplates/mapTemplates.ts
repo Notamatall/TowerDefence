@@ -15,7 +15,7 @@ export interface IMapTemplateCell {
 const menuItems: TowerType[] = ['platform', 'singleBarrelCannon', 'simpleLaserCannon', 'slowTower']
 const firstLevelUserStats: IUserStats = {
 	userHP: 100,
-	userCoins: 5000
+	userCoins: 1200
 }
 
 const firstLevelTemplate: IMapTemplateCell[][] = [
