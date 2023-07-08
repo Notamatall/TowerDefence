@@ -8,7 +8,6 @@ class CanvasBuilder {
 		this.registerWindowResize();
 	}
 	registerWindowResize() {
-
 		window.addEventListener('resize', (e) => {
 			const mainMenuIcon = document.getElementById('game__main-menu-icon')
 			if (mainMenuIcon) {
