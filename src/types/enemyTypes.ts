@@ -51,6 +51,7 @@ export default class Enemy {
 	private moveSprite: Sprite;
 	private context: CanvasRenderingContext2D;
 	private totalHP: number;
+	public slowTimeout: NodeJS.Timeout | null = null;
 
 	private turnPositions: TurnPosition[];
 

@@ -228,7 +228,6 @@ export class Tower {
 			return this.sprite.frameChangeRate === this.currentFrameChangeValue
 		}
 	}
-	private count = 0;
 	private getAngleToAttackTarget() {
 		let angle = Math.atan2(this.attackTarget!.center.centerY - this.imageCenter.centerY, this.attackTarget!.center.centerX - this.imageCenter.centerX);
 		return angle * (180 / Math.PI);
@@ -241,9 +240,7 @@ export class Tower {
 		this.rotationAngle = this.getAngleToAttackTarget();
 		this.animate();
 		const isAnimationRestarted = this.tryRestartAnimation();
-		this.count++;
 		if (isAnimationRestarted) {
-			this.count = 0;
 			this.playShotAudio();
 			this.createShotAnimaton();
 			if (this.specialEffect) {
@@ -258,10 +255,10 @@ export class Tower {
 		}
 	}
 	private getTargetsInAOE() {
-		const xPos = this.attackTarget!.imageCenter.centerX - (this.attackSprite!.pxWidth / 2) + this.attackTarget!.moveDirX * (this.attackSprite!.pxWidth / 4);
-		const yPos = this.attackTarget!.imageCenter.centerY - (this.attackSprite!.pxHeight / 2) + this.attackTarget!.moveDirY * (this.attackSprite!.pxHeight / 4);
+		const xPos = this.attackTarget!.imageCenter.centerX;
+		const yPos = this.attackTarget!.imageCenter.centerY;
 		const attackCircleRadius = new Path2D();
-		attackCircleRadius.arc(xPos, yPos, this.attackSprite!.displayX, 0, 2 * Math.PI);
+		attackCircleRadius.arc(xPos, yPos, this.attackSprite!.pxWidth, 0, 2 * Math.PI);
 		return this.getAttackTargetInRadius(attackCircleRadius);
 	}
 

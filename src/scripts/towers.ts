@@ -165,12 +165,18 @@ class TowerTemplates {
 			},
 			slowTower: {
 				type: 'slowTower',
-				attackDamage: 20,
+				attackDamage: 0,
 				specialEffect: (attackTarget: Enemy[]) => {
 					attackTarget.forEach(target => {
 						if (target.isSlowed === false) {
 							target.isSlowed = true;
-							setTimeout(() => target.isSlowed = false, 2000);
+							target.slowTimeout = setTimeout(() => target.isSlowed = false, 2000);
+						}
+						else {
+							if (target.slowTimeout) {
+								clearTimeout(target.slowTimeout);
+								target.slowTimeout = setTimeout(() => target.isSlowed = false, 2000);
+							}
 						}
 					})
 
@@ -182,7 +188,7 @@ class TowerTemplates {
 					imageSrc: ImagePath.slowAttack, xFramesStart: 0, yFramesStart: 0, framesAmount: 16, frameChangeRate: 2,
 					pxHeight: 192, pxWidth: 192, dispayX: 192, dispayY: 192
 				}),
-				sprite: new Sprite({ imageSrc: ImagePath.slowTower, xFramesStart: 0, yFramesStart: 0, framesAmount: 11, frameChangeRate: 7, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
+				sprite: new Sprite({ imageSrc: ImagePath.slowTower, xFramesStart: 0, yFramesStart: 0, framesAmount: 11, frameChangeRate: 6, pxHeight: 128, pxWidth: 128, dispayX: 128, dispayY: 128 }),
 				price: 600,
 				name: 'Slow tower'
 			}
