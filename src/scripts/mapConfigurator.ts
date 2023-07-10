@@ -33,7 +33,7 @@ export default class MapConfigurator extends Configurator {
 	private mapImageWidth: number;
 	private mapImageHeight: number;
 	private mapImageSrc: string;
-	private mapTemplate: IMapTemplateCell[][];
+	public mapTemplate: IMapTemplateCell[][];
 	private mapTurnPlaces: TurnPosition[] = []
 
 	private innerMapImage: HTMLImageElement | null = null

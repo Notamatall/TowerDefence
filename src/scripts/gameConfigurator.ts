@@ -47,7 +47,9 @@ export default class GameConfigurator extends Configurator {
 		this.setTowerMenuElement();
 		this.registerSellUpgradeMenuHandlers();
 		this.configureMainMenuHandlers();
+		this.registerWindowResize();
 	}
+
 	public async startGame() {
 		await this.animate();
 	}
@@ -76,6 +78,29 @@ export default class GameConfigurator extends Configurator {
 
 	}
 
+	registerWindowResize() {
+		window.addEventListener('resize', (e) => {
+			this.setCorrectMenuLocation();
+		})
+	}
+
+	private setCorrectMenuLocation() {
+		const mainMenuIcon = document.getElementById('game__main-menu-icon');
+		let offsetScreenLeltSide = window.innerWidth;
+		if (this.currentMap.mapTemplate[0].length * 128 < window.innerWidth)
+			offsetScreenLeltSide = this.currentMap.mapTemplate[0].length * 128;
+
+		if (mainMenuIcon) {
+			const offsetRightMainMenu = 60;
+			mainMenuIcon.style.left = offsetScreenLeltSide - offsetRightMainMenu + 'px';
+		}
+
+		const hpMoneyContainer = document.getElementById('game__hp-money-container')
+		if (hpMoneyContainer) {
+			const offsetRightHPMoney = 200;
+			hpMoneyContainer.style.left = offsetScreenLeltSide - offsetRightHPMoney + 'px';
+		}
+	}
 	private tryDisplaySelectedTowerRadius() {
 		const tower = this.towerToSellUpgrade;
 		if (tower)
@@ -249,6 +274,7 @@ export default class GameConfigurator extends Configurator {
 		this.clearTowersList();
 		this.clearEnemiesList();
 		this.towerToSellUpgrade = null;
+		this.setCorrectMenuLocation();
 		setTimeout(() => {
 			this.isChangingMap = false;
 			this.showOverlay();
