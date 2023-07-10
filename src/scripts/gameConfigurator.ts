@@ -276,7 +276,7 @@ export default class GameConfigurator extends Configurator {
 		const mapToInit = this.maps.find(map => map.level === this.currentLevel);
 		if (_.isEmpty(mapToInit))
 			throw new Error('Current map does not exist');
-		this.scrollTop();
+		this.scrollToDefaultPosition();
 		this.clearTimerInterval();
 		this.setCurrentMap(mapToInit.map, isRestart);
 		await this.currentMap.configureMap();
@@ -294,9 +294,10 @@ export default class GameConfigurator extends Configurator {
 		}, 2000);
 	}
 
-	private scrollTop() {
+	private scrollToDefaultPosition() {
 		window.scrollTo({
 			top: 0,
+			left: 0,
 			behavior: "smooth"
 		});
 	}
