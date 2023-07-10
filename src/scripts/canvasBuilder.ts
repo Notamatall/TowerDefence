@@ -5,7 +5,22 @@ class CanvasBuilder {
 		this.loadHtmlCanvas();
 		this.canvasContainer = this.createCanvasContainer();
 		this.appendCanvasToContainer(this.canvasContainer.id);
+		this.injectHtmlElementsIntoCanvasContainer();
 	}
+
+
+	injectHtmlElementsIntoCanvasContainer() {
+		const gameTimer = document.getElementById('game__timer')!;
+		const gameLostWindow = document.getElementById('game__lost-windowID')!;
+		const gameVictoryWindow = document.getElementById('game__victory-windowID')!;
+		const gameUpdateTowerMenu = document.getElementById('game__update-tower-menu')!;
+		const gameMainMenu = document.getElementById('game__main-menu')!;
+		const gameMainMenuIcon = document.getElementById('game__main-menu-icon')!;
+		[gameTimer, gameLostWindow, gameVictoryWindow, gameUpdateTowerMenu, gameMainMenu, gameMainMenuIcon]
+			.forEach(child => this.canvasContainer.appendChild(child));
+	}
+
+
 
 	public context!: CanvasRenderingContext2D;
 	public canvas!: HTMLCanvasElement;

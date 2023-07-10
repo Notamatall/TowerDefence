@@ -40,6 +40,9 @@ html {
 
 .game__container {
 	overflow-y: hidden;
+	position: relative;
+	width: fit-content;
+	margin: auto;
 }
 
 .game__update-tower-menu-upgradeBtn {
@@ -197,7 +200,7 @@ html {
 	opacity: 0.7;
 }
 
-.game__menu-placeholder {
+#game__menu-placeholder {
 	display: flex;
 	position: fixed;
 	top: 25px;

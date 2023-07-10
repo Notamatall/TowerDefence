@@ -4,6 +4,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/regular';
 
 #game__main-menu-icon {
+	width: fit-content;
 	position: fixed;
 	display: none;
 	top: 35px;
@@ -14,6 +15,7 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 
 #game__main-menu {
 	display: none;
+	z-index: 999;
 	border: solid wheat 2px;
 	position: fixed;
 	left: 50%;

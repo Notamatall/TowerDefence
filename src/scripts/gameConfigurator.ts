@@ -85,17 +85,29 @@ export default class GameConfigurator extends Configurator {
 	}
 
 	private setCorrectMenuLocation() {
-		const mainMenuIcon = document.getElementById('game__main-menu-icon');
+		const mainMenuIcon = document.getElementById('game__main-menu-icon')!;
+		const hpMoneyContainer = document.getElementById('game__hp-money-container')!;
+		const gameTowersIcon = document.getElementById('game__menu-placeholder')!;
+
 		let offsetScreenLeltSide = window.innerWidth;
-		if (this.currentMap.mapTemplate[0].length * 128 < window.innerWidth)
+		if (this.currentMap.mapTemplate[0].length * 128 < window.innerWidth) {
 			offsetScreenLeltSide = this.currentMap.mapTemplate[0].length * 128;
+			mainMenuIcon.style.position = 'absolute';
+			hpMoneyContainer.style.position = 'absolute';
+			gameTowersIcon.style.position = 'absolute';
+		}
+		else {
+			mainMenuIcon.style.position = 'fixed';
+			hpMoneyContainer.style.position = 'fixed';
+			gameTowersIcon.style.position = 'fixed';
+		}
 
 		if (mainMenuIcon) {
 			const offsetRightMainMenu = 60;
 			mainMenuIcon.style.left = offsetScreenLeltSide - offsetRightMainMenu + 'px';
 		}
 
-		const hpMoneyContainer = document.getElementById('game__hp-money-container')
+
 		if (hpMoneyContainer) {
 			const offsetRightHPMoney = 200;
 			hpMoneyContainer.style.left = offsetScreenLeltSide - offsetRightHPMoney + 'px';
@@ -182,7 +194,7 @@ export default class GameConfigurator extends Configurator {
 		const hpMoneyContainer = (document.getElementById('game__hp-money-container') as HTMLDivElement);
 		hpMoneyContainer.style.display = 'none';
 
-		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
+		const gameMenuPlaceHolder = (document.getElementById('game__menu-placeholder')! as HTMLDivElement);
 		gameMenuPlaceHolder.style.display = 'none';
 
 		const gameMenuIcon = document.getElementById('game__main-menu-icon')!;
@@ -199,7 +211,7 @@ export default class GameConfigurator extends Configurator {
 		const hpMoneyContainer = (document.getElementById('game__hp-money-container') as HTMLDivElement);
 		hpMoneyContainer.style.display = 'flex';
 
-		const gameMenuPlaceHolder = (document.getElementsByClassName('game__menu-placeholder')[0] as HTMLDivElement);
+		const gameMenuPlaceHolder = (document.getElementById('game__menu-placeholder')! as HTMLDivElement);
 		gameMenuPlaceHolder.style.display = 'flex';
 
 		const gameMenuIcon = document.getElementById('game__main-menu-icon')!;
@@ -481,18 +493,27 @@ export default class GameConfigurator extends Configurator {
 	}
 	private changeAnimationTimer = 0;
 	private drawMapChangeAnimation() {
+		this.drawBlackBackground();
+		let leftMargin = (window.innerWidth - this.canvas.width) / 2;
+		leftMargin = leftMargin > 0 ? leftMargin : 0;
 		this.changeAnimationTimer++;
 		this.context.drawImage(this.gateLoadAnimation,
 			160 * Math.floor(this.changeAnimationTimer / 10),
 			0,
 			160,
 			160,
-			document.body.clientWidth / 2 - 80,
+			window.innerWidth / 2 - (leftMargin + 80),
 			window.innerHeight / 2 - 80,
 			160,
 			160);
 		if (this.changeAnimationTimer == 120)
 			this.changeAnimationTimer = 0;
+	}
+
+
+	private drawBlackBackground() {
+		this.context.fillStyle = 'black';
+		this.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	}
 
 	private drawTowers() {

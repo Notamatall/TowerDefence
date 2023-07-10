@@ -194,15 +194,14 @@ export default class MapConfigurator extends Configurator {
 			}
 
 			function removePlaceHolder() {
-				const menuPlaceholders = document.getElementsByClassName('game__menu-placeholder');
-				for (const menuPlaceholder of menuPlaceholders) {
+				const menuPlaceholder = document.getElementById('game__menu-placeholder')!;
+				if (menuPlaceholder)
 					menuPlaceholder.remove();
-				}
 			}
 
 			function createMenuPlaceholder(this: MapConfigurator) {
 				const menuPlaceholder = document.createElement('div');
-				menuPlaceholder.classList.add('game__menu-placeholder');
+				menuPlaceholder.id = 'game__menu-placeholder';
 				menuPlaceholder.onmousemove = (e) => {
 					this.setCursorCoordinates(e);
 				};
